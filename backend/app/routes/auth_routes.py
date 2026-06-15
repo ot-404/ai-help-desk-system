@@ -14,7 +14,7 @@ def register():
         return jsonify(error="name, email and password are required"), 400
     if User.query.filter_by(email=data["email"]).first():
         return jsonify(error="email already registered"), 409
-    user = User(name=data["name"], email=data["email"], role=data.get("role", "user"))
+    user = User(name=data["name"], email=data["email"], role="user")
     user.set_password(data["password"])
     db.session.add(user)
     db.session.commit()

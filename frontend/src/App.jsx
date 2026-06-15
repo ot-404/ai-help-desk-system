@@ -45,6 +45,7 @@ export default function App() {
           <Route path="/admin" element={<PrivateRoute roles={["admin"]}><Layout><Dashboard /></Layout></PrivateRoute>} />
           <Route path="/admin/users" element={<PrivateRoute roles={["admin"]}><Layout><AdminPanel /></Layout></PrivateRoute>} />
           <Route path="/admin/kb" element={<PrivateRoute roles={["agent","admin"]}><Layout><KnowledgeBase /></Layout></PrivateRoute>} />
+          <Route path="*" element={<Layout><div style={{ textAlign: "center", marginTop: 80, color: "#7a8794" }}><h2>404 — Page not found</h2></div></Layout>} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

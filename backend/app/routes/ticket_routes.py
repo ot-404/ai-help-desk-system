@@ -5,6 +5,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from app import db
 from app.models.ticket_model import Ticket, PRIORITIES, STATUSES
 from app.services import ticket_service
+from app.utils.auth_helpers import role_required
 
 ticket_bp = Blueprint("tickets", __name__)
 
@@ -90,7 +91,7 @@ def rate_ticket(ticket_id):
 
 
 @ticket_bp.delete("/<int:ticket_id>")
-@jwt_required()
+@role_required("agent", "admin")
 def delete_ticket(ticket_id):
     ticket = Ticket.query.get(ticket_id)
     if not ticket:

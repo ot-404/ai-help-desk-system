@@ -141,7 +141,7 @@ export default function TicketDetail() {
         </div>
       )}
 
-      {ticket.status !== "closed" && (
+      {ticket.status !== "closed" && ticket.status !== "resolved" && (
         <form onSubmit={sendReply} style={s.replyForm}>
           <textarea style={s.replyInput} value={reply} onChange={e => setReply(e.target.value)}
             placeholder="Write a reply…" rows={3} />
