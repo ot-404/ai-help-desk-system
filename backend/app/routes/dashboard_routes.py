@@ -1,5 +1,5 @@
 """Dashboard: stats API + serves the analytics UI."""
-from flask import Blueprint, jsonify, render_template
+from flask import Blueprint, jsonify
 from sqlalchemy import func
 from app import db
 from app.models.ticket_model import Ticket
@@ -10,11 +10,6 @@ dashboard_bp = Blueprint("dashboard", __name__)
 
 # SLA targets in hours by priority
 SLA_HOURS = {"low": 72, "medium": 48, "high": 24, "urgent": 4}
-
-
-@dashboard_bp.get("/")
-def index():
-    return render_template("dashboard.html")
 
 
 @dashboard_bp.get("/api/dashboard/stats")

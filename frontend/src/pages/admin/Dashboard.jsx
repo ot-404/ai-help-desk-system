@@ -68,7 +68,7 @@ export default function Dashboard() {
       <div style={s.grid4}>
         <Metric label="Total Tickets" value={stats.total_tickets} />
         <Metric label="Avg Resolution"
-          value={stats.avg_resolution_minutes != null ? `${stats.avg_resolution_minutes} min` : null}
+          value={stats.avg_resolution_minutes != null && stats.avg_resolution_minutes !== "null" ? `${stats.avg_resolution_minutes} min` : null}
           sub="from resolved tickets" />
         <Metric label="AI Replies" value={stats.ai_messages} />
         <Metric label="Resolved" value={stats.resolved} />
