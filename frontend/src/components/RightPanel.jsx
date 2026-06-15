@@ -4,182 +4,169 @@ import api from "../api/client";
 import { useAuth } from "../context/AuthContext";
 import { useIsMobile } from "../hooks/useIsMobile";
 
+const TOPICS = [
+  { label: "Password & Login", to: "/help?category=password" },
+  { label: "Billing", to: "/help?category=billing" },
+  { label: "Security", to: "/help?category=security" },
+  { label: "Account", to: "/help?category=account" },
+  { label: "Technical", to: "/help?category=technical" },
+];
+
 export default function RightPanel() {
   const { user } = useAuth();
   const isMobile = useIsMobile();
-  const [adminStats, setAdminStats] = useState(null);
-  const [tickets, setTickets]       = useState([]);
-  const [kb, setKb]                 = useState([]);
+  const [kbArticles, setKbArticles] = useState([]);
+  const [stats, setStats] = useState(null);
+  const [myTickets, setMyTickets] = useState([]);
 
   useEffect(() => {
-    api.get("/kb/").then(r => setKb((r.data || []).slice(0, 5))).catch(() => {});
-    if (!user) return;
-    if (user.role === "admin") {
-      api.get("/dashboard/stats").then(r => setAdminStats(r.data)).catch(() => {});
-    } else if (user.role === "user") {
-      api.get("/tickets/").then(r => setTickets(r.data || [])).catch(() => {});
+    api.get("/kb/").then(r => setKbArticles(r.data || [])).catch(() => {});
+    if (user?.role === "admin") {
+      api.get("/dashboard/stats").then(r => setStats(r.data)).catch(() => {});
+    }
+    if (user?.role === "user") {
+      api.get("/tickets/").then(r => setMyTickets(r.data || [])).catch(() => {});
     }
   }, [user]);
 
-  // Hidden on mobile — sidebar and right panel collapse into BottomNav
   if (isMobile) return null;
 
+  const open = myTickets.filter(t => t.status === "open").length;
+  const pending = myTickets.filter(t => t.status === "pending").length;
+  const resolved = myTickets.filter(t => ["resolved", "closed"].includes(t.status)).length;
+
   return (
-    <aside style={s.aside}>
-
-      {/* ── Add Question CTA ─────────────────── */}
-      <div style={s.addCard}>
-        <Link to="/ask" style={s.addBtn}>Add Question</Link>
-        {user?.role === "user" && (
-          <Link to="/new-question" style={s.ticketBtn}>Ask a Question</Link>
-        )}
-      </div>
-
-      {/* ── Admin stats ─────────────────────── */}
-      {user?.role === "admin" && adminStats && (
+    <aside style={s.panel}>
+      {/* CTA buttons */}
+      {user ? (
         <div style={s.card}>
-          <div style={s.cardHead}>Platform Overview</div>
-          {[
-            ["Total Tickets",  adminStats.total_tickets],
-            ["Resolved",       adminStats.resolved],
-            ["AI Deflection",  `${adminStats.deflection_rate}%`],
-            ["Users",          adminStats.total_users],
-            ["Visits Today",   adminStats.visits_today],
-          ].map(([label, val]) => (
-            <div key={label} style={s.statRow}>
-              <span style={s.statLabel}>{label}</span>
-              <span style={s.statVal}>{val ?? "—"}</span>
-            </div>
-          ))}
-          <Link to="/admin" style={s.moreLink}>Full dashboard →</Link>
+          <Link to="/ask" style={s.greenBtn}>Add Question</Link>
+          <Link to="/ask" style={s.outlineBtn}>Ask a Question</Link>
+        </div>
+      ) : (
+        <div style={s.card}>
+          <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 8 }}>What is AHD?</div>
+          <div style={{ fontSize: 13, color: "#666", marginBottom: 12, lineHeight: 1.5 }}>
+            AI Help Desk — get instant answers from AI and expert support staff.
+          </div>
+          <Link to="/register" style={s.greenBtn}>Sign up — it's free</Link>
+          <Link to="/login" style={s.outlineBtn}>Sign in</Link>
         </div>
       )}
 
-      {/* ── Agent quick links ────────────────── */}
+      {/* Role-specific panel */}
+      {user?.role === "admin" && stats && (
+        <div style={s.card}>
+          <div style={s.cardTitle}>Platform Overview</div>
+          <div style={s.statRow}>
+            <span style={s.statLabel}>Total Tickets</span>
+            <span style={s.statVal}>{stats.total_tickets ?? "—"}</span>
+          </div>
+          <div style={s.statRow}>
+            <span style={s.statLabel}>Resolved</span>
+            <span style={{ ...s.statVal, color: "#16c784" }}>{stats.resolved_tickets ?? "—"}</span>
+          </div>
+          <div style={s.statRow}>
+            <span style={s.statLabel}>Users</span>
+            <span style={s.statVal}>{stats.total_users ?? "—"}</span>
+          </div>
+          <div style={s.statRow}>
+            <span style={s.statLabel}>Visits Today</span>
+            <span style={s.statVal}>{stats.visits_today ?? "—"}</span>
+          </div>
+        </div>
+      )}
+
       {user?.role === "agent" && (
         <div style={s.card}>
-          <div style={s.cardHead}>Quick Links</div>
-          <Link to="/agent"    style={s.actionLink}>View Queue</Link>
-          <Link to="/admin/kb" style={s.actionLink}>Knowledge Base</Link>
-          <Link to="/ask"      style={s.actionLink}>Ask AI</Link>
+          <div style={s.cardTitle}>Quick Links</div>
+          <Link to="/agent" style={s.quickLink}>View Queue</Link>
+          <Link to="/kb" style={s.quickLink}>Knowledge Base</Link>
+          <Link to="/ask" style={s.quickLink}>Ask AI</Link>
         </div>
       )}
 
-      {/* ── User ticket summary ──────────────── */}
       {user?.role === "user" && (
         <div style={s.card}>
-          <div style={s.cardHead}>My Questions</div>
-          {tickets.length === 0 ? (
-            <div style={s.empty}>No tickets yet.</div>
-          ) : (
-            [
-              ["Open",     tickets.filter(t => t.status === "open").length,    "#3182ce"],
-              ["Pending",  tickets.filter(t => t.status === "pending").length, "#d69e2e"],
-              ["Answered", tickets.filter(t => ["resolved","closed"].includes(t.status)).length, "#16c784"],
-            ].map(([label, count, color]) => (
-              <div key={label} style={s.statRow}>
-                <span style={s.statLabel}>{label}</span>
-                <span style={{ ...s.statVal, color }}>{count}</span>
-              </div>
-            ))
-          )}
-        </div>
-      )}
-
-      {/* ── Guest CTA ────────────────────────── */}
-      {!user && (
-        <div style={s.card}>
-          <div style={s.cardHead}>What is AI Help Desk?</div>
-          <p style={s.guestText}>
-            Ask questions and get instant AI-powered answers. Your questions and answers are shared to help everyone.
-          </p>
-          <Link to="/register" style={s.addBtn}>Sign up free</Link>
-          <Link to="/login"    style={s.moreLink}>Have an account? Sign in →</Link>
-        </div>
-      )}
-
-      {/* ── Topics ───────────────────────────── */}
-      <div style={s.card}>
-        <div style={s.cardHead}>Topics</div>
-        {["Password & Login", "Billing", "Security", "Account", "Technical"].map(topic => (
-          <Link
-            key={topic}
-            to={`/help?tab=${encodeURIComponent(topic.split(" ")[0])}`}
-            style={s.topicLink}
-          >
-            {topic}
+          <div style={s.cardTitle}>My Questions</div>
+          <div style={s.statRow}>
+            <span style={s.statLabel}>Open</span>
+            <span style={{ ...s.statVal, color: "#3182ce" }}>{open}</span>
+          </div>
+          <div style={s.statRow}>
+            <span style={s.statLabel}>Pending</span>
+            <span style={{ ...s.statVal, color: "#d69e2e" }}>{pending}</span>
+          </div>
+          <div style={s.statRow}>
+            <span style={s.statLabel}>Resolved</span>
+            <span style={{ ...s.statVal, color: "#16c784" }}>{resolved}</span>
+          </div>
+          <Link to="/my-questions" style={{ ...s.quickLink, marginTop: 8, display: "block" }}>
+            View all →
           </Link>
+        </div>
+      )}
+
+      {/* Topics */}
+      <div style={s.card}>
+        <div style={s.cardTitle}>Topics</div>
+        {TOPICS.map(t => (
+          <Link key={t.label} to={t.to} style={s.topicLink}>{t.label}</Link>
         ))}
       </div>
 
-      {/* ── Related Questions / KB ───────────── */}
-      {kb.length > 0 && (
+      {/* Related questions */}
+      {kbArticles.length > 0 && (
         <div style={s.card}>
-          <div style={s.cardHead}>Related Questions</div>
-          {kb.map(a => (
-            <Link key={a.id} to={`/help?article=${a.id}`} style={s.kbLink}>
+          <div style={s.cardTitle}>Related Questions</div>
+          {kbArticles.slice(0, 5).map(a => (
+            <Link key={a.id} to={`/help?article=${a.id}`} style={s.relatedLink}>
               {a.title}
             </Link>
           ))}
-          <Link to="/help" style={s.moreLink}>Browse all →</Link>
         </div>
       )}
-
     </aside>
   );
 }
 
 const s = {
-  aside: { width: 260, flexShrink: 0, display: "flex", flexDirection: "column", gap: 12 },
-
-  addCard: {
-    background: "#fff", border: "1px solid #e8e8e8", borderRadius: 8,
-    padding: "14px 16px", display: "flex", flexDirection: "column", gap: 8,
+  panel: {
+    width: 260, flexShrink: 0, paddingTop: 16,
+    position: "sticky", top: 56, height: "calc(100vh - 56px)",
+    overflowY: "auto", display: "flex", flexDirection: "column", gap: 12,
   },
-  addBtn: {
-    display: "block", textAlign: "center",
-    background: "#16c784", color: "#fff",
-    padding: "9px 0", borderRadius: 20,
-    fontWeight: 700, fontSize: 14, textDecoration: "none",
-  },
-  ticketBtn: {
-    display: "block", textAlign: "center",
-    background: "none", border: "1.5px solid #e8e8e8", color: "#282829",
-    padding: "8px 0", borderRadius: 20,
-    fontWeight: 600, fontSize: 13, textDecoration: "none",
-  },
-
   card: {
     background: "#fff", border: "1px solid #e8e8e8", borderRadius: 8,
-    padding: "16px", display: "flex", flexDirection: "column", gap: 0,
+    padding: 16, display: "flex", flexDirection: "column", gap: 6,
   },
-  cardHead: { fontWeight: 700, fontSize: 14, color: "#282829", marginBottom: 12 },
-
-  statRow: { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 0", borderBottom: "1px solid #f2f2f0" },
+  cardTitle: { fontWeight: 700, fontSize: 14, marginBottom: 4, color: "#111" },
+  greenBtn: {
+    display: "block", textAlign: "center", padding: "9px 0",
+    background: "#16c784", borderRadius: 20, fontSize: 14,
+    color: "#fff", textDecoration: "none", fontWeight: 600,
+  },
+  outlineBtn: {
+    display: "block", textAlign: "center", padding: "8px 0",
+    border: "1px solid #ccc", borderRadius: 20, fontSize: 14,
+    color: "#333", textDecoration: "none", fontWeight: 500,
+  },
+  statRow: {
+    display: "flex", justifyContent: "space-between", alignItems: "center",
+    padding: "4px 0", borderBottom: "1px solid #f0f0f0",
+  },
   statLabel: { fontSize: 13, color: "#555" },
-  statVal:   { fontWeight: 700, fontSize: 13, color: "#282829" },
-
-  empty: { fontSize: 13, color: "#939598", paddingBottom: 8 },
-
-  moreLink: { display: "block", marginTop: 12, fontSize: 12, color: "#16c784", textDecoration: "none", fontWeight: 600 },
-
-  actionLink: {
-    display: "block", padding: "8px 0",
-    fontSize: 14, color: "#282829", textDecoration: "none",
-    borderBottom: "1px solid #f2f2f0", fontWeight: 500,
+  statVal: { fontSize: 15, fontWeight: 700, color: "#111" },
+  quickLink: {
+    fontSize: 13, color: "#16c784", textDecoration: "none",
+    fontWeight: 500, padding: "3px 0", display: "block",
   },
-
-  guestText: { fontSize: 13, color: "#555", lineHeight: 1.6, margin: "0 0 12px" },
-
   topicLink: {
-    display: "block", padding: "7px 0",
-    fontSize: 13, color: "#282829", fontWeight: 500, textDecoration: "none",
-    borderBottom: "1px solid #f2f2f0",
+    fontSize: 13, color: "#555", textDecoration: "none",
+    padding: "4px 0", display: "block",
   },
-
-  kbLink: {
-    display: "block", padding: "7px 0",
-    fontSize: 13, color: "#282829", textDecoration: "none",
-    borderBottom: "1px solid #f2f2f0", lineHeight: 1.4,
+  relatedLink: {
+    fontSize: 13, color: "#3182ce", textDecoration: "none",
+    lineHeight: 1.4, display: "block", padding: "3px 0",
   },
 };
