@@ -42,7 +42,8 @@ def _call_llm(messages):
             )
             return resp.content[0].text, model
         except Exception as exc:
-            return (f"[anthropic-error] {exc}", "error")
+            current_app.logger.error("Anthropic call failed: %s", exc)
+            # fall through to OpenAI
 
     # --- OpenAI ---
     if openai_key:
@@ -55,17 +56,14 @@ def _call_llm(messages):
             )
             return resp.choices[0].message.content, model
         except Exception as exc:
-            return (f"[openai-error] {exc}", "error")
+            current_app.logger.error("OpenAI call failed: %s", exc)
+            # fall through to fallback
 
-    # --- Mock ---
-    user_msg = next(
-        (m["content"] for m in reversed(messages) if m["role"] == "user"), ""
-    )
+    # --- Fallback (no key configured or all providers failed) ---
     return (
-        "[mock model] Based on our knowledge base, here is guidance for: "
-        + user_msg[:160]
-        + " ... (set ANTHROPIC_API_KEY or OPENAI_API_KEY to enable a live model).",
-        "mock",
+        "Our AI assistant is temporarily unavailable. A support agent has been notified "
+        "and will respond to your question shortly. We apologize for the inconvenience.",
+        "unavailable",
     )
 
 
