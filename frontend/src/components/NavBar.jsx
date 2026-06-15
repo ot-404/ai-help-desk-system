@@ -26,7 +26,9 @@ export default function NavBar() {
 
       {/* Search — centered */}
       <form onSubmit={handleSearch} style={s.searchWrap}>
-        <span style={s.searchIcon}>🔍</span>
+        <span style={s.searchIcon}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </span>
         <input
           style={s.searchInput}
           placeholder="Search AI Help Desk…"
@@ -88,7 +90,7 @@ const s = {
     padding: "0 14px", height: 38,
     border: "1.5px solid transparent",
   },
-  searchIcon: { fontSize: 14, lineHeight: 1, opacity: .6, userSelect: "none" },
+  searchIcon: { fontSize: 14, lineHeight: 1, opacity: .5, userSelect: "none", display: "flex", alignItems: "center" },
   searchInput: {
     flex: 1, background: "none", border: "none", outline: "none",
     color: "#282829", fontSize: 14,

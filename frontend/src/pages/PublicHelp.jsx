@@ -174,7 +174,7 @@ export default function PublicHelp() {
                     {expanded === a.id && (
                       <div style={s.articleBody}>
                         <div style={s.authorLine}>
-                          <span style={s.authorAvatar}>🤖</span>
+                          <div style={s.authorAvatar}>AI</div>
                           <span style={s.authorName}>AI Help Desk</span>
                           {a.created_at && (
                             <span style={s.authorDate}>
@@ -300,7 +300,7 @@ const s = {
 
   articleBody: { borderTop: "1px solid #f2f2f0", padding: "16px 20px" },
   authorLine: { display: "flex", alignItems: "center", gap: 6, marginBottom: 12 },
-  authorAvatar: { fontSize: 16 },
+  authorAvatar: { width: 22, height: 22, borderRadius: "50%", background: "#16c784", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 700, flexShrink: 0 },
   authorName: { fontSize: 13, fontWeight: 700, color: "#282829" },
   authorDate: { fontSize: 13, color: "#939598" },
   articleContent: { fontSize: 14, color: "#282829", lineHeight: 1.75, whiteSpace: "pre-wrap" },

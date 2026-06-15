@@ -54,9 +54,9 @@ export default function RightPanel() {
       {user?.role === "agent" && (
         <div style={s.card}>
           <div style={s.cardHead}>Quick Links</div>
-          <Link to="/agent"    style={s.actionLink}>📋 View Queue</Link>
-          <Link to="/admin/kb" style={s.actionLink}>📖 Knowledge Base</Link>
-          <Link to="/ask"      style={s.actionLink}>🤖 Ask AI</Link>
+          <Link to="/agent"    style={s.actionLink}>View Queue</Link>
+          <Link to="/admin/kb" style={s.actionLink}>Knowledge Base</Link>
+          <Link to="/ask"      style={s.actionLink}>Ask AI</Link>
         </div>
       )}
 

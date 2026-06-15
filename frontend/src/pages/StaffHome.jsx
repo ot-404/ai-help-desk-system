@@ -81,7 +81,7 @@ export default function StaffHome() {
           </div>
         </div>
         <div style={s.welcomeActions}>
-          <Link to="/ask"   style={s.askBtn}>🤖 Ask AI</Link>
+          <Link to="/ask"   style={s.askBtn}>Ask AI</Link>
           <Link to="/agent" style={s.queueBtn}>View Queue →</Link>
         </div>
       </div>
@@ -131,11 +131,11 @@ export default function StaffHome() {
         <span style={s.sectionTitle}>Quick Actions</span>
       </div>
       <div style={s.actionsGrid}>
-        <Link to="/agent"    style={s.actionCard}><span style={s.actionIcon}>📋</span><span style={s.actionLabel}>Queue</span><span style={s.actionSub}>All questions</span></Link>
-        <Link to="/admin/kb" style={s.actionCard}><span style={s.actionIcon}>📖</span><span style={s.actionLabel}>Knowledge Base</span><span style={s.actionSub}>Add & edit articles</span></Link>
-        <Link to="/ask"      style={s.actionCard}><span style={s.actionIcon}>🤖</span><span style={s.actionLabel}>Ask AI</span><span style={s.actionSub}>Generate articles</span></Link>
-        {isAdmin && <Link to="/admin"      style={s.actionCard}><span style={s.actionIcon}>📊</span><span style={s.actionLabel}>Dashboard</span><span style={s.actionSub}>Analytics & metrics</span></Link>}
-        {isAdmin && <Link to="/admin/users" style={s.actionCard}><span style={s.actionIcon}>👥</span><span style={s.actionLabel}>Users</span><span style={s.actionSub}>Manage roles</span></Link>}
+        <Link to="/agent"    style={s.actionCard}><span style={s.actionLabel}>Queue</span><span style={s.actionSub}>All questions</span></Link>
+        <Link to="/admin/kb" style={s.actionCard}><span style={s.actionLabel}>Knowledge Base</span><span style={s.actionSub}>Add &amp; edit articles</span></Link>
+        <Link to="/ask"      style={s.actionCard}><span style={s.actionLabel}>Ask AI</span><span style={s.actionSub}>Generate articles</span></Link>
+        {isAdmin && <Link to="/admin"       style={s.actionCard}><span style={s.actionLabel}>Dashboard</span><span style={s.actionSub}>Analytics &amp; metrics</span></Link>}
+        {isAdmin && <Link to="/admin/users" style={s.actionCard}><span style={s.actionLabel}>Users</span><span style={s.actionSub}>Manage roles</span></Link>}
       </div>
 
     </div>
@@ -203,7 +203,6 @@ const s = {
   /* Quick actions grid */
   actionsGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 8 },
   actionCard:  { background: "#fff", border: "1px solid #e8e8e8", borderRadius: 8, padding: "14px 16px", textDecoration: "none", display: "flex", flexDirection: "column", gap: 4 },
-  actionIcon:  { fontSize: 22, lineHeight: 1 },
   actionLabel: { fontSize: 14, fontWeight: 700, color: "#282829" },
   actionSub:   { fontSize: 12, color: "#939598" },
 };

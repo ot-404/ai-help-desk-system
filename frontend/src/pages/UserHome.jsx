@@ -58,7 +58,7 @@ function KbCard({ a }) {
         </button>
       )}
       <div style={s.cardFooter}>
-        <span style={s.footerMeta}>🤖 AI Help Desk</span>
+        <span style={s.footerMeta}>AI Help Desk</span>
         <Link to={`/help?article=${a.id}`} style={s.footerLink}>Open ↗</Link>
       </div>
     </div>
@@ -102,7 +102,6 @@ export default function UserHome() {
 
       {/* ── Ask AI box ──────────────────────────────── */}
       <div style={s.askCard}>
-        <span style={s.askIcon}>🤖</span>
         <div style={s.askText}>
           <strong>Got a question?</strong> Ask our AI — your answer is saved to help others too.
         </div>

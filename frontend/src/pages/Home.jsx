@@ -74,7 +74,7 @@ function FeedCard({ article }) {
 
       {/* Author line */}
       <div style={s.authorLine}>
-        <div style={s.authorAvatar}>🤖</div>
+        <div style={s.authorAvatar}>AI</div>
         <div style={s.authorMeta}>
           <span style={s.authorName}>AI Help Desk</span>
           <span style={s.authorDot}>·</span>
@@ -125,7 +125,7 @@ export default function Home() {
       {/* Ask box */}
       <div style={s.askCard}>
         <div style={s.askHeader}>
-          <div style={s.askAvatar}>🤖</div>
+          <div style={s.askAvatar}>AI</div>
           <form onSubmit={handleAsk} style={s.askForm}>
             <input
               style={s.askInput}
@@ -169,7 +169,7 @@ const s = {
     padding: "14px 18px", marginBottom: 10,
   },
   askHeader: { display: "flex", alignItems: "center", gap: 12 },
-  askAvatar: { fontSize: 24, flexShrink: 0 },
+  askAvatar: { width: 32, height: 32, borderRadius: "50%", background: "#16c784", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 },
   askForm:   { flex: 1, display: "flex", gap: 8 },
   askInput:  {
     flex: 1, border: "1.5px solid #e8e8e8", borderRadius: 24,
@@ -210,7 +210,7 @@ const s = {
   "cardTitle:hover": { textDecoration: "underline" },
 
   authorLine: { display: "flex", alignItems: "center", gap: 8, marginBottom: 10 },
-  authorAvatar: { fontSize: 18, lineHeight: 1 },
+  authorAvatar: { width: 24, height: 24, borderRadius: "50%", background: "#16c784", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 700, flexShrink: 0 },
   authorMeta: { display: "flex", alignItems: "center", gap: 4 },
   authorName: { fontSize: 13, fontWeight: 700, color: "#282829" },
   authorDot:  { color: "#939598", fontSize: 13 },

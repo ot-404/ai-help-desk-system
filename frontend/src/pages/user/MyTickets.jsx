@@ -55,7 +55,7 @@ export default function MyTickets() {
       {loading && <div style={s.empty}>Loading…</div>}
       {!loading && shown.length === 0 && (
         <div style={s.empty}>
-          <div style={{ fontSize: 40, marginBottom: 12 }}>❓</div>
+          <div style={{ fontSize: 40, marginBottom: 12 }}></div>
           <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 8 }}>No questions yet</div>
           <div style={{ color: "#939598", marginBottom: 20 }}>Have a question? Ask it below.</div>
           <Link to="/new-question" style={s.askBtn}>Ask a Question</Link>
