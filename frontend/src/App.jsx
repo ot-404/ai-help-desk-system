@@ -15,6 +15,7 @@ import AgentQueue from "./pages/agent/AgentQueue";
 import Dashboard from "./pages/admin/Dashboard";
 import AdminPanel from "./pages/admin/AdminPanel";
 import KnowledgeBase from "./pages/admin/KnowledgeBase";
+import AskAI from "./pages/AskAI";
 
 /** Renders the right home experience based on who's viewing. */
 function HomeOrRedirect() {
@@ -47,6 +48,7 @@ export default function App() {
           {/* Public pages */}
           <Route path="/" element={<Layout><HomeOrRedirect /></Layout>} />
           <Route path="/help" element={<Layout><PublicHelp /></Layout>} />
+          <Route path="/ask" element={<Layout><AskAI /></Layout>} />
 
           {/* User-only pages */}
           <Route path="/my-tickets" element={<PrivateRoute roles={["user"]}><Layout><MyTickets /></Layout></PrivateRoute>} />

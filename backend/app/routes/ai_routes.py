@@ -1,9 +1,11 @@
-"""AI Assistant endpoints: answer, summarize, suggest resolution."""
+"""AI Assistant endpoints: answer, summarize, suggest resolution, ask-and-publish."""
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
+from app import db
 from app.models.ticket_model import Ticket
 from app.models.message_model import Message
 from app.models.user_model import User
+from app.models.kb_model import KnowledgeBase
 from app.services import ai_service
 from app.utils.auth_helpers import role_required
 
@@ -18,6 +20,53 @@ def answer():
     if not question:
         return jsonify(error="question is required"), 400
     return jsonify(ai_service.generate_response(question, data.get("ticket_id")))
+
+
+@ai_bp.post("/ask")
+@jwt_required()
+def ask_and_publish():
+    """Ask a question → AI answers → saves KB article + blog post → returns all three."""
+    data = request.get_json() or {}
+    question = (data.get("question") or "").strip()
+    if not question:
+        return jsonify(error="question is required"), 400
+
+    # 1. Generate AI answer (with RAG context from KB)
+    result = ai_service.generate_response(question)
+    answer = result["answer"]
+    model = result["model"]
+
+    # 2. Generate structured KB article from Q&A
+    kb_data = ai_service.generate_kb_article(question, answer)
+    kb_article = KnowledgeBase(
+        title=kb_data["title"],
+        content=kb_data["content"],
+        category=kb_data.get("category", "FAQ"),
+        tags=kb_data.get("tags", "ai-generated"),
+    )
+    db.session.add(kb_article)
+
+    # 3. Generate blog post from Q&A
+    blog_data = ai_service.generate_blog_post(question, answer)
+    existing_tags = kb_data.get("tags", "")
+    blog_tags = f"blog,ai-generated,{existing_tags}".strip(",")
+    blog_article = KnowledgeBase(
+        title=blog_data["title"],
+        content=blog_data["content"],
+        category="Blog",
+        tags=blog_tags,
+    )
+    db.session.add(blog_article)
+    db.session.flush()  # get IDs before commit
+
+    db.session.commit()
+
+    return jsonify(
+        answer=answer,
+        model=model,
+        kb_article=kb_article.to_dict(),
+        blog_post=blog_article.to_dict(),
+    ), 201
 
 
 @ai_bp.post("/summarize/<int:ticket_id>")

@@ -9,6 +9,7 @@ gunicorn==22.0.0
 psycopg2-binary==2.9.9
 # AI / RAG
 openai==1.40.0
+anthropic>=0.34.0
 numpy==1.26.4
 # File parsing (KB uploads)
 pypdf==4.3.1

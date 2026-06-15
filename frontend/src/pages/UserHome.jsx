@@ -62,6 +62,7 @@ export default function UserHome() {
 
           <div style={s.heroBtns}>
             <Link to="/new-ticket" style={s.btnPrimary}>+ New Ticket</Link>
+            <Link to="/ask" style={s.btnAsk}>🤖 Ask AI</Link>
             <Link to="/my-tickets" style={s.btnOutline}>View All Tickets</Link>
           </div>
         </div>
@@ -155,6 +156,7 @@ const s = {
   heroBtns: { display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap", marginTop: 28 },
   btnPrimary: { background: "#16c784", color: "#fff", borderRadius: 8, padding: "10px 22px", fontSize: 14, fontWeight: 700, textDecoration: "none", display: "inline-block" },
   btnOutline: { border: "1.5px solid #4a5568", color: "#e2e8f0", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 600, textDecoration: "none", background: "transparent" },
+  btnAsk: { background: "rgba(22,199,132,.18)", color: "#16c784", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 700, textDecoration: "none", border: "1px solid rgba(22,199,132,.35)" },
 
   body: { padding: "40px 20px 56px" },
   inner: { maxWidth: 900, margin: "0 auto" },

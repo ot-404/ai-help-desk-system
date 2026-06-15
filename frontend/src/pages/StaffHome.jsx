@@ -81,6 +81,7 @@ export default function StaffHome() {
 
           <div style={s.heroBtns}>
             <Link to="/agent" style={s.btnPrimary}>View Full Queue</Link>
+            <Link to="/ask" style={s.btnAsk}>🤖 Ask AI</Link>
             <Link to="/admin/kb" style={s.btnOutline}>Knowledge Base</Link>
             {isAdmin && <Link to="/admin" style={s.btnOutlineAlt}>Analytics</Link>}
           </div>
@@ -178,6 +179,7 @@ const s = {
   heroBtns: { display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" },
   btnPrimary: { background: "#805ad5", color: "#fff", borderRadius: 8, padding: "10px 22px", fontSize: 14, fontWeight: 700, textDecoration: "none", display: "inline-block" },
   btnOutline: { border: "1.5px solid #4a5568", color: "#e2e8f0", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 600, textDecoration: "none", background: "transparent" },
+  btnAsk: { background: "rgba(183,148,244,.18)", color: "#b794f4", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 700, textDecoration: "none", border: "1px solid rgba(183,148,244,.35)" },
   btnOutlineAlt: { border: "1.5px solid #553c9a", color: "#b794f4", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 600, textDecoration: "none", background: "transparent" },
 
   body: { padding: "40px 20px 56px" },

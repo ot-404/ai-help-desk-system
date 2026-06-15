@@ -65,6 +65,20 @@ export default function Home() {
         </div>
       )}
 
+      {/* Ask AI band */}
+      <div style={s.askBand}>
+        <div style={s.askBandInner}>
+          <div style={s.askBandLeft}>
+            <div style={s.askBandIcon}>🤖</div>
+            <div>
+              <div style={s.askBandTitle}>Ask our AI a question</div>
+              <div style={s.askBandSub}>Get an instant answer — and it's automatically published as a help article for everyone.</div>
+            </div>
+          </div>
+          <Link to="/ask" style={s.btnPrimary}>Ask AI →</Link>
+        </div>
+      </div>
+
       {/* CTA Band */}
       <div style={s.cta}>
         <div style={s.ctaInner}>
@@ -120,4 +134,11 @@ const s = {
   ctaSub: { fontSize: 15, color: "rgba(255,255,255,.85)", margin: "0 0 28px", lineHeight: 1.6 },
   ctaBtnRow: { display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" },
   btnOutlineWhite: { border: "1.5px solid rgba(255,255,255,.6)", color: "#fff", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 600, textDecoration: "none", background: "transparent" },
+
+  askBand: { background: "#fff", borderTop: "1px solid #e8edf2", borderBottom: "1px solid #e8edf2", padding: "24px 20px" },
+  askBandInner: { maxWidth: 900, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 20, flexWrap: "wrap" },
+  askBandLeft: { display: "flex", alignItems: "center", gap: 16 },
+  askBandIcon: { fontSize: 32, flexShrink: 0 },
+  askBandTitle: { fontSize: 15, fontWeight: 700, color: "#1f2a37", marginBottom: 3 },
+  askBandSub: { fontSize: 13, color: "#7a8794" },
 };

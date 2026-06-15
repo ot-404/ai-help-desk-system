@@ -12,9 +12,9 @@ export default function NavBar() {
   }
 
   const links = {
-    user:  [{ to: "/my-tickets", label: "My Tickets" }, { to: "/new-ticket", label: "New Ticket" }],
-    agent: [{ to: "/agent", label: "Queue" }, { to: "/admin/kb", label: "Knowledge Base" }],
-    admin: [{ to: "/agent", label: "Queue" }, { to: "/admin", label: "Dashboard" }, { to: "/admin/users", label: "Users" }, { to: "/admin/kb", label: "Knowledge Base" }],
+    user:  [{ to: "/my-tickets", label: "My Tickets" }, { to: "/new-ticket", label: "New Ticket" }, { to: "/ask", label: "Ask AI" }],
+    agent: [{ to: "/agent", label: "Queue" }, { to: "/admin/kb", label: "Knowledge Base" }, { to: "/ask", label: "Ask AI" }],
+    admin: [{ to: "/agent", label: "Queue" }, { to: "/admin", label: "Dashboard" }, { to: "/admin/users", label: "Users" }, { to: "/admin/kb", label: "Knowledge Base" }, { to: "/ask", label: "Ask AI" }],
   };
 
   const roleLinks = links[user?.role] ?? [];

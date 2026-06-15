@@ -2,3 +2,6 @@
 body { margin: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #eef1f4; color: #1f2a37; }
 #root { min-height: 100vh; }
 a { color: inherit; }
+
+@keyframes spin   { to { transform: rotate(360deg); } }
+@keyframes bounce { 0%, 80%, 100% { transform: scale(0); opacity: 0.4; } 40% { transform: scale(1); opacity: 1; } }
