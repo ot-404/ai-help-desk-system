@@ -21,7 +21,7 @@ export default function Home() {
   const [copied, setCopied] = useState(null);
 
   useEffect(() => {
-    api.get("/api/kb/")
+    api.get("/kb/")
       .then(r => {
         const data = r.data || [];
         setArticles(data);

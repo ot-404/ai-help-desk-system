@@ -5,6 +5,7 @@ import Sidebar from "./components/Sidebar";
 import RightPanel from "./components/RightPanel";
 import BottomNav from "./components/BottomNav";
 import PrivateRoute from "./components/PrivateRoute";
+import ErrorBoundary from "./components/ErrorBoundary";
 import { useIsMobile } from "./hooks/useIsMobile";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -58,6 +59,7 @@ const s = {
 
 export default function App() {
   return (
+    <ErrorBoundary>
     <AuthProvider>
       <BrowserRouter>
         <Routes>
@@ -94,5 +96,6 @@ export default function App() {
         </Routes>
       </BrowserRouter>
     </AuthProvider>
+    </ErrorBoundary>
   );
 }
