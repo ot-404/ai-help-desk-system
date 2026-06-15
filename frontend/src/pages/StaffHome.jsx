@@ -117,7 +117,6 @@ export default function StaffHome() {
         <div style={s.loadingCard}>Loading tickets…</div>
       ) : active.length === 0 ? (
         <div style={s.emptyCard}>
-          <span style={s.emptyIcon}>
           <span style={s.emptyText}>Queue is clear — no open questions!</span>
         </div>
       ) : (

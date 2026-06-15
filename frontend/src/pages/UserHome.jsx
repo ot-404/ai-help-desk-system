@@ -118,7 +118,6 @@ export default function UserHome() {
 
           {tickets.length === 0 ? (
             <div style={s.emptyCard}>
-              <span style={s.emptyIcon}>
               <span style={s.emptyText}>No questions yet.</span>
               <Link to="/new-question" style={s.emptyLink}>Ask your first question →</Link>
             </div>
