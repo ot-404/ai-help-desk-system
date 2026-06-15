@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../api/client";
 import { useAuth } from "../context/AuthContext";
+import { useIsMobile } from "../hooks/useIsMobile";
 
 export default function RightPanel() {
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   const [adminStats, setAdminStats] = useState(null);
   const [tickets, setTickets]       = useState([]);
   const [kb, setKb]                 = useState([]);
@@ -18,6 +20,9 @@ export default function RightPanel() {
       api.get("/tickets/").then(r => setTickets(r.data || [])).catch(() => {});
     }
   }, [user]);
+
+  // Hidden on mobile — sidebar and right panel collapse into BottomNav
+  if (isMobile) return null;
 
   return (
     <aside style={s.aside}>

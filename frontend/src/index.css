@@ -7,6 +7,12 @@ body {
   font-size: 15px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  /* Prevent text size inflation on mobile */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* Smooth momentum scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: none;
 }
 
 #root { min-height: 100vh; }
@@ -20,8 +26,27 @@ input, textarea, select {
   font-family: inherit;
   font-size: 15px;
   outline: none;
+  /* Prevent iOS zoom on focus when font-size < 16px */
+  font-size: max(16px, 1em);
+}
+
+/* Ensure minimum tap target size on mobile */
+@media (max-width: 768px) {
+  button, a, [role="button"] {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  /* Override for inline items like badges */
+  span[style], small { min-height: unset; display: inline; }
 }
 
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #d0d0cf; border-radius: 3px; }
+
+/* Safe area padding for notched phones (iPhone X+) */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  body { padding-bottom: env(safe-area-inset-bottom); }
+}

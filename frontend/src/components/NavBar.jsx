@@ -1,45 +1,68 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useIsMobile } from "../hooks/useIsMobile";
 
 export default function NavBar() {
   const { user, logout } = useAuth();
   const nav = useNavigate();
+  const isMobile = useIsMobile();
   const [q, setQ] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
 
   function handleSearch(e) {
     e.preventDefault();
-    if (q.trim()) nav(`/help?q=${encodeURIComponent(q.trim())}`);
+    if (q.trim()) { nav(`/help?q=${encodeURIComponent(q.trim())}`); setSearchOpen(false); }
   }
 
-  function handleLogout() {
-    logout();
-    nav("/");
-  }
+  function handleLogout() { logout(); nav("/"); }
 
   return (
     <header style={s.bar}>
-      {/* Brand */}
       <Link to="/" style={s.brand}>
         <span style={s.logoBox}>AHD</span>
       </Link>
 
-      {/* Search — centered */}
-      <form onSubmit={handleSearch} style={s.searchWrap}>
-        <span style={s.searchIcon}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        </span>
-        <input
-          style={s.searchInput}
-          placeholder="Search AI Help Desk…"
-          value={q}
-          onChange={e => setQ(e.target.value)}
-        />
-      </form>
+      {/* Search — full bar on desktop, expandable on mobile */}
+      {!isMobile && (
+        <form onSubmit={handleSearch} style={s.searchWrap}>
+          <span style={s.searchIcon}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </span>
+          <input
+            style={s.searchInput}
+            placeholder="Search AI Help Desk…"
+            value={q}
+            onChange={e => setQ(e.target.value)}
+          />
+        </form>
+      )}
 
-      {/* Right actions */}
+      {/* Mobile: expandable search overlay */}
+      {isMobile && searchOpen && (
+        <form onSubmit={handleSearch} style={s.mobileSearchOverlay}>
+          <input
+            autoFocus
+            style={s.mobileSearchInput}
+            placeholder="Search…"
+            value={q}
+            onChange={e => setQ(e.target.value)}
+          />
+          <button type="button" style={s.cancelBtn} onClick={() => { setSearchOpen(false); setQ(""); }}>
+            Cancel
+          </button>
+        </form>
+      )}
+
       <div style={s.right}>
-        <Link to="/ask" style={s.addBtn}>Add Question</Link>
+        {/* Mobile search icon */}
+        {isMobile && !searchOpen && (
+          <button style={s.iconBtn} onClick={() => setSearchOpen(true)} aria-label="Search">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </button>
+        )}
+
+        {!isMobile && <Link to="/ask" style={s.addBtn}>Add Question</Link>}
 
         {user ? (
           <>
@@ -47,14 +70,16 @@ export default function NavBar() {
               <div style={{ ...s.avatar, background: ROLE_BG[user.role] ?? "#16c784" }}>
                 {user.name?.[0]?.toUpperCase() ?? "?"}
               </div>
-              <span style={s.userName}>{user.name?.split(" ")[0]}</span>
+              {!isMobile && <span style={s.userName}>{user.name?.split(" ")[0]}</span>}
             </div>
-            <button onClick={handleLogout} style={s.ghostBtn}>Sign out</button>
+            {!isMobile && (
+              <button onClick={handleLogout} style={s.ghostBtn}>Sign out</button>
+            )}
           </>
         ) : (
           <>
             <Link to="/login"    style={s.ghostBtn}>Sign in</Link>
-            <Link to="/register" style={s.signUpBtn}>Sign up</Link>
+            {!isMobile && <Link to="/register" style={s.signUpBtn}>Sign up</Link>}
           </>
         )}
       </div>
@@ -68,19 +93,15 @@ const s = {
   bar: {
     position: "fixed", top: 0, left: 0, right: 0, zIndex: 200,
     height: 56, display: "flex", alignItems: "center", gap: 12,
-    padding: "0 20px",
+    padding: "0 16px",
     background: "#fff",
     borderBottom: "1px solid #e8e8e8",
     boxShadow: "0 1px 3px rgba(0,0,0,.06)",
   },
-  brand: {
-    display: "flex", alignItems: "center",
-    textDecoration: "none", flexShrink: 0,
-  },
+  brand: { display: "flex", alignItems: "center", textDecoration: "none", flexShrink: 0 },
   logoBox: {
     background: "#16c784", color: "#fff",
-    fontWeight: 900, fontSize: 13, padding: "4px 10px", borderRadius: 6,
-    letterSpacing: ".5px",
+    fontWeight: 900, fontSize: 13, padding: "4px 10px", borderRadius: 6, letterSpacing: ".5px",
   },
 
   searchWrap: {
@@ -91,12 +112,29 @@ const s = {
     border: "1.5px solid transparent",
   },
   searchIcon: { fontSize: 14, lineHeight: 1, opacity: .5, userSelect: "none", display: "flex", alignItems: "center" },
-  searchInput: {
-    flex: 1, background: "none", border: "none", outline: "none",
-    color: "#282829", fontSize: 14,
+  searchInput: { flex: 1, background: "none", border: "none", outline: "none", color: "#282829", fontSize: 14 },
+
+  mobileSearchOverlay: {
+    position: "absolute", left: 0, right: 0, top: 0, height: 56,
+    display: "flex", alignItems: "center", gap: 10,
+    padding: "0 12px", background: "#fff", zIndex: 10,
+  },
+  mobileSearchInput: {
+    flex: 1, border: "1.5px solid #e8e8e8", borderRadius: 20,
+    padding: "8px 14px", fontSize: 14, color: "#282829", background: "#f2f2f0",
+  },
+  cancelBtn: {
+    background: "none", border: "none", color: "#16c784",
+    fontWeight: 600, fontSize: 14, padding: "4px 2px", cursor: "pointer",
   },
 
-  right: { display: "flex", alignItems: "center", gap: 10, marginLeft: "auto", flexShrink: 0 },
+  right: { display: "flex", alignItems: "center", gap: 8, marginLeft: "auto", flexShrink: 0 },
+
+  iconBtn: {
+    background: "none", border: "none", cursor: "pointer",
+    display: "flex", alignItems: "center", justifyContent: "center",
+    padding: 6, borderRadius: "50%",
+  },
 
   addBtn: {
     background: "#16c784", color: "#fff",
@@ -121,7 +159,6 @@ const s = {
   signUpBtn: {
     border: "1.5px solid #16c784", color: "#16c784",
     padding: "5px 14px", borderRadius: 20,
-    fontSize: 13, fontWeight: 700, textDecoration: "none",
-    background: "transparent",
+    fontSize: 13, fontWeight: 700, textDecoration: "none", background: "transparent",
   },
 };

@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useIsMobile } from "../hooks/useIsMobile";
 import api from "../api/client";
 
 export default function AskAI() {
   const { user } = useAuth();
   const nav = useNavigate();
+  const isMobile = useIsMobile();
   const [question, setQuestion] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -133,7 +135,7 @@ export default function AskAI() {
               </div>
 
               {/* Saved articles */}
-              <div style={s.savedRow}>
+              <div style={{ ...s.savedRow, gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr" }}>
                 <div style={s.savedCard}>
                   <div style={s.savedIcon}>
                     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#16c784" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>

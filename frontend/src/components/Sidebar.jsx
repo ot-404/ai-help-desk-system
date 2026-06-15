@@ -1,5 +1,6 @@
 import { NavLink, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useIsMobile } from "../hooks/useIsMobile";
 
 /* ─── SVG icon set ──────────────────────────────────────────── */
 function Icon({ name, size = 16 }) {
@@ -37,17 +38,15 @@ function Icon({ name, size = 16 }) {
     case "kb":
       return p(["M4 19.5A2.5 2.5 0 016.5 17H20",
         "M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"]);
-    case "dot":
-      return <span style={{ display:"block", width: size, height: size, display:"flex", alignItems:"center", justifyContent:"center", color:"currentColor", fontSize: 18, lineHeight:1 }}>·</span>;
     default:
       return null;
   }
 }
 
 const COMMON = [
-  { to: "/",    icon: "home",      label: "Home"        },
-  { to: "/ask", icon: "ai",        label: "Ask AI"       },
-  { to: "/help",icon: "help",      label: "Help Center"  },
+  { to: "/",    icon: "home",  label: "Home"       },
+  { to: "/ask", icon: "ai",   label: "Ask AI"      },
+  { to: "/help",icon: "help", label: "Help Center" },
 ];
 
 const ROLE_LINKS = {
@@ -56,8 +55,8 @@ const ROLE_LINKS = {
     { to: "/new-question", icon: "new",        label: "New Question" },
   ],
   agent: [
-    { to: "/agent",      icon: "queue",     label: "Queue"          },
-    { to: "/admin/kb",   icon: "kb",        label: "Knowledge Base" },
+    { to: "/agent",    icon: "queue", label: "Queue"          },
+    { to: "/admin/kb", icon: "kb",   label: "Knowledge Base" },
   ],
   admin: [
     { to: "/agent",       icon: "queue",     label: "Queue"          },
@@ -71,8 +70,12 @@ const TOPICS = ["Password & Login", "Billing", "Security", "Account", "Technical
 
 export default function Sidebar() {
   const { user } = useAuth();
-  const roleLinks = ROLE_LINKS[user?.role] ?? [];
+  const isMobile = useIsMobile();
 
+  // Hidden on mobile — BottomNav takes over
+  if (isMobile) return null;
+
+  const roleLinks = ROLE_LINKS[user?.role] ?? [];
   function linkStyle({ isActive }) {
     return { ...s.link, ...(isActive ? s.linkActive : {}) };
   }

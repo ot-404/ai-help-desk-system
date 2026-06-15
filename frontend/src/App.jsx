@@ -3,7 +3,9 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import NavBar from "./components/NavBar";
 import Sidebar from "./components/Sidebar";
 import RightPanel from "./components/RightPanel";
+import BottomNav from "./components/BottomNav";
 import PrivateRoute from "./components/PrivateRoute";
+import { useIsMobile } from "./hooks/useIsMobile";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
@@ -19,7 +21,6 @@ import Dashboard from "./pages/admin/Dashboard";
 import AdminPanel from "./pages/admin/AdminPanel";
 import KnowledgeBase from "./pages/admin/KnowledgeBase";
 
-/** Renders the right home experience based on who's viewing. */
 function HomeOrRedirect() {
   const { user } = useAuth();
   if (user?.role === "admin" || user?.role === "agent") return <StaffHome />;
@@ -28,28 +29,30 @@ function HomeOrRedirect() {
 }
 
 /**
- * Three-column Quora-style shell.
- *  wide  → suppresses the right panel (full-width content like Dashboard)
+ * Three-column shell on desktop, single-column + BottomNav on mobile.
+ *  wide    → suppresses right panel (full-width content like Dashboard)
  *  noRight → suppresses right panel without widening main
  */
 function Layout({ children, wide, noRight }) {
+  const isMobile = useIsMobile();
   return (
     <>
       <NavBar />
-      <div style={s.page}>
-        <div style={{ ...s.container, maxWidth: wide ? 1260 : 1180 }}>
+      <div style={{ ...s.page, paddingBottom: isMobile ? 72 : 0 }}>
+        <div style={{ ...s.container, maxWidth: wide ? 1260 : 1180, gap: isMobile ? 0 : 20, padding: isMobile ? "12px 0" : "20px 16px" }}>
           <Sidebar />
-          <main style={s.main}>{children}</main>
+          <main style={{ ...s.main, padding: isMobile ? "0 12px" : 0 }}>{children}</main>
           {!wide && !noRight && <RightPanel />}
         </div>
       </div>
+      {isMobile && <BottomNav />}
     </>
   );
 }
 
 const s = {
   page: { paddingTop: 56, minHeight: "100vh", background: "#f2f2f0" },
-  container: { margin: "0 auto", display: "flex", gap: 20, padding: "20px 16px", alignItems: "flex-start" },
+  container: { margin: "0 auto", display: "flex", alignItems: "flex-start" },
   main: { flex: 1, minWidth: 0 },
 };
 
