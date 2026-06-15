@@ -49,12 +49,6 @@ export default function Login() {
 
         <div style={s.footer}>New user? <Link to="/register" style={s.link}>Create an account</Link></div>
 
-        <div style={s.hints}>
-          <div style={s.hintsTitle}>Demo accounts</div>
-          <div style={s.hintRow}><span style={s.hintRole}>Admin</span> admin@example.com / admin123</div>
-          <div style={s.hintRow}><span style={s.hintRole}>Agent</span> agent@example.com / agent123</div>
-          <div style={s.hintRow}><span style={s.hintRole}>User</span> jane@example.com / user123</div>
-        </div>
       </div>
     </div>
   );
