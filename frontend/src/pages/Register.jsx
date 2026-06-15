@@ -27,7 +27,10 @@ export default function Register() {
   return (
     <div style={s.page}>
       <div style={s.card}>
-        <div style={s.logoWrap}><span style={s.logo}>AI</span></div>
+        <div style={s.logoWrap}>
+          <span style={s.logo}>AI</span>
+          <span style={{ fontWeight: 800, fontSize: 20, color: "#282829" }}>HelpDesk</span>
+        </div>
         <h1 style={s.title}>Create Account</h1>
         <p style={s.sub}>Get help desk access</p>
 
@@ -52,16 +55,16 @@ export default function Register() {
 }
 
 const s = {
-  page: { minHeight: "100vh", background: "#eef1f4", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 },
-  card: { background: "#fff", borderRadius: 18, padding: "40px 36px", width: "100%", maxWidth: 400, boxShadow: "0 8px 32px rgba(0,0,0,.08)" },
-  logoWrap: { marginBottom: 14 },
-  logo: { background: "#16c784", color: "#fff", fontWeight: 800, fontSize: 16, padding: "6px 12px", borderRadius: 8 },
-  title: { fontSize: 22, fontWeight: 700, margin: "0 0 4px" },
-  sub: { color: "#7a8794", fontSize: 14, margin: "0 0 24px" },
-  err: { background: "#fff5f5", color: "#c53030", border: "1px solid #feb2b2", borderRadius: 8, padding: "10px 14px", marginBottom: 16, fontSize: 14 },
-  label: { display: "block", fontSize: 13, fontWeight: 600, color: "#4a5568", marginBottom: 6 },
-  input: { width: "100%", border: "1px solid #e2e8f0", borderRadius: 8, padding: "10px 12px", fontSize: 14, marginBottom: 16, outline: "none", boxSizing: "border-box" },
-  btn: { width: "100%", background: "#16c784", color: "#fff", border: "none", borderRadius: 8, padding: "12px", fontSize: 15, fontWeight: 700, cursor: "pointer", marginTop: 4 },
-  footer: { marginTop: 20, textAlign: "center", fontSize: 14, color: "#7a8794" },
+  page: { minHeight: "100vh", background: "#f2f2f0", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 },
+  card: { background: "#fff", border: "1px solid #e8e8e8", borderRadius: 8, padding: "40px 36px", width: "100%", maxWidth: 380 },
+  logoWrap: { display: "flex", alignItems: "center", gap: 8, justifyContent: "center", marginBottom: 20 },
+  logo: { background: "#16c784", color: "#fff", fontWeight: 800, fontSize: 14, padding: "4px 8px", borderRadius: 5 },
+  title: { fontSize: 22, fontWeight: 700, margin: "0 0 4px", textAlign: "center", color: "#282829" },
+  sub: { color: "#939598", fontSize: 14, margin: "0 0 24px", textAlign: "center" },
+  err: { background: "#fff5f5", color: "#c53030", border: "1px solid #fed7d7", borderRadius: 6, padding: "10px 14px", marginBottom: 16, fontSize: 14 },
+  label: { display: "block", fontSize: 14, fontWeight: 600, color: "#282829", marginBottom: 6 },
+  input: { width: "100%", border: "1px solid #ccc", borderRadius: 4, padding: "10px 12px", fontSize: 15, marginBottom: 14, outline: "none", boxSizing: "border-box", color: "#282829" },
+  btn: { width: "100%", background: "#16c784", color: "#fff", border: "none", borderRadius: 4, padding: "12px", fontSize: 16, fontWeight: 700, cursor: "pointer", marginTop: 4 },
+  footer: { marginTop: 20, textAlign: "center", fontSize: 14, color: "#555" },
   link: { color: "#16c784", fontWeight: 600, textDecoration: "none" },
 };

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../../api/client";
 import { useAuth } from "../../context/AuthContext";
 
-const ROLE_COLOR = { admin: "#e53e3e", agent: "#805ad5", user: "#3182ce" };
+const ROLE_COLOR = { admin: "#ef4444", agent: "#8b5cf6", user: "#3b82f6" };
 const ROLES = ["user", "agent", "admin"];
 
 const ROLE_DEFS = [
@@ -191,31 +191,31 @@ export default function AdminPanel() {
 }
 
 const s = {
-  page: { maxWidth: 960, margin: "32px auto", padding: "0 20px" },
-  header: { marginBottom: 24 },
-  title: { fontSize: 20, fontWeight: 700, margin: 0 },
-  sub: { fontSize: 13, color: "#7a8794", marginTop: 2 },
-  section: { background: "#fff", borderRadius: 14, padding: "20px 24px", boxShadow: "0 2px 12px rgba(0,0,0,.06)", marginBottom: 20 },
-  sectionTitle: { fontSize: 14, fontWeight: 700, color: "#1f2a37", marginBottom: 16 },
-  loading: { textAlign: "center", color: "#7a8794", padding: "40px 0", fontSize: 14 },
+  page: { paddingTop: 16 },
+  header: { marginBottom: 20 },
+  title: { fontSize: 22, fontWeight: 700, margin: 0, color: "#282829" },
+  sub: { fontSize: 13, color: "#939598", marginTop: 2 },
+  section: { background: "#fff", border: "1px solid #e8e8e8", borderRadius: 8, padding: "20px 24px", marginBottom: 16 },
+  sectionTitle: { fontSize: 14, fontWeight: 700, color: "#282829", marginBottom: 16 },
+  loading: { textAlign: "center", color: "#939598", padding: "40px 0", fontSize: 14 },
   tableWrap: { overflowX: "auto" },
   table: { width: "100%", borderCollapse: "collapse" },
-  thead: { background: "#f7fafc" },
-  th: { textAlign: "left", padding: "10px 14px", fontSize: 11, fontWeight: 700, color: "#a0aec0", textTransform: "uppercase", letterSpacing: ".5px" },
-  tr: { borderTop: "1px solid #f0f4f8" },
+  thead: { background: "#f7f7f5" },
+  th: { textAlign: "left", padding: "10px 14px", fontSize: 11, fontWeight: 700, color: "#939598", textTransform: "uppercase", letterSpacing: ".5px" },
+  tr: { borderTop: "1px solid #f2f2f0" },
   td: { padding: "13px 14px", fontSize: 14 },
-  badge: { fontSize: 12, fontWeight: 600, padding: "3px 10px", borderRadius: 20 },
-  roleSelect: { border: "1px solid #e2e8f0", borderRadius: 8, padding: "5px 10px", fontSize: 13, background: "#f7fafc", cursor: "pointer", outline: "none" },
-  selfNote: { fontSize: 12, color: "#a0aec0", fontStyle: "italic" },
+  badge: { fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 10, textTransform: "uppercase", letterSpacing: ".4px" },
+  roleSelect: { border: "1px solid #e8e8e8", borderRadius: 6, padding: "5px 10px", fontSize: 13, background: "#f7f7f5", cursor: "pointer", outline: "none" },
+  selfNote: { fontSize: 12, color: "#939598", fontStyle: "italic" },
   rolesGrid: { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 },
-  roleCard: { borderRadius: 12, padding: "18px 20px" },
+  roleCard: { borderRadius: 8, padding: "16px 18px" },
   roleCardHeader: { display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 10 },
   roleIcon: { fontSize: 24, lineHeight: 1, marginTop: 2 },
   roleTitle: { fontWeight: 700, fontSize: 15, marginBottom: 4 },
   rolePill: { fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 10, textTransform: "uppercase", letterSpacing: ".3px" },
-  roleSummary: { fontSize: 13, color: "#4a5568", lineHeight: 1.55, margin: "0 0 14px" },
+  roleSummary: { fontSize: 13, color: "#555", lineHeight: 1.55, margin: "0 0 14px" },
   roleSection: { marginBottom: 10 },
-  roleSectionLabel: { fontSize: 11, fontWeight: 700, color: "#276749", textTransform: "uppercase", letterSpacing: ".4px", marginBottom: 4 },
+  roleSectionLabel: { fontSize: 11, fontWeight: 700, color: "#16c784", textTransform: "uppercase", letterSpacing: ".4px", marginBottom: 4 },
   roleList: { margin: 0, padding: "0 0 0 16px" },
-  roleListItem: { fontSize: 12, color: "#4a5568", lineHeight: 1.7 },
+  roleListItem: { fontSize: 12, color: "#555", lineHeight: 1.7 },
 };

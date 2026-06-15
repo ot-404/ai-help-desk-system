@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../../api/client";
 
-const STATUS_COLOR = { open: "#3182ce", pending: "#d69e2e", resolved: "#16c784", closed: "#718096" };
-const PRI_COLOR   = { low: "#48bb78",  medium: "#ecc94b",  high: "#ed8936",    urgent: "#e53e3e" };
+const STATUS_COLOR = { open: "#f59e0b", pending: "#3b82f6", resolved: "#16c784", closed: "#939598" };
+const PRI_COLOR   = { low: "#939598", medium: "#3b82f6", high: "#f97316", urgent: "#ef4444" };
 const FILTERS = ["all", "open", "pending", "resolved", "closed"];
 
 export default function AgentQueue() {
@@ -31,11 +31,7 @@ export default function AgentQueue() {
               onClick={() => setFilter(st)}
               style={{
                 ...s.fBtn,
-                ...(filter === st
-                  ? st === "all"
-                    ? { background: "#2d3748", color: "#fff", borderColor: "#2d3748" }
-                    : { background: STATUS_COLOR[st], color: "#fff", borderColor: STATUS_COLOR[st] }
-                  : {}),
+                ...(filter === st ? { background: "#f0fdf8", color: "#16c784", fontWeight: 700 } : {}),
               }}
             >
               {st.charAt(0).toUpperCase() + st.slice(1)}
@@ -99,18 +95,18 @@ export default function AgentQueue() {
 }
 
 const s = {
-  page: { maxWidth: 960, margin: "32px auto", padding: "0 20px" },
-  header: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20, gap: 16, flexWrap: "wrap" },
-  title: { fontSize: 20, fontWeight: 700, margin: 0 },
-  sub: { fontSize: 13, color: "#7a8794", marginTop: 2 },
-  filters: { display: "flex", gap: 6, flexWrap: "wrap" },
-  fBtn: { padding: "6px 14px", borderRadius: 20, border: "1.5px solid #e2e8f0", background: "#fff", cursor: "pointer", fontSize: 13, fontWeight: 500, transition: "all .15s" },
-  tableWrap: { background: "#fff", borderRadius: 14, overflow: "hidden", boxShadow: "0 2px 12px rgba(0,0,0,.06)" },
+  page: { paddingTop: 16 },
+  header: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16, gap: 16, flexWrap: "wrap" },
+  title: { fontSize: 22, fontWeight: 700, margin: 0, color: "#282829" },
+  sub: { fontSize: 13, color: "#939598", marginTop: 2 },
+  filters: { display: "flex", gap: 4, background: "#fff", border: "1px solid #e8e8e8", borderRadius: 8, padding: 4 },
+  fBtn: { padding: "6px 14px", borderRadius: 6, border: "none", background: "none", cursor: "pointer", fontSize: 13, fontWeight: 500, color: "#555", transition: "all .15s" },
+  tableWrap: { background: "#fff", border: "1px solid #e8e8e8", borderRadius: 8, overflow: "hidden" },
   table: { width: "100%", borderCollapse: "collapse" },
-  thead: { background: "#f7fafc" },
-  th: { textAlign: "left", padding: "12px 16px", fontSize: 11, fontWeight: 700, color: "#a0aec0", textTransform: "uppercase", letterSpacing: ".5px" },
-  tr: { borderTop: "1px solid #f0f4f8", transition: "background .12s" },
+  thead: { background: "#f7f7f5" },
+  th: { textAlign: "left", padding: "12px 16px", fontSize: 11, fontWeight: 700, color: "#939598", textTransform: "uppercase", letterSpacing: ".5px" },
+  tr: { borderTop: "1px solid #f2f2f0" },
   td: { padding: "14px 16px", fontSize: 14 },
-  link: { color: "#2b6cb0", textDecoration: "none", fontWeight: 500 },
-  badge: { fontSize: 12, fontWeight: 600, padding: "3px 10px", borderRadius: 20 },
+  link: { color: "#282829", textDecoration: "none", fontWeight: 600 },
+  badge: { fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 10, textTransform: "uppercase", letterSpacing: ".4px" },
 };
