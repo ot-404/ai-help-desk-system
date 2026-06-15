@@ -7,6 +7,7 @@ export default function Login() {
   const nav = useNavigate();
   const loc = useLocation();
   const registered = new URLSearchParams(loc.search).get("registered");
+  const next = new URLSearchParams(loc.search).get("next");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,7 +20,11 @@ export default function Login() {
     setLoading(true);
     try {
       const u = await login(email, password);
-      nav(u.role === "user" ? "/my-tickets" : u.role === "admin" ? "/admin" : "/agent");
+      const dest = next && next.startsWith("/") ? next
+        : u.role === "user" ? "/my-tickets"
+        : u.role === "admin" ? "/admin"
+        : "/agent";
+      nav(dest);
     } catch (err) {
       setError(err.response?.data?.error || "Login failed");
     } finally {
