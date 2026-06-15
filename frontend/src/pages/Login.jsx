@@ -67,12 +67,6 @@ export default function Login() {
 
         <Link to="/register" style={s.signUpBtn}>Create account</Link>
 
-        <div style={s.hints}>
-          <strong>Demo accounts:</strong><br />
-          admin@example.com / admin123<br />
-          agent@example.com / agent123<br />
-          jane@example.com / user123
-        </div>
       </div>
     </div>
   );
