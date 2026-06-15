@@ -28,9 +28,13 @@ class Ticket(db.Model):
     )
 
     def to_dict(self):
+        from app.models.user_model import User
+        owner = User.query.get(self.user_id)
         return {
             "id": self.id,
             "user_id": self.user_id,
+            "user_name": owner.name if owner else None,
+            "user_email": owner.email if owner else None,
             "subject": self.subject,
             "description": self.description,
             "priority": self.priority,

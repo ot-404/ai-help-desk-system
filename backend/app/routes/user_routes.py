@@ -1,4 +1,4 @@
-"""User endpoints: list (admin), profile, update."""
+"""User endpoints: list (admin), profile, update, role change."""
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app import db
@@ -7,11 +7,13 @@ from app.utils.auth_helpers import role_required
 
 user_bp = Blueprint("users", __name__)
 
+VALID_ROLES = ("user", "agent", "admin")
+
 
 @user_bp.get("/")
 @role_required("admin")
 def list_users():
-    return jsonify([u.to_dict() for u in User.query.all()])
+    return jsonify([u.to_dict() for u in User.query.order_by(User.id).all()])
 
 
 @user_bp.get("/me")
@@ -34,5 +36,22 @@ def update_profile():
         user.name = data["name"]
     if data.get("password"):
         user.set_password(data["password"])
+    db.session.commit()
+    return jsonify(user.to_dict())
+
+
+@user_bp.patch("/<int:user_id>")
+@role_required("admin")
+def update_user(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify(error="not found"), 404
+    data = request.get_json() or {}
+    if "role" in data:
+        if data["role"] not in VALID_ROLES:
+            return jsonify(error=f"role must be one of {VALID_ROLES}"), 400
+        user.role = data["role"]
+    if "name" in data:
+        user.name = data["name"]
     db.session.commit()
     return jsonify(user.to_dict())

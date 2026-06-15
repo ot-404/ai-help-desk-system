@@ -45,29 +45,49 @@ def list_tickets():
 @ticket_bp.get("/<int:ticket_id>")
 @jwt_required()
 def get_ticket(ticket_id):
+    claims = get_jwt()
+    uid = int(get_jwt_identity())
     ticket = Ticket.query.get(ticket_id)
     if not ticket:
         return jsonify(error="not found"), 404
+    if claims.get("role") == "user" and ticket.user_id != uid:
+        return jsonify(error="forbidden"), 403
     return jsonify(ticket.to_dict())
 
 
 @ticket_bp.put("/<int:ticket_id>")
 @jwt_required()
 def update_ticket(ticket_id):
+    claims = get_jwt()
+    uid = int(get_jwt_identity())
+    role = claims.get("role")
+
     ticket = Ticket.query.get(ticket_id)
     if not ticket:
         return jsonify(error="not found"), 404
+
+    if role == "user" and ticket.user_id != uid:
+        return jsonify(error="forbidden"), 403
+
     data = request.get_json() or {}
-    new_status = data.get("status")
-    if new_status and new_status not in STATUSES:
-        return jsonify(error=f"status must be one of {STATUSES}"), 400
-    for field in ("subject", "description", "priority", "status", "assigned_to"):
-        if field in data:
-            setattr(ticket, field, data[field])
-    if new_status in ("resolved", "closed") and not ticket.resolved_at:
-        ticket.resolved_at = datetime.utcnow()
-    elif new_status in ("open", "pending"):
-        ticket.resolved_at = None
+
+    if role == "user":
+        # Users can only edit their ticket's subject/description, not status or priority
+        for field in ("subject", "description"):
+            if field in data:
+                setattr(ticket, field, data[field])
+    else:
+        new_status = data.get("status")
+        if new_status and new_status not in STATUSES:
+            return jsonify(error=f"status must be one of {STATUSES}"), 400
+        for field in ("subject", "description", "priority", "status", "assigned_to"):
+            if field in data:
+                setattr(ticket, field, data[field])
+        if new_status in ("resolved", "closed") and not ticket.resolved_at:
+            ticket.resolved_at = datetime.utcnow()
+        elif new_status in ("open", "pending"):
+            ticket.resolved_at = None
+
     db.session.commit()
     return jsonify(ticket.to_dict())
 
