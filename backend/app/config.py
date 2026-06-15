@@ -9,9 +9,13 @@ class Config:
     SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret")
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "dev-jwt-secret")
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=12)
-    SQLALCHEMY_DATABASE_URI = os.getenv(
+    _db_url = os.getenv(
         "DATABASE_URL", "sqlite:///" + os.path.join(BASE_DIR, "instance", "ai_hds.db")
     )
+    # SQLAlchemy 2.x requires postgresql:// not postgres://
+    if _db_url.startswith("postgres://"):
+        _db_url = "postgresql://" + _db_url[len("postgres://"):]
+    SQLALCHEMY_DATABASE_URI = _db_url
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # LLM — Anthropic takes priority if key is set, then OpenAI, then mock

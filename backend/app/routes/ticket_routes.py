@@ -24,7 +24,13 @@ def create():
     )
     result = None
     if data.get("auto_answer", True):
-        result = ticket_service.auto_handle(ticket)
+        try:
+            result = ticket_service.auto_handle(ticket)
+        except Exception as exc:
+            # AI pipeline failure must not block ticket creation
+            import traceback
+            traceback.print_exc()
+            result = {"escalated": True, "answer": f"[AI unavailable: {exc}]"}
     return jsonify(ticket=ticket.to_dict(), ai=result), 201
 
 

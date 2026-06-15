@@ -39,8 +39,21 @@ def list_articles():
 
 @kb_bp.get("/search")
 def search():
-    q = request.args.get("q", "")
-    return jsonify(results=retrieve_context(q, top_k=int(request.args.get("k", 4))))
+    q = request.args.get("q", "").strip()
+    if not q:
+        return jsonify([a.to_dict() for a in KnowledgeBase.query.order_by(KnowledgeBase.created_at.desc()).all()])
+    # Score all articles by keyword overlap and return full objects
+    import re
+    q_tokens = set(re.findall(r"[a-z0-9]+", q.lower()))
+    scored = []
+    for a in KnowledgeBase.query.all():
+        doc = (a.title or "") + " " + (a.content or "") + " " + (a.tags or "")
+        doc_tokens = set(re.findall(r"[a-z0-9]+", doc.lower()))
+        overlap = len(q_tokens & doc_tokens)
+        if overlap:
+            scored.append((overlap, a))
+    scored.sort(key=lambda x: x[0], reverse=True)
+    return jsonify([a.to_dict() for _, a in scored])
 
 
 @kb_bp.get("/<int:kb_id>")
