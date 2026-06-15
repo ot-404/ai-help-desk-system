@@ -9,8 +9,8 @@ const COMMON = [
 
 const ROLE_LINKS = {
   user: [
-    { to: "/my-tickets", icon: "🎫", label: "My Tickets"     },
-    { to: "/new-ticket", icon: "✏️", label: "New Ticket"     },
+    { to: "/my-questions", icon: "❓", label: "My Questions"   },
+    { to: "/new-question", icon: "✏️", label: "New Question"  },
   ],
   agent: [
     { to: "/agent",      icon: "📋", label: "Queue"          },

@@ -65,7 +65,7 @@ export default function PublicHelp() {
     ? allArticles
     : allArticles.filter(a => (a.category || "").toLowerCase() === tab.toLowerCase());
 
-  const ticketLink = user?.role === "user" ? "/new-ticket" : "/login?next=/new-ticket";
+  const ticketLink = user?.role === "user" ? "/new-question" : "/login?next=/new-question";
 
   return (
     <div style={s.page}>
@@ -150,7 +150,7 @@ export default function PublicHelp() {
               <div style={s.emptyBtns}>
                 <Link to="/ask"        style={s.btnPrimary}>Ask AI →</Link>
                 <Link to={ticketLink}  style={s.btnOutline}>
-                  {user ? "Submit a Ticket" : "Sign In to Get Help"}
+                  {user ? "Ask a Question" : "Sign In to Get Help"}
                 </Link>
               </div>
             </div>
@@ -205,7 +205,7 @@ export default function PublicHelp() {
             <div style={s.ctaBtns}>
               <Link to="/ask"       style={s.btnPrimary}>Ask AI</Link>
               <Link to={ticketLink} style={s.btnOutline}>
-                {user?.role === "user" ? "Submit a Ticket" : user ? "Go to Queue" : "Sign In to Get Help"}
+                {user?.role === "user" ? "Ask a Question" : user ? "Go to Queue" : "Sign In to Get Help"}
               </Link>
             </div>
           </div>

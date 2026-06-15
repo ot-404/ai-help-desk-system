@@ -22,7 +22,7 @@ export default function AgentQueue() {
       <div style={s.header}>
         <div>
           <h2 style={s.title}>Support Queue</h2>
-          <div style={s.sub}>{loading ? "Loading…" : `${tickets.length} ticket${tickets.length !== 1 ? "s" : ""}`}</div>
+          <div style={s.sub}>{loading ? "Loading…" : `${tickets.length} question${tickets.length !== 1 ? "s" : ""}`}</div>
         </div>
         <div style={s.filters}>
           {FILTERS.map(st => (
@@ -57,7 +57,7 @@ export default function AgentQueue() {
               <tr key={t.id} style={s.tr}>
                 <td style={{ ...s.td, color: "#a0aec0", fontSize: 13 }}>{t.id}</td>
                 <td style={s.td}>
-                  <Link to={`/ticket/${t.id}`} style={s.link}>{t.subject}</Link>
+                  <Link to={`/question/${t.id}`} style={s.link}>{t.subject}</Link>
                 </td>
                 <td style={{ ...s.td, color: "#7a8794", fontSize: 13 }}>{t.user_name || `#${t.user_id}`}</td>
                 <td style={s.td}>

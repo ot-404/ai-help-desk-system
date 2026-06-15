@@ -25,9 +25,9 @@ export default function NewTicket() {
     setLoading(true);
     try {
       const { data } = await api.post("/tickets/", { ...form, auto_answer: true });
-      nav(`/ticket/${data.ticket.id}`);
+      nav(`/question/${data.ticket.id}`);
     } catch (err) {
-      setError(err.response?.data?.error || "Failed to submit ticket");
+      setError(err.response?.data?.error || "Failed to submit question");
       setLoading(false);
     }
   }
@@ -36,10 +36,10 @@ export default function NewTicket() {
     <div style={s.page}>
       <div style={s.header}>
         <div>
-          <h2 style={s.title}>Submit a Ticket</h2>
-          <div style={s.sub}>Our team typically responds within 24 hours</div>
+          <h2 style={s.title}>Ask a Question</h2>
+          <div style={s.sub}>Our AI responds instantly, and our team follows up within 24 hours</div>
         </div>
-        <Link to="/my-tickets" style={s.backBtn}>← My Tickets</Link>
+        <Link to="/my-questions" style={s.backBtn}>← My Questions</Link>
       </div>
 
       {error && <div style={s.err}>{error}</div>}
@@ -89,7 +89,7 @@ export default function NewTicket() {
         </div>
 
         <button style={s.btn} disabled={loading}>
-          {loading ? "Submitting…" : "Submit Ticket"}
+          {loading ? "Submitting question…" : "Submit Question"}
         </button>
       </form>
     </div>

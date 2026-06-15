@@ -13,13 +13,13 @@ function TicketCard({ t }) {
         <span style={{ ...s.badge, background: PRI_COLOR[t.priority] + "22", color: PRI_COLOR[t.priority] }}>{t.priority}</span>
         <span style={s.ts}>{new Date(t.created_at).toLocaleDateString()}</span>
       </div>
-      <Link to={`/ticket/${t.id}`} style={s.subject}>{t.subject}</Link>
+      <Link to={`/question/${t.id}`} style={s.subject}>{t.subject}</Link>
       <div style={s.preview}>{t.description?.slice(0, 140)}{t.description?.length > 140 ? "…" : ""}</div>
       <div style={s.cardFooter}>
-        <span style={s.footItem}>💬 {t.message_count ?? 0} replies</span>
+        <span style={s.footItem}>💬 {t.message_count ?? 0} responses</span>
         {t.csat_rating && <span style={s.footItem}>⭐ {t.csat_rating}/5</span>}
         {(t.status === "resolved" || t.status === "closed") && !t.csat_rating && (
-          <Link to={`/ticket/${t.id}`} style={s.rateLink}>Rate this answer</Link>
+          <Link to={`/question/${t.id}`} style={s.rateLink}>Rate this response</Link>
         )}
       </div>
     </div>
@@ -41,7 +41,7 @@ export default function MyTickets() {
     <div style={s.wrap}>
       <div style={s.topBar}>
         <h1 style={s.h1}>My Questions</h1>
-        <Link to="/new-ticket" style={s.askBtn}>+ Ask a Question</Link>
+        <Link to="/new-question" style={s.askBtn}>+ Ask a Question</Link>
       </div>
 
       <div style={s.tabs}>
@@ -55,10 +55,10 @@ export default function MyTickets() {
       {loading && <div style={s.empty}>Loading…</div>}
       {!loading && shown.length === 0 && (
         <div style={s.empty}>
-          <div style={{ fontSize: 40, marginBottom: 12 }}>🎫</div>
-          <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 8 }}>No tickets yet</div>
-          <div style={{ color: "#939598", marginBottom: 20 }}>Have a question? Submit your first ticket.</div>
-          <Link to="/new-ticket" style={s.askBtn}>Ask a Question</Link>
+          <div style={{ fontSize: 40, marginBottom: 12 }}>❓</div>
+          <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 8 }}>No questions yet</div>
+          <div style={{ color: "#939598", marginBottom: 20 }}>Have a question? Ask it below.</div>
+          <Link to="/new-question" style={s.askBtn}>Ask a Question</Link>
         </div>
       )}
 

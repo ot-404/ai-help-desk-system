@@ -26,7 +26,7 @@ export default function RightPanel() {
       <div style={s.addCard}>
         <Link to="/ask" style={s.addBtn}>Add Question</Link>
         {user?.role === "user" && (
-          <Link to="/new-ticket" style={s.ticketBtn}>Submit a Ticket</Link>
+          <Link to="/new-question" style={s.ticketBtn}>Ask a Question</Link>
         )}
       </div>
 
@@ -63,14 +63,14 @@ export default function RightPanel() {
       {/* ── User ticket summary ──────────────── */}
       {user?.role === "user" && (
         <div style={s.card}>
-          <div style={s.cardHead}>My Tickets</div>
+          <div style={s.cardHead}>My Questions</div>
           {tickets.length === 0 ? (
             <div style={s.empty}>No tickets yet.</div>
           ) : (
             [
               ["Open",     tickets.filter(t => t.status === "open").length,    "#3182ce"],
               ["Pending",  tickets.filter(t => t.status === "pending").length, "#d69e2e"],
-              ["Resolved", tickets.filter(t => ["resolved","closed"].includes(t.status)).length, "#16c784"],
+              ["Answered", tickets.filter(t => ["resolved","closed"].includes(t.status)).length, "#16c784"],
             ].map(([label, count, color]) => (
               <div key={label} style={s.statRow}>
                 <span style={s.statLabel}>{label}</span>

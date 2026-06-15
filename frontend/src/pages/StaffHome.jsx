@@ -75,8 +75,8 @@ export default function StaffHome() {
             </div>
             <div style={s.welcomeSub}>
               {open > 0
-                ? `${open} open · ${pending} pending · ${urgent > 0 ? `${urgent} urgent` : "no urgent"}`
-                : "Queue is clear — nothing open right now."}
+                ? `${open} open · ${pending} pending · ${urgent > 0 ? `${urgent} urgent` : "no urgent"} questions`
+                : "Queue is clear — no open questions."}
             </div>
           </div>
         </div>
@@ -118,7 +118,7 @@ export default function StaffHome() {
       ) : active.length === 0 ? (
         <div style={s.emptyCard}>
           <span style={s.emptyIcon}>✅</span>
-          <span style={s.emptyText}>Queue is clear — all caught up!</span>
+          <span style={s.emptyText}>Queue is clear — no open questions!</span>
         </div>
       ) : (
         <div style={s.feed}>
@@ -131,7 +131,7 @@ export default function StaffHome() {
         <span style={s.sectionTitle}>Quick Actions</span>
       </div>
       <div style={s.actionsGrid}>
-        <Link to="/agent"    style={s.actionCard}><span style={s.actionIcon}>📋</span><span style={s.actionLabel}>Queue</span><span style={s.actionSub}>All tickets</span></Link>
+        <Link to="/agent"    style={s.actionCard}><span style={s.actionIcon}>📋</span><span style={s.actionLabel}>Queue</span><span style={s.actionSub}>All questions</span></Link>
         <Link to="/admin/kb" style={s.actionCard}><span style={s.actionIcon}>📖</span><span style={s.actionLabel}>Knowledge Base</span><span style={s.actionSub}>Add & edit articles</span></Link>
         <Link to="/ask"      style={s.actionCard}><span style={s.actionIcon}>🤖</span><span style={s.actionLabel}>Ask AI</span><span style={s.actionSub}>Generate articles</span></Link>
         {isAdmin && <Link to="/admin"      style={s.actionCard}><span style={s.actionIcon}>📊</span><span style={s.actionLabel}>Dashboard</span><span style={s.actionSub}>Analytics & metrics</span></Link>}

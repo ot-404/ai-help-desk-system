@@ -68,11 +68,16 @@ export default function App() {
           <Route path="/ask"  element={<Layout noRight><AskAI /></Layout>} />
 
           {/* User-only */}
-          <Route path="/my-tickets" element={<PrivateRoute roles={["user"]}><Layout><MyTickets /></Layout></PrivateRoute>} />
-          <Route path="/new-ticket" element={<PrivateRoute roles={["user"]}><Layout noRight><NewTicket /></Layout></PrivateRoute>} />
+          <Route path="/my-questions" element={<PrivateRoute roles={["user"]}><Layout><MyTickets /></Layout></PrivateRoute>} />
+          <Route path="/new-question" element={<PrivateRoute roles={["user"]}><Layout noRight><NewTicket /></Layout></PrivateRoute>} />
+
+          {/* Legacy redirects */}
+          <Route path="/my-tickets"  element={<Navigate to="/my-questions" replace />} />
+          <Route path="/new-ticket"  element={<Navigate to="/new-question" replace />} />
 
           {/* Any authenticated user */}
-          <Route path="/ticket/:id" element={<PrivateRoute><Layout noRight><TicketDetail /></Layout></PrivateRoute>} />
+          <Route path="/question/:id" element={<PrivateRoute><Layout noRight><TicketDetail /></Layout></PrivateRoute>} />
+          <Route path="/ticket/:id"   element={<PrivateRoute><Layout noRight><TicketDetail /></Layout></PrivateRoute>} />
 
           {/* Agent + Admin */}
           <Route path="/agent"    element={<PrivateRoute roles={["agent","admin"]}><Layout noRight><AgentQueue /></Layout></PrivateRoute>} />

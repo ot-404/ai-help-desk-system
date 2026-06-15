@@ -86,7 +86,7 @@ export default function TicketDetail() {
   const canManage = user.role === "agent" || user.role === "admin";
   const isOwner = ticket.user_id === user.id;
   const isClosedOrResolved = ticket.status === "resolved" || ticket.status === "closed";
-  const backLink = canManage ? "/agent" : "/my-tickets";
+  const backLink = canManage ? "/agent" : "/my-questions";
 
   return (
     <div style={s.page}>
@@ -220,7 +220,7 @@ export default function TicketDetail() {
             rows={3}
           />
           <div style={s.replyRow}>
-            <span style={s.replyHint}>{canManage ? "Replying as support agent" : "Replying as customer"}</span>
+            <span style={s.replyHint}>{canManage ? "Replying as support agent" : "Replying as user"}</span>
             <button style={s.replyBtn} disabled={sending || !reply.trim()}>
               {sending ? "Sending…" : "Send Reply"}
             </button>
@@ -228,7 +228,7 @@ export default function TicketDetail() {
         </form>
       )}
       {isClosedOrResolved && !isOwner && (
-        <div style={s.closedNote}>This ticket is {ticket.status}. Reopen it by changing the status above.</div>
+        <div style={s.closedNote}>This question is {ticket.status}. Reopen it by changing the status above.</div>
       )}
     </div>
   );

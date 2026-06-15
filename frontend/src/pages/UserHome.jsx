@@ -32,7 +32,7 @@ function TicketCard({ t }) {
       {/* Footer */}
       <div style={s.cardFooter}>
         <span style={s.footerMeta}>Ticket #{t.id} · {new Date(t.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
-        <span style={s.footerLink}>View thread ↗</span>
+        <span style={s.footerLink}>View question ↗</span>
       </div>
     </Link>
   );
@@ -92,12 +92,12 @@ export default function UserHome() {
             <div style={s.welcomeTitle}>Welcome back, {firstName} 👋</div>
             <div style={s.welcomeSub}>
               {open > 0
-                ? `You have ${open} open ticket${open !== 1 ? "s" : ""}${pending > 0 ? ` and ${pending} pending` : ""}.`
-                : "You're all caught up — no open tickets."}
+                ? `You have ${open} open question${open !== 1 ? "s" : ""}${pending > 0 ? ` and ${pending} pending` : ""}.`
+                : "You're all caught up — no open questions."}
             </div>
           </div>
         </div>
-        <Link to="/new-ticket" style={s.newTicketBtn}>+ New Ticket</Link>
+        <Link to="/new-question" style={s.newTicketBtn}>+ New Question</Link>
       </div>
 
       {/* ── Ask AI box ──────────────────────────────── */}
@@ -113,15 +113,15 @@ export default function UserHome() {
       {!loading && (
         <>
           <div style={s.sectionRow}>
-            <span style={s.sectionTitle}>My Recent Tickets</span>
-            <Link to="/my-tickets" style={s.seeAll}>See all →</Link>
+            <span style={s.sectionTitle}>My Recent Questions</span>
+            <Link to="/my-questions" style={s.seeAll}>See all →</Link>
           </div>
 
           {tickets.length === 0 ? (
             <div style={s.emptyCard}>
               <span style={s.emptyIcon}>🎫</span>
-              <span style={s.emptyText}>No tickets yet.</span>
-              <Link to="/new-ticket" style={s.emptyLink}>Submit your first ticket →</Link>
+              <span style={s.emptyText}>No questions yet.</span>
+              <Link to="/new-question" style={s.emptyLink}>Ask your first question →</Link>
             </div>
           ) : (
             <div style={s.feed}>
