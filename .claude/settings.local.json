@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(extract-text AI_HDS.Plan.docx)",
+      "Bash(pandoc AI_HDS.Plan.docx -o - --to markdown)",
+      "PowerShell(New-Item -ItemType Directory -Force \"C:\\\\Users\\\\ripp3\\\\OneDrive\\\\Desktop\\\\AI_HDS\\\\frontend\\\\src\\\\api\")",
+      "PowerShell(New-Item -ItemType Directory -Force \"C:\\\\Users\\\\ripp3\\\\OneDrive\\\\Desktop\\\\AI_HDS\\\\frontend\\\\src\\\\components\")",
+      "PowerShell(New-Item -ItemType Directory -Force \"C:\\\\Users\\\\ripp3\\\\OneDrive\\\\Desktop\\\\AI_HDS\\\\frontend\\\\src\\\\pages\\\\user\")",
+      "PowerShell(New-Item -ItemType Directory -Force \"C:\\\\Users\\\\ripp3\\\\OneDrive\\\\Desktop\\\\AI_HDS\\\\frontend\\\\src\\\\pages\\\\agent\")",
+      "PowerShell(New-Item -ItemType Directory -Force \"C:\\\\Users\\\\ripp3\\\\OneDrive\\\\Desktop\\\\AI_HDS\\\\frontend\\\\src\\\\pages\\\\admin\")",
+      "PowerShell(New-Item -ItemType Directory -Force \"C:\\\\Users\\\\ripp3\\\\OneDrive\\\\Desktop\\\\AI_HDS\\\\frontend\\\\src\\\\context\")",
+      "mcp__Claude_Preview__preview_start",
+      "PowerShell(where.exe python 2>$null; where.exe python3 2>$null; Get-ChildItem \"$env:LOCALAPPDATA\\\\Programs\\\\Python\" -ErrorAction SilentlyContinue | Select-Object FullName)",
+      "PowerShell($py = \"C:\\\\Users\\\\ripp3\\\\.cache\\\\codex-runtimes\\\\codex-primary-runtime\\\\dependencies\\\\python\\\\python.exe\"; & $py -c \"import flask; print\\(flask.__version__\\)\" 2>&1)"
+    ]
+  }
+}

@@ -1,0 +1,4 @@
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #eef1f4; color: #1f2a37; }
+#root { min-height: 100vh; }
+a { color: inherit; }
