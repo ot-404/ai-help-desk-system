@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import api from "../../api/client";
 
 export default function KnowledgeBase() {
@@ -7,6 +7,9 @@ export default function KnowledgeBase() {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({ title: "", content: "", category: "" });
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadMsg, setUploadMsg] = useState("");
+  const fileRef = useRef();
 
   async function load(q = "") {
     const url = q ? `/kb/search?q=${encodeURIComponent(q)}` : "/kb/";
@@ -34,6 +37,31 @@ export default function KnowledgeBase() {
     } finally { setSaving(false); }
   }
 
+  async function deleteArticle(id) {
+    if (!confirm("Delete this article?")) return;
+    await api.delete(`/kb/${id}`);
+    load(search);
+  }
+
+  async function handleUpload(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    setUploadMsg("");
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const { data } = await api.post("/kb/upload", fd, { headers: { "Content-Type": "multipart/form-data" } });
+      setUploadMsg(`✓ "${data.title}" added to knowledge base`);
+      load(search);
+    } catch (err) {
+      setUploadMsg(`Error: ${err.response?.data?.error || "upload failed"}`);
+    } finally {
+      setUploading(false);
+      fileRef.current.value = "";
+    }
+  }
+
   async function handleSearch(e) {
     e.preventDefault();
     load(search);
@@ -43,7 +71,23 @@ export default function KnowledgeBase() {
     <div style={s.page}>
       <div style={s.header}>
         <h2 style={s.title}>Knowledge Base</h2>
-        <button onClick={startNew} style={s.newBtn}>+ New Article</button>
+        <div style={s.headerBtns}>
+          <label style={s.uploadBtn}>
+            {uploading ? "Uploading…" : "Upload File"}
+            <input ref={fileRef} type="file" accept=".pdf,.docx,.doc,.txt" style={{ display: "none" }} onChange={handleUpload} disabled={uploading} />
+          </label>
+          <button onClick={startNew} style={s.newBtn}>+ New Article</button>
+        </div>
+      </div>
+
+      {uploadMsg && (
+        <div style={{ ...s.uploadMsg, color: uploadMsg.startsWith("✓") ? "#16c784" : "#c53030", background: uploadMsg.startsWith("✓") ? "#f0fff4" : "#fff5f5" }}>
+          {uploadMsg}
+        </div>
+      )}
+
+      <div style={s.uploadHint}>
+        Supported file types: <b>PDF</b>, <b>DOCX</b>, <b>TXT</b> — content is extracted and saved as a KB article automatically.
       </div>
 
       <form onSubmit={handleSearch} style={s.searchRow}>
@@ -59,9 +103,9 @@ export default function KnowledgeBase() {
             <label style={s.label}>Title</label>
             <input style={s.input} value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} required />
             <label style={s.label}>Category</label>
-            <input style={s.input} value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} placeholder="e.g. network, billing…" />
+            <input style={s.input} value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} placeholder="e.g. billing, account, security…" />
             <label style={s.label}>Content</label>
-            <textarea style={{ ...s.input, height: 140, resize: "vertical" }} value={form.content} onChange={e => setForm(f => ({ ...f, content: e.target.value }))} required />
+            <textarea style={{ ...s.input, height: 160, resize: "vertical" }} value={form.content} onChange={e => setForm(f => ({ ...f, content: e.target.value }))} required />
             <div style={s.formBtns}>
               <button style={s.saveBtn} disabled={saving}>{saving ? "Saving…" : "Save"}</button>
               <button type="button" onClick={cancel} style={s.cancelBtn}>Cancel</button>
@@ -76,12 +120,15 @@ export default function KnowledgeBase() {
             <div style={s.artLeft}>
               {a.category && <span style={s.cat}>{a.category}</span>}
               <div style={s.artTitle}>{a.title}</div>
-              <div style={s.artContent}>{a.content?.slice(0, 160)}{a.content?.length > 160 ? "…" : ""}</div>
+              <div style={s.artContent}>{a.content?.slice(0, 180)}{a.content?.length > 180 ? "…" : ""}</div>
             </div>
-            <button onClick={() => startEdit(a)} style={s.editBtn}>Edit</button>
+            <div style={s.artActions}>
+              <button onClick={() => startEdit(a)} style={s.editBtn}>Edit</button>
+              <button onClick={() => deleteArticle(a.id)} style={s.deleteBtn}>Delete</button>
+            </div>
           </div>
         ))}
-        {articles.length === 0 && <div style={s.empty}>No articles found.</div>}
+        {articles.length === 0 && <div style={s.empty}>No articles found. Add one or upload a file above.</div>}
       </div>
     </div>
   );
@@ -89,9 +136,13 @@ export default function KnowledgeBase() {
 
 const s = {
   page: { maxWidth: 860, margin: "32px auto", padding: "0 20px" },
-  header: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 },
+  header: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 },
   title: { fontSize: 20, fontWeight: 700, margin: 0 },
+  headerBtns: { display: "flex", gap: 10 },
+  uploadBtn: { background: "#ebf8ff", color: "#2b6cb0", border: "1px solid #bee3f8", borderRadius: 8, padding: "8px 16px", fontSize: 14, fontWeight: 600, cursor: "pointer" },
   newBtn: { background: "#16c784", color: "#fff", border: "none", borderRadius: 8, padding: "8px 18px", fontSize: 14, fontWeight: 600, cursor: "pointer" },
+  uploadMsg: { borderRadius: 8, padding: "10px 14px", marginBottom: 12, fontSize: 14, fontWeight: 500 },
+  uploadHint: { fontSize: 12, color: "#a0aec0", marginBottom: 16 },
   searchRow: { display: "flex", gap: 8, marginBottom: 20 },
   searchInput: { flex: 1, border: "1px solid #e2e8f0", borderRadius: 8, padding: "10px 12px", fontSize: 14, outline: "none" },
   searchBtn: { background: "#2d3748", color: "#fff", border: "none", borderRadius: 8, padding: "10px 18px", cursor: "pointer", fontSize: 14 },
@@ -109,6 +160,8 @@ const s = {
   cat: { fontSize: 11, fontWeight: 700, color: "#3182ce", background: "#ebf8ff", padding: "2px 8px", borderRadius: 6, textTransform: "uppercase", display: "inline-block", marginBottom: 6 },
   artTitle: { fontWeight: 600, fontSize: 15, marginBottom: 4 },
   artContent: { fontSize: 13, color: "#7a8794", lineHeight: 1.5 },
-  editBtn: { background: "#f7fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "6px 14px", fontSize: 13, cursor: "pointer", flexShrink: 0, marginLeft: 16 },
+  artActions: { display: "flex", flexDirection: "column", gap: 6, marginLeft: 16, flexShrink: 0 },
+  editBtn: { background: "#f7fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "6px 14px", fontSize: 13, cursor: "pointer" },
+  deleteBtn: { background: "#fff5f5", border: "1px solid #fed7d7", borderRadius: 8, padding: "6px 14px", fontSize: 13, cursor: "pointer", color: "#c53030" },
   empty: { color: "#7a8794", textAlign: "center", marginTop: 32 },
 };
