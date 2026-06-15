@@ -11,7 +11,7 @@ const ROLE_DEFS = [
     color: "#e53e3e",
     bg: "#fff5f5",
     border: "#fed7d7",
-    icon: "🛡",
+    icon: "A",
     title: "Administrator",
     summary: "Full system access. Manages users, monitors platform health, and oversees all support operations.",
     responsibilities: [
@@ -32,7 +32,7 @@ const ROLE_DEFS = [
     color: "#805ad5",
     bg: "#faf5ff",
     border: "#d6bcfa",
-    icon: "🎧",
+    icon: "S",
     title: "Support Agent",
     summary: "Front-line support staff. Handles incoming tickets, communicates with customers, and maintains the knowledge base.",
     responsibilities: [
@@ -55,7 +55,7 @@ const ROLE_DEFS = [
     color: "#3182ce",
     bg: "#ebf8ff",
     border: "#bee3f8",
-    icon: "👤",
+    icon: "U",
     title: "Customer / End User",
     summary: "External customers requesting support. Can only see and interact with their own tickets.",
     responsibilities: [

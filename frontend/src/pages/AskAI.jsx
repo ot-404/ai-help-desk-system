@@ -55,7 +55,9 @@ export default function AskAI() {
           {!result && (
             <div style={s.formCard}>
               <div style={s.formHeader}>
-                <span style={s.formIcon}>💬</span>
+                <span style={s.formIcon}>
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#16c784" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                </span>
                 <div>
                   <div style={s.formTitle}>Ask a Question</div>
                   <div style={s.formSub}>Be specific — the more detail you give, the better the answer.</div>
@@ -73,7 +75,9 @@ export default function AskAI() {
                 {error && <div style={s.errBox}>{error}</div>}
                 {!user ? (
                   <div style={s.authPrompt}>
-                    <span style={s.authIcon}>🔒</span>
+                    <span style={s.authIcon}>
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7a8794" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                    </span>
                     <div>
                       <strong>Sign in to ask a question</strong>
                       <div style={s.authSub}>Your question and AI answer will be saved to help others too.</div>
@@ -108,7 +112,7 @@ export default function AskAI() {
             <div style={s.results}>
               {/* Question recap */}
               <div style={s.questionRecap}>
-                <span style={s.qIcon}>❓</span>
+                <span style={s.qIcon}>Q</span>
                 <div style={s.qText}>{question}</div>
               </div>
 
@@ -131,14 +135,18 @@ export default function AskAI() {
               {/* Saved articles */}
               <div style={s.savedRow}>
                 <div style={s.savedCard}>
-                  <div style={s.savedIcon}>📚</div>
+                  <div style={s.savedIcon}>
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#16c784" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+                  </div>
                   <div style={s.savedLabel}>Knowledge Base Article</div>
                   <div style={s.savedTitle}>{result.kb_article?.title}</div>
                   <div style={s.savedMeta}>Category: {result.kb_article?.category}</div>
                   <Link to={`/help?article=${result.kb_article?.id}`} style={s.viewBtn}>View Article →</Link>
                 </div>
                 <div style={s.savedCard}>
-                  <div style={s.savedIcon}>✍️</div>
+                  <div style={s.savedIcon}>
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#805ad5" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                  </div>
                   <div style={s.savedLabel}>Blog Post</div>
                   <div style={s.savedTitle}>{result.blog_post?.title}</div>
                   <div style={s.savedMeta}>Category: Blog · Published to Help Center</div>
@@ -159,17 +167,23 @@ export default function AskAI() {
             <div style={s.infoBanner}>
               <div style={s.infoGrid}>
                 <div style={s.infoItem}>
-                  <div style={s.infoIcon}>🤖</div>
+                  <div style={s.infoIcon}>
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#16c784" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+                  </div>
                   <div style={s.infoTitle}>AI-Powered</div>
                   <div style={s.infoText}>Uses your knowledge base to give accurate, contextual answers.</div>
                 </div>
                 <div style={s.infoItem}>
-                  <div style={s.infoIcon}>📚</div>
+                  <div style={s.infoIcon}>
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3182ce" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+                  </div>
                   <div style={s.infoTitle}>Saves to KB</div>
                   <div style={s.infoText}>Every question and answer is saved as a help article for future visitors.</div>
                 </div>
                 <div style={s.infoItem}>
-                  <div style={s.infoIcon}>✍️</div>
+                  <div style={s.infoIcon}>
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#805ad5" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                  </div>
                   <div style={s.infoTitle}>Creates Blog Posts</div>
                   <div style={s.infoText}>A formatted blog post is published automatically to the Help Center.</div>
                 </div>

@@ -37,7 +37,7 @@ function EngageRow({ articleId }) {
         {count > 0 && <><span style={s.engSep}>·</span><span>{count}</span></>}
       </button>
       <Link to={`/help?article=${articleId}`} style={s.engLink}>
-        💬 Comment
+        Comment
       </Link>
       <button style={s.engBtn} onClick={handleShare}>
         {copied ? "✓ Copied!" : "↗ Share"}
@@ -59,7 +59,7 @@ function FeedCard({ article }) {
       <div style={s.cardMeta}>
         {article.category && (
           <span style={{ ...s.catBadge, background: cc.bg, color: cc.color }}>
-            {article.category === "Blog" ? "✍️ Blog" : article.category}
+            {article.category}
           </span>
         )}
         {(article.tags || []).slice(0, 3).map((t, i) => (
@@ -146,7 +146,9 @@ export default function Home() {
       {/* Feed */}
       {!loading && articles.length === 0 ? (
         <div style={s.empty}>
-          <div style={s.emptyIcon}>📭</div>
+          <div style={s.emptyIcon}>
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#cbd5e0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 9v11"/></svg>
+          </div>
           <div style={s.emptyText}>No questions answered yet.</div>
           <Link to="/ask" style={s.emptyLink}>Ask the first question →</Link>
         </div>

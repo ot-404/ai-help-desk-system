@@ -16,8 +16,8 @@ function TicketCard({ t }) {
       <Link to={`/question/${t.id}`} style={s.subject}>{t.subject}</Link>
       <div style={s.preview}>{t.description?.slice(0, 140)}{t.description?.length > 140 ? "…" : ""}</div>
       <div style={s.cardFooter}>
-        <span style={s.footItem}>💬 {t.message_count ?? 0} responses</span>
-        {t.csat_rating && <span style={s.footItem}>⭐ {t.csat_rating}/5</span>}
+        <span style={s.footItem}>{t.message_count ?? 0} responses</span>
+        {t.csat_rating && <span style={s.footItem}>Rating: {t.csat_rating}/5</span>}
         {(t.status === "resolved" || t.status === "closed") && !t.csat_rating && (
           <Link to={`/question/${t.id}`} style={s.rateLink}>Rate this response</Link>
         )}

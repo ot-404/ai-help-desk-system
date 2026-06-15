@@ -85,7 +85,9 @@ export default function PublicHelp() {
               : "Browse articles, guides, and AI-generated answers"}
           </p>
           <form onSubmit={handleSearch} style={s.searchRow}>
-            <span style={s.searchIcon}>🔍</span>
+            <span style={s.searchIcon}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#939598" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </span>
             <input
               style={s.searchInput}
               placeholder="Search questions and articles…"
@@ -102,7 +104,7 @@ export default function PublicHelp() {
           </form>
           <div style={s.askRow}>
             <span style={s.askHint}>Can't find what you're looking for?</span>
-            <Link to="/ask" style={s.askLink}>🤖 Ask AI →</Link>
+            <Link to="/ask" style={s.askLink}>Ask AI →</Link>
           </div>
         </div>
       </div>
@@ -123,7 +125,7 @@ export default function PublicHelp() {
                   style={{ ...s.tabBtn, ...(tab === t ? s.tabActive : {}) }}
                   onClick={() => switchTab(t)}
                 >
-                  {t === "Blog" ? "✍️ Blog" : t}
+                  {t === "Blog" ? "Blog" : t}
                   {count != null && count > 0 && (
                     <span style={{ ...s.tabCount, ...(tab === t ? s.tabCountActive : {}) }}>
                       {count}
@@ -144,7 +146,9 @@ export default function PublicHelp() {
             <div style={s.loading}>Loading…</div>
           ) : articles.length === 0 ? (
             <div style={s.empty}>
-              <div style={s.emptyIcon}>🔍</div>
+              <div style={s.emptyIcon}>
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#cbd5e0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              </div>
               <div style={s.emptyTitle}>No articles found</div>
               <p style={s.emptySub}>Try a different search, or ask our AI to generate an answer.</p>
               <div style={s.emptyBtns}>
@@ -164,7 +168,7 @@ export default function PublicHelp() {
                       <div style={s.articleLeft}>
                         {a.category && (
                           <span style={{ ...s.catTag, background: cc.bg, color: cc.color }}>
-                            {a.category === "Blog" ? "✍️ Blog" : a.category}
+                            {a.category}
                           </span>
                         )}
                         <span style={s.articleTitle}>{a.title}</span>

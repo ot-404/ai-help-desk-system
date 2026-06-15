@@ -16,7 +16,7 @@ function TicketCard({ t }) {
         <span style={{ ...s.badge, background: PRI_COLOR[t.priority] + "18", color: PRI_COLOR[t.priority] }}>
           {t.priority}
         </span>
-        {t.priority === "urgent" && <span style={s.urgentPing}>⚡ Urgent</span>}
+        {t.priority === "urgent" && <span style={s.urgentPing}>Urgent</span>}
       </div>
       <div style={s.cardTitle}>{t.subject}</div>
       {t.description && (
@@ -117,7 +117,7 @@ export default function StaffHome() {
         <div style={s.loadingCard}>Loading tickets…</div>
       ) : active.length === 0 ? (
         <div style={s.emptyCard}>
-          <span style={s.emptyIcon}>✅</span>
+          <span style={s.emptyIcon}>
           <span style={s.emptyText}>Queue is clear — no open questions!</span>
         </div>
       ) : (

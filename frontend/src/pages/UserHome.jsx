@@ -89,7 +89,7 @@ export default function UserHome() {
         <div style={s.welcomeLeft}>
           <div style={s.avatar}>{user?.name?.[0]?.toUpperCase() ?? "U"}</div>
           <div>
-            <div style={s.welcomeTitle}>Welcome back, {firstName} 👋</div>
+            <div style={s.welcomeTitle}>Welcome back, {firstName}</div>
             <div style={s.welcomeSub}>
               {open > 0
                 ? `You have ${open} open question${open !== 1 ? "s" : ""}${pending > 0 ? ` and ${pending} pending` : ""}.`
@@ -118,7 +118,7 @@ export default function UserHome() {
 
           {tickets.length === 0 ? (
             <div style={s.emptyCard}>
-              <span style={s.emptyIcon}>🎫</span>
+              <span style={s.emptyIcon}>
               <span style={s.emptyText}>No questions yet.</span>
               <Link to="/new-question" style={s.emptyLink}>Ask your first question →</Link>
             </div>
