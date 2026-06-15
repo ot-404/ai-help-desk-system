@@ -19,12 +19,8 @@ export default function Login() {
     setError("");
     setLoading(true);
     try {
-      const u = await login(email, password);
-      const dest = next && next.startsWith("/") ? next
-        : u.role === "user" ? "/my-tickets"
-        : u.role === "admin" ? "/admin"
-        : "/agent";
-      nav(dest);
+      await login(email, password);
+      nav(next && next.startsWith("/") ? next : "/");
     } catch (err) {
       setError(err.response?.data?.error || "Login failed");
     } finally {

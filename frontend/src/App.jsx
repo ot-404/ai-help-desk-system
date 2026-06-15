@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import NavBar from "./components/NavBar";
 import PrivateRoute from "./components/PrivateRoute";
@@ -6,6 +6,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
 import PublicHelp from "./pages/PublicHelp";
+import UserHome from "./pages/UserHome";
+import StaffHome from "./pages/StaffHome";
 import MyTickets from "./pages/user/MyTickets";
 import NewTicket from "./pages/user/NewTicket";
 import TicketDetail from "./pages/TicketDetail";
@@ -14,12 +16,11 @@ import Dashboard from "./pages/admin/Dashboard";
 import AdminPanel from "./pages/admin/AdminPanel";
 import KnowledgeBase from "./pages/admin/KnowledgeBase";
 
-/** Logged-in users go to their role dashboard; guests see the public Home. */
+/** Renders the right home experience based on who's viewing. */
 function HomeOrRedirect() {
   const { user } = useAuth();
-  if (user?.role === "admin") return <Navigate to="/admin" replace />;
-  if (user?.role === "agent") return <Navigate to="/agent" replace />;
-  if (user?.role === "user") return <Navigate to="/my-tickets" replace />;
+  if (user?.role === "admin" || user?.role === "agent") return <StaffHome />;
+  if (user?.role === "user") return <UserHome />;
   return <Home />;
 }
 
