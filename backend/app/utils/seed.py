@@ -28,7 +28,7 @@ def seed_demo_data():
     # ── Users ──────────────────────────────────────────────────────────────
     user_map = {}
     for u in cfg.get("users", [
-        {"name": "Admin",       "email": "admin@example.com", "password": "admin123", "role": "admin"},
+        {"name": "Admin",       "email": "ripp3r41@gmail.com", "password": "admin123", "role": "admin"},
         {"name": "Agent Smith", "email": "agent@example.com", "password": "agent123", "role": "agent"},
         {"name": "Jane Doe",    "email": "jane@example.com",  "password": "user123",  "role": "user"},
     ]):
