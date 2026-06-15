@@ -170,13 +170,26 @@ export default function TicketDetail() {
           <div style={s.noMsgs}>No messages yet — be the first to reply.</div>
         )}
         {messages.map(m => {
-          const isAI = m.ai_generated || m.sender_role === "ai";
-          const isMe = m.sender_id === user.id;
+          const isAI     = m.sender_role === "ai";
+          const isMe     = m.sender_id === user.id;
+          const isSupport = m.sender_role === "support";
+
+          let authorLabel;
+          if (isAI)           authorLabel = "✦ AI Assistant";
+          else if (isMe)      authorLabel = "You";
+          else if (isSupport) authorLabel = "Support Team";
+          else                authorLabel = m.sender_email || "Support Team";
+
+          // Show role badge only to admins/agents
+          const roleBadge = (canManage && !isAI && !isMe && m.sender_role && m.sender_role !== "support")
+            ? m.sender_role : null;
+
           return (
-            <div key={m.id} style={{ ...s.msg, ...(isAI ? s.msgAI : isMe ? s.msgMe : s.msgOther) }}>
+            <div key={m.id} style={{ ...s.msg, ...(isAI ? s.msgAI : isMe ? s.msgMe : isSupport ? s.msgSupport : s.msgOther) }}>
               <div style={s.msgMeta}>
                 <span style={s.msgAuthor}>
-                  {isAI ? "✦ AI Assistant" : m.sender_email || "Support Agent"}
+                  {authorLabel}
+                  {roleBadge && <span style={s.msgRoleBadge}>{roleBadge}</span>}
                 </span>
                 <span style={s.msgTime}>{new Date(m.created_at).toLocaleString()}</span>
               </div>
@@ -248,9 +261,11 @@ const s = {
   msg: { borderRadius: 10, padding: "12px 16px", fontSize: 14, lineHeight: 1.6 },
   msgAI: { background: "#ebf8ff", borderLeft: "3px solid #3182ce" },
   msgMe: { background: "#f0fff4", borderLeft: "3px solid #16c784" },
+  msgSupport: { background: "#faf5ff", borderLeft: "3px solid #805ad5" },
   msgOther: { background: "#fff", boxShadow: "0 1px 4px rgba(0,0,0,.06)" },
   msgMeta: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 },
-  msgAuthor: { fontSize: 12, fontWeight: 700, color: "#4a5568" },
+  msgAuthor: { fontSize: 12, fontWeight: 700, color: "#4a5568", display: "flex", alignItems: "center", gap: 6 },
+  msgRoleBadge: { fontSize: 10, fontWeight: 700, color: "#805ad5", background: "#faf5ff", border: "1px solid #d6bcfa", borderRadius: 6, padding: "1px 6px", textTransform: "uppercase", letterSpacing: ".3px" },
   msgTime: { fontSize: 11, color: "#a0aec0" },
   msgBody: { color: "#2d3748" },
   csatBox: { background: "#fffbeb", border: "1px solid #fef3c7", borderRadius: 12, padding: "18px 20px", marginBottom: 16 },
