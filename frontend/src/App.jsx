@@ -6,6 +6,11 @@ import RightPanel from "./components/RightPanel";
 import PrivateRoute from "./components/PrivateRoute";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Home from "./pages/Home";
+import UserHome from "./pages/UserHome";
+import StaffHome from "./pages/StaffHome";
+import PublicHelp from "./pages/PublicHelp";
+import AskAI from "./pages/AskAI";
 import MyTickets from "./pages/user/MyTickets";
 import NewTicket from "./pages/user/NewTicket";
 import TicketDetail from "./pages/TicketDetail";
@@ -14,25 +19,28 @@ import Dashboard from "./pages/admin/Dashboard";
 import AdminPanel from "./pages/admin/AdminPanel";
 import KnowledgeBase from "./pages/admin/KnowledgeBase";
 
-function RoleRedirect() {
+/** Renders the right home experience based on who's viewing. */
+function HomeOrRedirect() {
   const { user } = useAuth();
-  if (!user) return <Navigate to="/login" replace />;
-  if (user.role === "user") return <Navigate to="/my-tickets" replace />;
-  return <Navigate to="/agent" replace />;
+  if (user?.role === "admin" || user?.role === "agent") return <StaffHome />;
+  if (user?.role === "user") return <UserHome />;
+  return <Home />;
 }
 
-/** Three-column Quora-style layout */
-function Layout({ children, wide }) {
-  const { user } = useAuth();
-  if (!user) return children;
+/**
+ * Three-column Quora-style shell.
+ *  wide  → suppresses the right panel (full-width content like Dashboard)
+ *  noRight → suppresses right panel without widening main
+ */
+function Layout({ children, wide, noRight }) {
   return (
     <>
       <NavBar />
       <div style={s.page}>
-        <div style={{ ...s.container, maxWidth: wide ? 1200 : 1100 }}>
+        <div style={{ ...s.container, maxWidth: wide ? 1260 : 1180 }}>
           <Sidebar />
           <main style={s.main}>{children}</main>
-          {!wide && <RightPanel />}
+          {!wide && !noRight && <RightPanel />}
         </div>
       </div>
     </>
@@ -40,8 +48,8 @@ function Layout({ children, wide }) {
 }
 
 const s = {
-  page: { paddingTop: 66, minHeight: "100vh", background: "#f2f2f0" },
-  container: { margin: "0 auto", display: "flex", gap: 24, padding: "0 16px", alignItems: "flex-start" },
+  page: { paddingTop: 56, minHeight: "100vh", background: "#f2f2f0" },
+  container: { margin: "0 auto", display: "flex", gap: 20, padding: "20px 16px", alignItems: "flex-start" },
   main: { flex: 1, minWidth: 0 },
 };
 
@@ -50,22 +58,31 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          {/* Standalone auth pages — no shell */}
           <Route path="/login"    element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          <Route path="/" element={<PrivateRoute><Layout><RoleRedirect /></Layout></PrivateRoute>} />
+          {/* Public pages — shell visible, no login required */}
+          <Route path="/"    element={<Layout><HomeOrRedirect /></Layout>} />
+          <Route path="/help" element={<Layout noRight><PublicHelp /></Layout>} />
+          <Route path="/ask"  element={<Layout noRight><AskAI /></Layout>} />
 
+          {/* User-only */}
           <Route path="/my-tickets" element={<PrivateRoute roles={["user"]}><Layout><MyTickets /></Layout></PrivateRoute>} />
-          <Route path="/new-ticket" element={<PrivateRoute roles={["user"]}><Layout><NewTicket /></Layout></PrivateRoute>} />
-          <Route path="/ticket/:id" element={<PrivateRoute><Layout><TicketDetail /></Layout></PrivateRoute>} />
+          <Route path="/new-ticket" element={<PrivateRoute roles={["user"]}><Layout noRight><NewTicket /></Layout></PrivateRoute>} />
 
-          <Route path="/agent"    element={<PrivateRoute roles={["agent","admin"]}><Layout><AgentQueue /></Layout></PrivateRoute>} />
-          <Route path="/admin/kb" element={<PrivateRoute roles={["agent","admin"]}><Layout><KnowledgeBase /></Layout></PrivateRoute>} />
+          {/* Any authenticated user */}
+          <Route path="/ticket/:id" element={<PrivateRoute><Layout noRight><TicketDetail /></Layout></PrivateRoute>} />
 
+          {/* Agent + Admin */}
+          <Route path="/agent"    element={<PrivateRoute roles={["agent","admin"]}><Layout noRight><AgentQueue /></Layout></PrivateRoute>} />
+          <Route path="/admin/kb" element={<PrivateRoute roles={["agent","admin"]}><Layout noRight><KnowledgeBase /></Layout></PrivateRoute>} />
+
+          {/* Admin only */}
           <Route path="/admin"       element={<PrivateRoute roles={["admin"]}><Layout wide><Dashboard /></Layout></PrivateRoute>} />
-          <Route path="/admin/users" element={<PrivateRoute roles={["admin"]}><Layout><AdminPanel /></Layout></PrivateRoute>} />
+          <Route path="/admin/users" element={<PrivateRoute roles={["admin"]}><Layout noRight><AdminPanel /></Layout></PrivateRoute>} />
 
-          <Route path="*" element={<Layout><div style={{ textAlign:"center", marginTop:80, color:"#939598" }}><h2>404 — Page not found</h2></div></Layout>} />
+          <Route path="*" element={<Layout noRight><div style={{ textAlign:"center", marginTop:80, color:"#939598" }}><h2>404 — Page not found</h2></div></Layout>} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

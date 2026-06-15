@@ -5,63 +5,149 @@ import { useAuth } from "../context/AuthContext";
 
 export default function RightPanel() {
   const { user } = useAuth();
-  const [stats, setStats] = useState(null);
-  const [kb, setKb] = useState([]);
+  const [adminStats, setAdminStats] = useState(null);
+  const [tickets, setTickets]       = useState([]);
+  const [kb, setKb]                 = useState([]);
 
   useEffect(() => {
-    api.get("/dashboard/stats").then(r => setStats(r.data)).catch(() => {});
-    api.get("/kb/").then(r => setKb((r.data || []).slice(0, 4))).catch(() => {});
-  }, []);
+    // Public: always grab a few KB articles
+    api.get("/kb/").then(r => setKb((r.data || []).slice(0, 5))).catch(() => {});
+
+    if (!user) return;
+
+    if (user.role === "admin") {
+      api.get("/dashboard/stats").then(r => setAdminStats(r.data)).catch(() => {});
+    } else if (user.role === "user") {
+      api.get("/tickets/").then(r => setTickets(r.data || [])).catch(() => {});
+    }
+  }, [user]);
 
   return (
     <aside style={s.aside}>
-      {/* Stats card */}
-      {stats && (
+
+      {/* ── Admin stats ─────────────────────── */}
+      {user?.role === "admin" && adminStats && (
         <div style={s.card}>
-          <div style={s.cardTitle}>Help Desk Stats</div>
+          <div style={s.cardHead}>Platform</div>
           {[
-            ["Total Tickets", stats.total_tickets],
-            ["Resolved",      stats.resolved],
-            ["AI Deflection", `${stats.deflection_rate}%`],
-            ["AI Replies",    stats.ai_messages],
+            ["Total Tickets",  adminStats.total_tickets],
+            ["Resolved",       adminStats.resolved],
+            ["AI Deflection",  `${adminStats.deflection_rate}%`],
+            ["Users",          adminStats.total_users],
+            ["Visits Today",   adminStats.visits_today],
           ].map(([label, val]) => (
             <div key={label} style={s.statRow}>
               <span style={s.statLabel}>{label}</span>
-              <span style={s.statVal}>{val}</span>
+              <span style={s.statVal}>{val ?? "—"}</span>
             </div>
           ))}
+          <Link to="/admin" style={s.moreLink}>Full dashboard →</Link>
         </div>
       )}
 
-      {/* KB highlights */}
+      {/* ── Agent queue summary ──────────────── */}
+      {user?.role === "agent" && (
+        <div style={s.card}>
+          <div style={s.cardHead}>Quick links</div>
+          <Link to="/agent"    style={s.actionLink}>📋 View Queue</Link>
+          <Link to="/admin/kb" style={s.actionLink}>📖 Knowledge Base</Link>
+          <Link to="/ask"      style={s.actionLink}>🤖 Ask AI</Link>
+        </div>
+      )}
+
+      {/* ── User ticket summary ──────────────── */}
+      {user?.role === "user" && (
+        <div style={s.card}>
+          <div style={s.cardHead}>My Tickets</div>
+          {tickets.length === 0 ? (
+            <div style={s.empty}>No tickets yet.</div>
+          ) : (
+            <>
+              {[
+                ["Open",     tickets.filter(t => t.status === "open").length,    "#3182ce"],
+                ["Pending",  tickets.filter(t => t.status === "pending").length, "#d69e2e"],
+                ["Resolved", tickets.filter(t => ["resolved","closed"].includes(t.status)).length, "#16c784"],
+              ].map(([label, count, color]) => (
+                <div key={label} style={s.statRow}>
+                  <span style={s.statLabel}>{label}</span>
+                  <span style={{ ...s.statVal, color }}>{count}</span>
+                </div>
+              ))}
+            </>
+          )}
+          <Link to="/new-ticket" style={s.ctaBtn}>+ Submit a Ticket</Link>
+        </div>
+      )}
+
+      {/* ── Guest CTA ────────────────────────── */}
+      {!user && (
+        <div style={{ ...s.card, ...s.guestCard }}>
+          <div style={s.guestTitle}>Get Help Fast</div>
+          <p style={s.guestText}>
+            Sign in to submit a ticket or ask our AI — your question and its answer
+            are saved to help others too.
+          </p>
+          <Link to="/register" style={s.ctaBtn}>Sign up free</Link>
+          <Link to="/login"    style={s.moreLink}>Already have an account? Sign in →</Link>
+        </div>
+      )}
+
+      {/* ── KB highlights ────────────────────── */}
       {kb.length > 0 && (
         <div style={s.card}>
-          <div style={s.cardTitle}>From the Knowledge Base</div>
+          <div style={s.cardHead}>From the Knowledge Base</div>
           {kb.map(a => (
-            <Link key={a.id} to="/admin/kb" style={s.kbLink}>{a.title}</Link>
+            <Link key={a.id} to={`/help?article=${a.id}`} style={s.kbLink}>
+              {a.category && <span style={s.kbCat}>{a.category}</span>}
+              {a.title}
+            </Link>
           ))}
+          <Link to="/help" style={s.moreLink}>Browse all →</Link>
         </div>
       )}
 
-      {/* CTA */}
-      {user?.role === "user" && (
-        <div style={{ ...s.card, background: "#f0fdf8", border: "1px solid #c6f6d5" }}>
-          <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 6 }}>Got an issue?</div>
-          <div style={{ fontSize: 13, color: "#555", marginBottom: 12 }}>Submit a ticket and our AI + team will get you sorted.</div>
-          <Link to="/new-ticket" style={s.ctaBtn}>Ask a Question</Link>
-        </div>
-      )}
     </aside>
   );
 }
 
 const s = {
-  aside: { width: 280, flexShrink: 0, display: "flex", flexDirection: "column", gap: 16, paddingTop: 16 },
-  card: { background: "#fff", border: "1px solid #e8e8e8", borderRadius: 8, padding: "16px" },
-  cardTitle: { fontWeight: 700, fontSize: 15, marginBottom: 12, color: "#282829" },
-  statRow: { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "5px 0", borderBottom: "1px solid #f2f2f0", fontSize: 14 },
-  statLabel: { color: "#555" },
-  statVal: { fontWeight: 700, color: "#282829" },
-  kbLink: { display: "block", fontSize: 14, color: "#16c784", padding: "5px 0", textDecoration: "none", borderBottom: "1px solid #f2f2f0" },
-  ctaBtn: { display: "block", background: "#16c784", color: "#fff", textAlign: "center", padding: "9px 0", borderRadius: 20, fontWeight: 700, fontSize: 14, textDecoration: "none" },
+  aside: { width: 260, flexShrink: 0, display: "flex", flexDirection: "column", gap: 14, paddingTop: 0 },
+
+  card: { background: "#fff", border: "1px solid #e8e8e8", borderRadius: 8, padding: "16px", display: "flex", flexDirection: "column", gap: 0 },
+  cardHead: { fontWeight: 700, fontSize: 14, color: "#282829", marginBottom: 12 },
+
+  statRow: { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 0", borderBottom: "1px solid #f2f2f0" },
+  statLabel: { fontSize: 13, color: "#555" },
+  statVal:   { fontWeight: 700, fontSize: 13, color: "#282829" },
+
+  empty: { fontSize: 13, color: "#939598", paddingBottom: 8 },
+
+  ctaBtn: {
+    display: "block", marginTop: 14, textAlign: "center",
+    background: "#16c784", color: "#fff",
+    padding: "9px 0", borderRadius: 20,
+    fontWeight: 700, fontSize: 13, textDecoration: "none",
+  },
+  moreLink: { display: "block", marginTop: 10, fontSize: 12, color: "#16c784", textDecoration: "none", fontWeight: 600 },
+
+  actionLink: {
+    display: "block", padding: "8px 0",
+    fontSize: 14, color: "#282829", textDecoration: "none",
+    borderBottom: "1px solid #f2f2f0", fontWeight: 500,
+  },
+
+  guestCard: { background: "#f0fdf8", border: "1.5px solid #c6f6d5" },
+  guestTitle: { fontWeight: 700, fontSize: 15, color: "#1a202c", marginBottom: 8 },
+  guestText: { fontSize: 13, color: "#4a5568", lineHeight: 1.55, margin: "0 0 4px" },
+
+  kbLink: {
+    display: "block", padding: "7px 0",
+    fontSize: 13, color: "#282829", textDecoration: "none",
+    borderBottom: "1px solid #f2f2f0", lineHeight: 1.4,
+  },
+  kbCat: {
+    display: "inline-block", fontSize: 10, fontWeight: 700,
+    color: "#16c784", textTransform: "uppercase", letterSpacing: ".4px",
+    marginRight: 6,
+  },
 };

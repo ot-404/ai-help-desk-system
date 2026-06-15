@@ -4,206 +4,206 @@ import { useAuth } from "../context/AuthContext";
 import api from "../api/client";
 
 const STATUS_COLOR = { open: "#3182ce", pending: "#d69e2e", resolved: "#16c784", closed: "#718096" };
-const PRI_COLOR   = { low: "#48bb78", medium: "#ecc94b", high: "#ed8936", urgent: "#e53e3e" };
+const PRI_COLOR    = { low: "#48bb78", medium: "#ecc94b", high: "#ed8936", urgent: "#e53e3e" };
+
+function TicketCard({ t }) {
+  return (
+    <Link to={`/ticket/${t.id}`} style={s.card}>
+      <div style={s.cardMeta}>
+        <span style={{ ...s.badge, background: STATUS_COLOR[t.status] + "18", color: STATUS_COLOR[t.status] }}>
+          {t.status}
+        </span>
+        <span style={{ ...s.badge, background: PRI_COLOR[t.priority] + "18", color: PRI_COLOR[t.priority] }}>
+          {t.priority}
+        </span>
+        {t.priority === "urgent" && <span style={s.urgentPing}>⚡ Urgent</span>}
+      </div>
+      <div style={s.cardTitle}>{t.subject}</div>
+      {t.description && (
+        <div style={s.cardBody}>
+          {t.description.slice(0, 160)}{t.description.length > 160 ? "…" : ""}
+        </div>
+      )}
+      <div style={s.cardFooter}>
+        <span style={s.footerMeta}>
+          #{t.id}{t.user_name ? ` · ${t.user_name}` : ""} · {new Date(t.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+        </span>
+        <span style={s.footerLink}>Open ↗</span>
+      </div>
+    </Link>
+  );
+}
 
 export default function StaffHome() {
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
   const firstName = user?.name?.split(" ")[0] || "there";
 
-  const [tickets, setTickets] = useState([]);
-  const [dashStats, setDashStats] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [tickets,    setTickets]    = useState([]);
+  const [dashStats,  setDashStats]  = useState(null);
+  const [loading,    setLoading]    = useState(true);
 
   useEffect(() => {
     const reqs = [api.get("/tickets/")];
     if (isAdmin) reqs.push(api.get("/dashboard/stats").catch(() => null));
     Promise.all(reqs).then(([t, d]) => {
-      setTickets(t.data);
+      setTickets(t.data || []);
       if (d) setDashStats(d.data);
     }).finally(() => setLoading(false));
   }, [isAdmin]);
 
   const open    = tickets.filter(t => t.status === "open").length;
   const pending = tickets.filter(t => t.status === "pending").length;
-  const urgent  = tickets.filter(t => t.priority === "urgent" && t.status !== "resolved" && t.status !== "closed").length;
-  const recent  = tickets.filter(t => t.status === "open" || t.status === "pending").slice(0, 6);
+  const urgent  = tickets.filter(t => t.priority === "urgent" && !["resolved","closed"].includes(t.status)).length;
+  const active  = tickets.filter(t => ["open","pending"].includes(t.status)).slice(0, 6);
 
   return (
     <div style={s.page}>
-      {/* Hero — staff variant: indigo-tinted dark */}
-      <div style={s.hero}>
-        <div style={s.heroInner}>
-          <div style={s.heroTag}>{isAdmin ? "Admin" : "Agent"} Dashboard</div>
-          <h1 style={s.heroTitle}>Good to see you, {firstName}</h1>
-          <p style={s.heroSub}>
-            {open > 0
-              ? `You have ${open} open ticket${open !== 1 ? "s" : ""} waiting for attention.`
-              : "All caught up — no open tickets right now."}
-          </p>
 
-          {/* Queue stats */}
-          <div style={s.statRow}>
-            <div style={s.stat}>
-              <div style={{ ...s.statNum, color: "#63b3ed" }}>{open}</div>
-              <div style={s.statLabel}>Open</div>
-            </div>
-            <div style={s.statDivider} />
-            <div style={s.stat}>
-              <div style={{ ...s.statNum, color: "#f6e05e" }}>{pending}</div>
-              <div style={s.statLabel}>Pending</div>
-            </div>
-            <div style={s.statDivider} />
-            <div style={s.stat}>
-              <div style={{ ...s.statNum, color: "#fc8181" }}>{urgent}</div>
-              <div style={s.statLabel}>Urgent</div>
-            </div>
-            <div style={s.statDivider} />
-            <div style={s.stat}>
-              <div style={{ ...s.statNum, color: "#fff" }}>{tickets.length}</div>
-              <div style={s.statLabel}>Total</div>
-            </div>
-            {isAdmin && dashStats && (
-              <>
-                <div style={s.statDivider} />
-                <div style={s.stat}>
-                  <div style={{ ...s.statNum, color: "#b794f4" }}>{dashStats.total_users ?? "—"}</div>
-                  <div style={s.statLabel}>Users</div>
-                </div>
-                <div style={s.statDivider} />
-                <div style={s.stat}>
-                  <div style={{ ...s.statNum, color: "#76e4f7" }}>{dashStats.visits_today ?? "—"}</div>
-                  <div style={s.statLabel}>Visits Today</div>
-                </div>
-              </>
-            )}
+      {/* ── Welcome / stats bar ────────────────────── */}
+      <div style={s.welcomeCard}>
+        <div style={s.welcomeLeft}>
+          <div style={{ ...s.avatar, background: isAdmin ? "#805ad5" : "#3182ce" }}>
+            {user?.name?.[0]?.toUpperCase() ?? "S"}
           </div>
-
-          <div style={s.heroBtns}>
-            <Link to="/agent" style={s.btnPrimary}>View Full Queue</Link>
-            <Link to="/ask" style={s.btnAsk}>🤖 Ask AI</Link>
-            <Link to="/admin/kb" style={s.btnOutline}>Knowledge Base</Link>
-            {isAdmin && <Link to="/admin" style={s.btnOutlineAlt}>Analytics</Link>}
+          <div>
+            <div style={s.welcomeTitle}>
+              Good to see you, {firstName}
+              <span style={{ ...s.rolePill, background: isAdmin ? "#faf5ff" : "#ebf8ff", color: isAdmin ? "#805ad5" : "#2b6cb0" }}>
+                {user?.role}
+              </span>
+            </div>
+            <div style={s.welcomeSub}>
+              {open > 0
+                ? `${open} open · ${pending} pending · ${urgent > 0 ? `${urgent} urgent` : "no urgent"}`
+                : "Queue is clear — nothing open right now."}
+            </div>
           </div>
+        </div>
+        <div style={s.welcomeActions}>
+          <Link to="/ask"   style={s.askBtn}>🤖 Ask AI</Link>
+          <Link to="/agent" style={s.queueBtn}>View Queue →</Link>
         </div>
       </div>
 
-      <div style={s.body}>
-        <div style={s.inner}>
-          {/* Active tickets */}
-          <div style={s.sectionHeader}>
-            <h2 style={s.sectionTitle}>
-              {recent.length > 0 ? "Needs Attention" : "Queue"}
-            </h2>
-            <Link to="/agent" style={s.seeAll}>Full queue →</Link>
-          </div>
-
-          {loading ? (
-            <div style={s.loading}>Loading…</div>
-          ) : recent.length === 0 ? (
-            <div style={s.empty}>
-              <div style={s.emptyIcon}>✅</div>
-              <h3 style={s.emptyTitle}>Queue is clear</h3>
-              <p style={s.emptySub}>No open or pending tickets right now.</p>
+      {/* ── Admin stats strip ──────────────────────── */}
+      {isAdmin && dashStats && (
+        <div style={s.statsStrip}>
+          {[
+            ["Tickets",       dashStats.total_tickets,    "#282829"],
+            ["Resolved",      dashStats.resolved,         "#16c784"],
+            ["AI Deflection", `${dashStats.deflection_rate}%`, "#805ad5"],
+            ["Users",         dashStats.total_users,      "#3182ce"],
+            ["Visits Today",  dashStats.visits_today,     "#d69e2e"],
+          ].map(([label, val, color]) => (
+            <div key={label} style={s.statItem}>
+              <div style={{ ...s.statNum, color }}>{val ?? "—"}</div>
+              <div style={s.statLabel}>{label}</div>
             </div>
-          ) : (
-            <div style={s.grid}>
-              {recent.map(t => (
-                <Link key={t.id} to={`/ticket/${t.id}`} style={s.card}>
-                  <div style={s.cardBadges}>
-                    <span style={{ ...s.badge, background: STATUS_COLOR[t.status] + "22", color: STATUS_COLOR[t.status] }}>{t.status}</span>
-                    <span style={{ ...s.badge, background: PRI_COLOR[t.priority] + "22", color: PRI_COLOR[t.priority] }}>{t.priority}</span>
-                  </div>
-                  <div style={s.cardTitle}>{t.subject}</div>
-                  <div style={s.cardMeta}>
-                    #{t.id}
-                    {t.user_name ? ` · ${t.user_name}` : ""}
-                    {" · "}{new Date(t.created_at).toLocaleDateString()}
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
-
-          {/* Quick action cards */}
-          <div style={{ ...s.sectionHeader, marginTop: 40 }}>
-            <h2 style={s.sectionTitle}>Quick Actions</h2>
-          </div>
-          <div style={s.actionGrid}>
-            <Link to="/agent" style={s.actionCard}>
-              <div style={s.actionIcon}>📋</div>
-              <div style={s.actionTitle}>Support Queue</div>
-              <div style={s.actionSub}>View and manage all tickets</div>
-            </Link>
-            <Link to="/admin/kb" style={s.actionCard}>
-              <div style={s.actionIcon}>📚</div>
-              <div style={s.actionTitle}>Knowledge Base</div>
-              <div style={s.actionSub}>Add and edit help articles</div>
-            </Link>
-            {isAdmin && (
-              <>
-                <Link to="/admin" style={s.actionCard}>
-                  <div style={s.actionIcon}>📊</div>
-                  <div style={s.actionTitle}>Analytics</div>
-                  <div style={s.actionSub}>Stats, CSAT, SLA metrics</div>
-                </Link>
-                <Link to="/admin/users" style={s.actionCard}>
-                  <div style={s.actionIcon}>👥</div>
-                  <div style={s.actionTitle}>User Management</div>
-                  <div style={s.actionSub}>Manage roles and accounts</div>
-                </Link>
-              </>
-            )}
-          </div>
+          ))}
+          <Link to="/admin" style={s.statsLink}>Full analytics →</Link>
         </div>
+      )}
+
+      {/* ── Needs attention ─────────────────────────── */}
+      <div style={s.sectionRow}>
+        <span style={s.sectionTitle}>
+          {active.length > 0 ? "Needs Attention" : "Queue"}
+        </span>
+        <Link to="/agent" style={s.seeAll}>Full queue →</Link>
       </div>
+
+      {loading ? (
+        <div style={s.loadingCard}>Loading tickets…</div>
+      ) : active.length === 0 ? (
+        <div style={s.emptyCard}>
+          <span style={s.emptyIcon}>✅</span>
+          <span style={s.emptyText}>Queue is clear — all caught up!</span>
+        </div>
+      ) : (
+        <div style={s.feed}>
+          {active.map(t => <TicketCard key={t.id} t={t} />)}
+        </div>
+      )}
+
+      {/* ── Quick actions ───────────────────────────── */}
+      <div style={{ ...s.sectionRow, marginTop: 16 }}>
+        <span style={s.sectionTitle}>Quick Actions</span>
+      </div>
+      <div style={s.actionsGrid}>
+        <Link to="/agent"    style={s.actionCard}><span style={s.actionIcon}>📋</span><span style={s.actionLabel}>Queue</span><span style={s.actionSub}>All tickets</span></Link>
+        <Link to="/admin/kb" style={s.actionCard}><span style={s.actionIcon}>📖</span><span style={s.actionLabel}>Knowledge Base</span><span style={s.actionSub}>Add & edit articles</span></Link>
+        <Link to="/ask"      style={s.actionCard}><span style={s.actionIcon}>🤖</span><span style={s.actionLabel}>Ask AI</span><span style={s.actionSub}>Generate articles</span></Link>
+        {isAdmin && <Link to="/admin"      style={s.actionCard}><span style={s.actionIcon}>📊</span><span style={s.actionLabel}>Dashboard</span><span style={s.actionSub}>Analytics & metrics</span></Link>}
+        {isAdmin && <Link to="/admin/users" style={s.actionCard}><span style={s.actionIcon}>👥</span><span style={s.actionLabel}>Users</span><span style={s.actionSub}>Manage roles</span></Link>}
+      </div>
+
     </div>
   );
 }
 
 const s = {
-  page: { minHeight: "100%", background: "#eef1f4" },
+  page: { paddingTop: 4, display: "flex", flexDirection: "column", gap: 8 },
 
-  hero: { background: "linear-gradient(135deg, #1a202c 0%, #2d3748 60%, #3c366b 100%)", padding: "64px 20px 56px", textAlign: "center" },
-  heroInner: { maxWidth: 700, margin: "0 auto" },
-  heroTag: { display: "inline-block", background: "rgba(183,148,244,.18)", color: "#b794f4", fontSize: 12, fontWeight: 700, padding: "4px 12px", borderRadius: 20, letterSpacing: ".5px", textTransform: "uppercase", marginBottom: 16 },
-  heroTitle: { fontSize: 36, fontWeight: 800, color: "#fff", margin: "0 0 10px", lineHeight: 1.2 },
-  heroSub: { fontSize: 15, color: "#a0aec0", margin: "0 0 28px" },
+  /* Welcome */
+  welcomeCard: {
+    background: "#fff", border: "1px solid #e8e8e8", borderRadius: 8,
+    padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap",
+  },
+  welcomeLeft:    { display: "flex", alignItems: "center", gap: 12 },
+  avatar: {
+    width: 44, height: 44, borderRadius: "50%", color: "#fff",
+    display: "flex", alignItems: "center", justifyContent: "center",
+    fontSize: 18, fontWeight: 700, flexShrink: 0,
+  },
+  welcomeTitle: { fontSize: 16, fontWeight: 700, color: "#282829", display: "flex", alignItems: "center", gap: 8 },
+  rolePill: { fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 20, textTransform: "uppercase", letterSpacing: ".4px" },
+  welcomeSub: { fontSize: 13, color: "#939598", marginTop: 3 },
+  welcomeActions: { display: "flex", gap: 8 },
+  askBtn:  { background: "#f0fdf8", color: "#16c784", border: "1.5px solid #c6f6d5", padding: "7px 14px", borderRadius: 20, fontSize: 13, fontWeight: 700, textDecoration: "none" },
+  queueBtn:{ background: "#16c784", color: "#fff", padding: "7px 16px", borderRadius: 20, fontSize: 13, fontWeight: 700, textDecoration: "none" },
 
-  statRow: { display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(255,255,255,.06)", borderRadius: 14, padding: "18px 28px", width: "fit-content", margin: "0 auto 28px", flexWrap: "wrap", gap: 0 },
-  stat: { textAlign: "center", padding: "0 20px" },
-  statNum: { fontSize: 28, fontWeight: 800, lineHeight: 1 },
-  statLabel: { fontSize: 11, color: "#a0aec0", marginTop: 4, fontWeight: 500 },
-  statDivider: { width: 1, height: 36, background: "rgba(255,255,255,.1)" },
+  /* Admin stats strip */
+  statsStrip: {
+    background: "#fff", border: "1px solid #e8e8e8", borderRadius: 8,
+    padding: "14px 20px", display: "flex", alignItems: "center", gap: 0, flexWrap: "wrap",
+  },
+  statItem:  { textAlign: "center", padding: "4px 20px", borderRight: "1px solid #f2f2f0" },
+  statNum:   { fontSize: 22, fontWeight: 800, lineHeight: 1 },
+  statLabel: { fontSize: 11, color: "#939598", marginTop: 2, fontWeight: 500 },
+  statsLink: { marginLeft: "auto", fontSize: 12, color: "#16c784", fontWeight: 600, textDecoration: "none", paddingLeft: 20 },
 
-  heroBtns: { display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" },
-  btnPrimary: { background: "#805ad5", color: "#fff", borderRadius: 8, padding: "10px 22px", fontSize: 14, fontWeight: 700, textDecoration: "none", display: "inline-block" },
-  btnOutline: { border: "1.5px solid #4a5568", color: "#e2e8f0", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 600, textDecoration: "none", background: "transparent" },
-  btnAsk: { background: "rgba(183,148,244,.18)", color: "#b794f4", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 700, textDecoration: "none", border: "1px solid rgba(183,148,244,.35)" },
-  btnOutlineAlt: { border: "1.5px solid #553c9a", color: "#b794f4", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 600, textDecoration: "none", background: "transparent" },
+  /* Section */
+  sectionRow:   { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "2px 0" },
+  sectionTitle: { fontSize: 12, fontWeight: 700, color: "#939598", textTransform: "uppercase", letterSpacing: ".6px" },
+  seeAll:       { fontSize: 13, color: "#16c784", fontWeight: 600, textDecoration: "none" },
 
-  body: { padding: "40px 20px 56px" },
-  inner: { maxWidth: 960, margin: "0 auto" },
-  sectionHeader: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 },
-  sectionTitle: { fontSize: 18, fontWeight: 700, margin: 0, color: "#1f2a37" },
-  seeAll: { color: "#805ad5", fontWeight: 600, fontSize: 13, textDecoration: "none" },
+  /* Feed */
+  feed: { display: "flex", flexDirection: "column", gap: 6 },
+  loadingCard: { background: "#fff", border: "1px solid #e8e8e8", borderRadius: 8, padding: "32px 20px", textAlign: "center", color: "#939598", fontSize: 14 },
+  emptyCard:   { background: "#fff", border: "1px solid #e8e8e8", borderRadius: 8, padding: "32px 20px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 },
+  emptyIcon:   { fontSize: 28 },
+  emptyText:   { fontSize: 14, color: "#939598" },
 
-  loading: { textAlign: "center", color: "#7a8794", padding: "40px 0", fontSize: 14 },
-  empty: { textAlign: "center", padding: "48px 0" },
-  emptyIcon: { fontSize: 36, marginBottom: 10 },
-  emptyTitle: { fontSize: 18, fontWeight: 700, color: "#1f2a37", marginBottom: 6, margin: "0 0 6px" },
-  emptySub: { color: "#7a8794", fontSize: 14 },
+  /* Ticket card */
+  card: {
+    background: "#fff", border: "1px solid #e8e8e8", borderRadius: 8,
+    padding: "14px 18px", textDecoration: "none", color: "inherit",
+    display: "flex", flexDirection: "column", gap: 0,
+  },
+  cardMeta: { display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 8, alignItems: "center" },
+  badge: { fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 20 },
+  urgentPing: { fontSize: 11, fontWeight: 700, color: "#e53e3e", background: "#fff5f5", padding: "2px 8px", borderRadius: 20 },
+  cardTitle:  { fontSize: 15, fontWeight: 700, color: "#282829", lineHeight: 1.35, marginBottom: 6 },
+  cardBody:   { fontSize: 13, color: "#555", lineHeight: 1.55, marginBottom: 6 },
+  cardFooter: { display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8, paddingTop: 8, borderTop: "1px solid #f2f2f0" },
+  footerMeta: { fontSize: 12, color: "#939598" },
+  footerLink: { fontSize: 12, color: "#16c784", fontWeight: 600 },
 
-  grid: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 14, marginBottom: 8 },
-  card: { background: "#fff", borderRadius: 12, padding: "18px", boxShadow: "0 2px 10px rgba(0,0,0,.06)", textDecoration: "none", display: "block" },
-  cardBadges: { display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 10 },
-  badge: { fontSize: 11, fontWeight: 600, padding: "3px 9px", borderRadius: 20 },
-  cardTitle: { fontSize: 14, fontWeight: 600, color: "#1f2a37", marginBottom: 6, lineHeight: 1.4 },
-  cardMeta: { fontSize: 12, color: "#7a8794", lineHeight: 1.5 },
-
-  actionGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 14 },
-  actionCard: { background: "#fff", borderRadius: 14, padding: "22px 20px", boxShadow: "0 2px 10px rgba(0,0,0,.06)", textDecoration: "none", display: "block", transition: "box-shadow .2s" },
-  actionIcon: { fontSize: 28, marginBottom: 10 },
-  actionTitle: { fontSize: 15, fontWeight: 700, color: "#1f2a37", marginBottom: 4 },
-  actionSub: { fontSize: 13, color: "#7a8794" },
+  /* Quick actions grid */
+  actionsGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 8 },
+  actionCard:  { background: "#fff", border: "1px solid #e8e8e8", borderRadius: 8, padding: "14px 16px", textDecoration: "none", display: "flex", flexDirection: "column", gap: 4 },
+  actionIcon:  { fontSize: 22, lineHeight: 1 },
+  actionLabel: { fontSize: 14, fontWeight: 700, color: "#282829" },
+  actionSub:   { fontSize: 12, color: "#939598" },
 };

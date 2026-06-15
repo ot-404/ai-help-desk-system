@@ -1,144 +1,215 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 import api from "../api/client";
 
-export default function Home() {
-  const { user } = useAuth();
-  const nav = useNavigate();
-  const [articles, setArticles] = useState([]);
-  const [query, setQuery] = useState("");
+const CAT_COLOR = {
+  Blog:      { bg: "#faf5ff", color: "#805ad5" },
+  FAQ:       { bg: "#f0fff4", color: "#276749" },
+  Technical: { bg: "#ebf8ff", color: "#2b6cb0" },
+  Account:   { bg: "#fffff0", color: "#744210" },
+  Billing:   { bg: "#fff5f5", color: "#c53030" },
+  General:   { bg: "#f7fafc", color: "#4a5568" },
+};
 
-  useEffect(() => {
-    api.get("/kb/").then(r => setArticles(r.data.slice(0, 6))).catch(() => {});
-  }, []);
-
-  function handleSearch(e) {
-    e.preventDefault();
-    nav(`/help${query ? `?q=${encodeURIComponent(query)}` : ""}`);
-  }
-
-  const ticketHref = user?.role === "user" ? "/new-ticket" : user ? "/" : "/login?next=/new-ticket";
+function FeedCard({ article }) {
+  const [open, setOpen] = useState(false);
+  const PREVIEW = 220;
+  const needsMore = (article.content || "").length > PREVIEW;
+  const cc = CAT_COLOR[article.category] || CAT_COLOR.General;
 
   return (
-    <div style={s.page}>
-      {/* Hero */}
-      <div style={s.hero}>
-        <div style={s.heroInner}>
-          <div style={s.heroTag}>AI-Powered Support</div>
-          <h1 style={s.heroTitle}>How can we help you today?</h1>
-          <p style={s.heroSub}>Search our knowledge base or submit a ticket and we'll get back to you quickly.</p>
-          <form onSubmit={handleSearch} style={s.searchRow}>
-            <input
-              style={s.searchInput}
-              placeholder="Search help articles…"
-              value={query}
-              onChange={e => setQuery(e.target.value)}
-            />
-            <button type="submit" style={s.searchBtn}>Search</button>
-          </form>
-          <div style={s.heroBtns}>
-            <Link to="/help" style={s.btnOutline}>Browse Help Center</Link>
-            {!user && <Link to="/register" style={s.btnPrimary}>Get Started Free</Link>}
-          </div>
-        </div>
+    <div style={s.card}>
+      {/* Category + tags */}
+      <div style={s.cardMeta}>
+        {article.category && (
+          <span style={{ ...s.catBadge, background: cc.bg, color: cc.color }}>
+            {article.category === "Blog" ? "✍️ Blog" : article.category}
+          </span>
+        )}
+        {(article.tags || []).slice(0, 3).map((t, i) => (
+          <span key={`${t}-${i}`} style={s.tag}>{t}</span>
+        ))}
       </div>
 
-      {/* Featured Articles */}
-      {articles.length > 0 && (
-        <div style={s.section}>
-          <div style={s.sectionInner}>
-            <div style={s.sectionHeader}>
-              <h2 style={s.sectionTitle}>Popular Articles</h2>
-              <Link to="/help" style={s.seeAll}>View all →</Link>
-            </div>
-            <div style={s.grid}>
-              {articles.map(a => (
-                <Link key={a.id} to={`/help?article=${a.id}`} style={s.card}>
-                  {a.category && <div style={s.cardTag}>{a.category}</div>}
-                  <div style={s.cardTitle}>{a.title}</div>
-                  <div style={s.cardExcerpt}>{(a.content || "").slice(0, 120)}{a.content?.length > 120 ? "…" : ""}</div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
+      {/* Title */}
+      <Link to={`/help?article=${article.id}`} style={s.cardTitle}>
+        {article.title}
+      </Link>
+
+      {/* Content preview */}
+      <div style={s.cardBody}>
+        {open
+          ? article.content
+          : (article.content || "").slice(0, PREVIEW) + (needsMore ? "…" : "")}
+      </div>
+      {needsMore && (
+        <button style={s.moreBtn} onClick={() => setOpen(o => !o)}>
+          {open ? "Show less ▲" : "Read more ▼"}
+        </button>
       )}
 
-      {/* Ask AI band */}
-      <div style={s.askBand}>
-        <div style={s.askBandInner}>
-          <div style={s.askBandLeft}>
-            <div style={s.askBandIcon}>🤖</div>
-            <div>
-              <div style={s.askBandTitle}>Ask our AI a question</div>
-              <div style={s.askBandSub}>Get an instant answer — and it's automatically published as a help article for everyone.</div>
-            </div>
-          </div>
-          <Link to="/ask" style={s.btnPrimary}>Ask AI →</Link>
-        </div>
-      </div>
-
-      {/* CTA Band */}
-      <div style={s.cta}>
-        <div style={s.ctaInner}>
-          <div style={s.ctaIcon}>💬</div>
-          <h3 style={s.ctaTitle}>Still need help?</h3>
-          <p style={s.ctaSub}>Our support team is ready to assist you. Submit a ticket and get a response fast.</p>
-          {user?.role === "user" ? (
-            <Link to="/new-ticket" style={s.btnPrimary}>Submit a Ticket</Link>
-          ) : user ? (
-            <span style={{ ...s.btnPrimary, opacity: 0.6, cursor: "default" }}>Agents & Admins manage tickets via Queue</span>
-          ) : (
-            <div style={s.ctaBtnRow}>
-              <Link to="/login?next=/new-ticket" style={s.btnPrimary}>Sign In to Get Help</Link>
-              <Link to="/register" style={s.btnOutlineWhite}>Create an Account</Link>
-            </div>
-          )}
-        </div>
+      {/* Footer */}
+      <div style={s.cardFooter}>
+        <span style={s.footerMeta}>
+          🤖 AI Help Desk
+          {article.created_at && ` · ${new Date(article.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`}
+        </span>
+        <Link to={`/help?article=${article.id}`} style={s.footerLink}>Open ↗</Link>
       </div>
     </div>
   );
 }
 
+export default function Home() {
+  const nav = useNavigate();
+  const [articles, setArticles] = useState([]);
+  const [loading,  setLoading]  = useState(true);
+  const [q, setQ] = useState("");
+
+  useEffect(() => {
+    api.get("/kb/").then(r => setArticles(r.data || [])).finally(() => setLoading(false));
+  }, []);
+
+  function handleAsk(e) {
+    e.preventDefault();
+    nav(q.trim() ? `/ask` : "/ask");
+  }
+
+  function handleSearch(e) {
+    e.preventDefault();
+    if (q.trim()) nav(`/help?q=${encodeURIComponent(q.trim())}`);
+  }
+
+  return (
+    <div style={s.page}>
+
+      {/* ── Ask box (Quora "What do you want to know?") ─── */}
+      <div style={s.askCard}>
+        <div style={s.askHeader}>
+          <span style={s.askIcon}>🤖</span>
+          <div>
+            <div style={s.askTitle}>What do you want to know?</div>
+            <div style={s.askSub}>Ask our AI — your question and its answer are published to help everyone.</div>
+          </div>
+        </div>
+        <form onSubmit={handleAsk} style={s.askForm}>
+          <input
+            style={s.askInput}
+            placeholder="e.g. How do I reset my password?"
+            value={q}
+            onChange={e => setQ(e.target.value)}
+          />
+          <button type="submit" style={s.askBtn}>Ask AI</button>
+        </form>
+        <div style={s.askFooterRow}>
+          <span style={s.askHint}>or</span>
+          <form onSubmit={handleSearch}>
+            <button
+              type="submit"
+              style={s.searchHintBtn}
+              disabled={!q.trim()}
+            >
+              Search the Help Center →
+            </button>
+          </form>
+        </div>
+      </div>
+
+      {/* ── Feed label ─────────────────────────────────── */}
+      <div style={s.feedLabel}>
+        {loading ? "Loading…" : `${articles.length} articles in the Help Center`}
+      </div>
+
+      {/* ── Feed ───────────────────────────────────────── */}
+      {!loading && articles.length === 0 ? (
+        <div style={s.empty}>
+          <div style={s.emptyIcon}>📭</div>
+          <div style={s.emptyText}>No articles yet.</div>
+          <Link to="/ask" style={s.emptyLink}>Be the first to ask a question →</Link>
+        </div>
+      ) : (
+        <div style={s.feed}>
+          {articles.map(a => <FeedCard key={a.id} article={a} />)}
+        </div>
+      )}
+
+    </div>
+  );
+}
+
 const s = {
-  page: { minHeight: "100%", background: "#eef1f4" },
+  page: { paddingTop: 4 },
 
-  hero: { background: "linear-gradient(135deg, #1f2a37 0%, #2d3748 100%)", padding: "72px 20px 64px", textAlign: "center" },
-  heroInner: { maxWidth: 640, margin: "0 auto" },
-  heroTag: { display: "inline-block", background: "#16c78422", color: "#16c784", fontSize: 12, fontWeight: 700, padding: "4px 12px", borderRadius: 20, letterSpacing: ".5px", textTransform: "uppercase", marginBottom: 18 },
-  heroTitle: { fontSize: 38, fontWeight: 800, color: "#fff", margin: "0 0 14px", lineHeight: 1.2 },
-  heroSub: { fontSize: 16, color: "#a0aec0", margin: "0 0 32px", lineHeight: 1.6 },
-  searchRow: { display: "flex", gap: 10, maxWidth: 500, margin: "0 auto 24px" },
-  searchInput: { flex: 1, border: "none", borderRadius: 10, padding: "13px 16px", fontSize: 15, outline: "none", background: "#fff" },
-  searchBtn: { background: "#16c784", color: "#fff", border: "none", borderRadius: 10, padding: "13px 22px", fontSize: 14, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" },
-  heroBtns: { display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" },
-  btnOutline: { border: "1.5px solid #4a5568", color: "#e2e8f0", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 600, textDecoration: "none", background: "transparent" },
-  btnPrimary: { background: "#16c784", color: "#fff", borderRadius: 8, padding: "10px 22px", fontSize: 14, fontWeight: 700, textDecoration: "none", display: "inline-block" },
+  /* Ask card */
+  askCard: {
+    background: "#fff", border: "1px solid #e8e8e8", borderRadius: 8,
+    padding: "20px", marginBottom: 12,
+  },
+  askHeader: { display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 14 },
+  askIcon:   { fontSize: 28, lineHeight: 1, flexShrink: 0, marginTop: 2 },
+  askTitle:  { fontWeight: 700, fontSize: 16, color: "#282829", marginBottom: 2 },
+  askSub:    { fontSize: 13, color: "#939598", lineHeight: 1.4 },
+  askForm:   { display: "flex", gap: 8 },
+  askInput:  {
+    flex: 1, border: "1.5px solid #e8e8e8", borderRadius: 20,
+    padding: "9px 16px", fontSize: 14, outline: "none",
+    color: "#282829",
+  },
+  askBtn: {
+    background: "#16c784", color: "#fff", border: "none",
+    borderRadius: 20, padding: "9px 20px",
+    fontSize: 13, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap",
+  },
+  askFooterRow: { display: "flex", alignItems: "center", gap: 10, marginTop: 10 },
+  askHint:      { fontSize: 12, color: "#939598" },
+  searchHintBtn:{
+    background: "none", border: "none", color: "#16c784",
+    fontSize: 13, fontWeight: 600, cursor: "pointer", padding: 0,
+  },
 
-  section: { padding: "48px 20px" },
-  sectionInner: { maxWidth: 900, margin: "0 auto" },
-  sectionHeader: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 },
-  sectionTitle: { fontSize: 20, fontWeight: 700, margin: 0, color: "#1f2a37" },
-  seeAll: { color: "#16c784", fontWeight: 600, fontSize: 14, textDecoration: "none" },
-  grid: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 16 },
-  card: { background: "#fff", borderRadius: 12, padding: "20px", boxShadow: "0 2px 10px rgba(0,0,0,.06)", textDecoration: "none", display: "block", transition: "box-shadow .2s" },
-  cardTag: { fontSize: 11, fontWeight: 700, color: "#16c784", textTransform: "uppercase", letterSpacing: ".4px", marginBottom: 8 },
-  cardTitle: { fontSize: 15, fontWeight: 600, color: "#1f2a37", marginBottom: 8, lineHeight: 1.4 },
-  cardExcerpt: { fontSize: 13, color: "#7a8794", lineHeight: 1.55 },
+  feedLabel: { fontSize: 12, color: "#939598", fontWeight: 600, marginBottom: 8, paddingLeft: 2 },
 
-  cta: { background: "#16c784", padding: "56px 20px" },
-  ctaInner: { maxWidth: 560, margin: "0 auto", textAlign: "center" },
-  ctaIcon: { fontSize: 36, marginBottom: 12 },
-  ctaTitle: { fontSize: 24, fontWeight: 800, color: "#fff", margin: "0 0 10px" },
-  ctaSub: { fontSize: 15, color: "rgba(255,255,255,.85)", margin: "0 0 28px", lineHeight: 1.6 },
-  ctaBtnRow: { display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" },
-  btnOutlineWhite: { border: "1.5px solid rgba(255,255,255,.6)", color: "#fff", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 600, textDecoration: "none", background: "transparent" },
+  feed: { display: "flex", flexDirection: "column", gap: 8 },
 
-  askBand: { background: "#fff", borderTop: "1px solid #e8edf2", borderBottom: "1px solid #e8edf2", padding: "24px 20px" },
-  askBandInner: { maxWidth: 900, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 20, flexWrap: "wrap" },
-  askBandLeft: { display: "flex", alignItems: "center", gap: 16 },
-  askBandIcon: { fontSize: 32, flexShrink: 0 },
-  askBandTitle: { fontSize: 15, fontWeight: 700, color: "#1f2a37", marginBottom: 3 },
-  askBandSub: { fontSize: 13, color: "#7a8794" },
+  /* Feed card */
+  card: {
+    background: "#fff", border: "1px solid #e8e8e8",
+    borderRadius: 8, padding: "18px 20px",
+    display: "flex", flexDirection: "column", gap: 0,
+  },
+  cardMeta: { display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", marginBottom: 8 },
+  catBadge: {
+    fontSize: 11, fontWeight: 700, padding: "2px 8px",
+    borderRadius: 20, textTransform: "uppercase", letterSpacing: ".3px",
+  },
+  tag: {
+    fontSize: 11, color: "#718096", background: "#f7fafc",
+    border: "1px solid #e2e8f0", padding: "1px 7px",
+    borderRadius: 20,
+  },
+  cardTitle: {
+    fontSize: 17, fontWeight: 700, color: "#282829",
+    textDecoration: "none", lineHeight: 1.35,
+    display: "block", marginBottom: 8,
+  },
+  cardBody: {
+    fontSize: 14, color: "#4e4e4e", lineHeight: 1.65,
+    whiteSpace: "pre-wrap", marginBottom: 6,
+  },
+  moreBtn: {
+    background: "none", border: "none", color: "#16c784",
+    fontSize: 13, fontWeight: 600, cursor: "pointer",
+    padding: "4px 0", textAlign: "left",
+  },
+  cardFooter: {
+    display: "flex", justifyContent: "space-between", alignItems: "center",
+    marginTop: 12, paddingTop: 10, borderTop: "1px solid #f2f2f0",
+  },
+  footerMeta: { fontSize: 12, color: "#939598" },
+  footerLink: { fontSize: 12, color: "#16c784", fontWeight: 600, textDecoration: "none" },
+
+  empty: { textAlign: "center", padding: "60px 0" },
+  emptyIcon: { fontSize: 36, marginBottom: 10 },
+  emptyText: { fontSize: 16, color: "#939598", marginBottom: 12 },
+  emptyLink: { color: "#16c784", fontWeight: 600, fontSize: 14, textDecoration: "none" },
 };
