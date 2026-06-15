@@ -1,6 +1,7 @@
 """Entry point for the AI Help Desk System."""
 from app import create_app, db
 from app.utils.seed import seed_demo_data
+from app.utils.seed_kb import run_seed as seed_kb_articles
 
 app = create_app()
 
@@ -11,6 +12,15 @@ def seed():
     with app.app_context():
         seed_demo_data()
     print("Seeded demo data.")
+
+
+@app.cli.command("seed-kb")
+def seed_kb():
+    """Populate the Knowledge Base with help articles (safe to re-run — skips duplicates)."""
+    from app.models.kb_model import KnowledgeBase
+    with app.app_context():
+        added = seed_kb_articles(db, KnowledgeBase)
+    print(f"KB seed complete — {added} new article(s) added.")
 
 
 @app.cli.command("set-admin-email")
@@ -28,9 +38,11 @@ def set_admin_email():
             print("Admin email already set or no admin found.")
 
 
-# Auto-seed on first boot (safe — seed_demo_data() is a no-op if data exists)
+# Auto-seed on first boot (safe — no-ops if data already exists)
 with app.app_context():
     seed_demo_data()
+    from app.models.kb_model import KnowledgeBase
+    seed_kb_articles(db, KnowledgeBase)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
