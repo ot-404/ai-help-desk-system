@@ -8,6 +8,7 @@ from app.models.ai_logs_model import AILog
 from app.models.message_model import Message
 from app.models.user_model import User
 from app.models.site_visit_model import SiteVisit
+from app.utils.auth_helpers import role_required
 
 dashboard_bp = Blueprint("dashboard", __name__)
 
@@ -16,6 +17,7 @@ SLA_HOURS = {"low": 72, "medium": 48, "high": 24, "urgent": 4}
 
 
 @dashboard_bp.get("/api/dashboard/stats")
+@role_required("admin")
 def stats():
     total = Ticket.query.count()
     by_status = dict(

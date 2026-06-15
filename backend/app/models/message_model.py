@@ -16,12 +16,13 @@ class Message(db.Model):
     sender = db.relationship("User", foreign_keys=[sender_id], lazy="joined")
 
     def to_dict(self):
+        # Never expose actual role (admin/agent/user) — use message_routes._serialize_message() for HTTP responses.
         return {
             "id": self.id,
             "ticket_id": self.ticket_id,
             "sender_id": self.sender_id,
             "sender_email": self.sender.email if self.sender else None,
-            "sender_role": "ai" if self.ai_generated else (self.sender.role if self.sender else "unknown"),
+            "sender_role": "ai" if self.ai_generated else "human",
             "message": self.message,
             "ai_generated": self.ai_generated,
             "created_at": self.created_at.isoformat() if self.created_at else None,
