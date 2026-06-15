@@ -74,6 +74,15 @@ export default function Dashboard() {
         <Metric label="Resolved" value={stats.resolved} />
       </div>
 
+      <div style={s.grid4}>
+        <Metric label="Registered Users" value={stats.total_users} sub={
+          Object.entries(stats.users_by_role || {}).map(([r, n]) => `${n} ${r}`).join(" · ") || null
+        } />
+        <Metric label="Total Visits" value={stats.visits_total} sub="all time" />
+        <Metric label="Visits Today" value={stats.visits_today} sub={`${stats.unique_visitors_today} unique`} />
+        <Metric label="Visits This Week" value={stats.visits_this_week} sub="last 7 days" />
+      </div>
+
       <div style={s.grid2}>
         <div style={s.card}>
           <div style={s.cardTitle}>Tickets by Status</div>

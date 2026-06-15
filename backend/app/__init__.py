@@ -1,6 +1,7 @@
 """Application factory for the AI Help Desk System."""
+import hashlib
 import os
-from flask import Flask, jsonify, send_from_directory, send_file
+from flask import Flask, jsonify, request, send_from_directory, send_file
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
@@ -62,6 +63,25 @@ def create_app(config_object="app.config.Config"):
             if path and os.path.isfile(file_path):
                 return send_from_directory(FRONTEND_DIST, path)
             return send_file(os.path.join(FRONTEND_DIST, "index.html"))
+
+    @app.before_request
+    def record_visit():
+        # Only record frontend page loads, not API or static asset calls
+        path = request.path
+        if path.startswith("/api/") or path.startswith("/static/"):
+            return
+        ext = path.rsplit(".", 1)[-1].lower() if "." in path.split("/")[-1] else ""
+        if ext in ("js", "css", "png", "svg", "ico", "json", "woff", "woff2", "ttf", "map"):
+            return
+        from app.models.site_visit_model import SiteVisit
+        ip = request.headers.get("X-Forwarded-For", request.remote_addr or "").split(",")[0].strip()
+        ip_hash = hashlib.sha256(ip.encode()).hexdigest() if ip else None
+        visit = SiteVisit(ip_hash=ip_hash, path=path or "/")
+        db.session.add(visit)
+        try:
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
 
     with app.app_context():
         db.create_all()
