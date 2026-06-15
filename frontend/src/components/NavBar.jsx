@@ -21,16 +21,15 @@ export default function NavBar() {
     <header style={s.bar}>
       {/* Brand */}
       <Link to="/" style={s.brand}>
-        <span style={s.logoBox}>AI</span>
-        <span style={s.brandName}>Help Desk</span>
+        <span style={s.logoBox}>AHD</span>
       </Link>
 
-      {/* Search */}
+      {/* Search — centered */}
       <form onSubmit={handleSearch} style={s.searchWrap}>
-        <span style={s.searchIcon}>⌕</span>
+        <span style={s.searchIcon}>🔍</span>
         <input
           style={s.searchInput}
-          placeholder="Search questions and articles…"
+          placeholder="Search AI Help Desk…"
           value={q}
           onChange={e => setQ(e.target.value)}
         />
@@ -38,14 +37,16 @@ export default function NavBar() {
 
       {/* Right actions */}
       <div style={s.right}>
-        <Link to="/ask" style={s.askBtn}>Ask Question</Link>
+        <Link to="/ask" style={s.addBtn}>Add Question</Link>
 
         {user ? (
           <>
-            <span style={{ ...s.rolePill, ...ROLE_COLORS[user.role] }}>
-              {user.role}
-            </span>
-            <span style={s.userName}>{user.name?.split(" ")[0]}</span>
+            <div style={s.avatarWrap}>
+              <div style={{ ...s.avatar, background: ROLE_BG[user.role] ?? "#16c784" }}>
+                {user.name?.[0]?.toUpperCase() ?? "?"}
+              </div>
+              <span style={s.userName}>{user.name?.split(" ")[0]}</span>
+            </div>
             <button onClick={handleLogout} style={s.ghostBtn}>Sign out</button>
           </>
         ) : (
@@ -59,64 +60,66 @@ export default function NavBar() {
   );
 }
 
-const ROLE_COLORS = {
-  admin: { background: "#fff5f5", color: "#e53e3e" },
-  agent: { background: "#faf5ff", color: "#805ad5" },
-  user:  { background: "#f0fff4", color: "#276749" },
-};
+const ROLE_BG = { admin: "#805ad5", agent: "#3182ce", user: "#16c784" };
 
 const s = {
   bar: {
     position: "fixed", top: 0, left: 0, right: 0, zIndex: 200,
-    height: 56, display: "flex", alignItems: "center", gap: 16,
+    height: 56, display: "flex", alignItems: "center", gap: 12,
     padding: "0 20px",
-    background: "#1f2a37",
-    boxShadow: "0 1px 4px rgba(0,0,0,.35)",
+    background: "#fff",
+    borderBottom: "1px solid #e8e8e8",
+    boxShadow: "0 1px 3px rgba(0,0,0,.06)",
   },
   brand: {
-    display: "flex", alignItems: "center", gap: 8,
+    display: "flex", alignItems: "center",
     textDecoration: "none", flexShrink: 0,
   },
   logoBox: {
     background: "#16c784", color: "#fff",
-    fontWeight: 800, fontSize: 13, padding: "3px 8px", borderRadius: 6,
+    fontWeight: 900, fontSize: 13, padding: "4px 10px", borderRadius: 6,
+    letterSpacing: ".5px",
   },
-  brandName: { color: "#fff", fontWeight: 700, fontSize: 16, whiteSpace: "nowrap" },
 
   searchWrap: {
-    flex: 1, maxWidth: 500,
+    flex: 1, maxWidth: 520,
     display: "flex", alignItems: "center", gap: 8,
-    background: "#2d3a4a", borderRadius: 24,
-    padding: "0 14px", height: 36,
+    background: "#f2f2f0", borderRadius: 24,
+    padding: "0 14px", height: 38,
+    border: "1.5px solid transparent",
   },
-  searchIcon: { color: "#a0aec0", fontSize: 18, lineHeight: 1, userSelect: "none" },
+  searchIcon: { fontSize: 14, lineHeight: 1, opacity: .6, userSelect: "none" },
   searchInput: {
     flex: 1, background: "none", border: "none", outline: "none",
-    color: "#e2e8f0", fontSize: 14,
+    color: "#282829", fontSize: 14,
   },
 
   right: { display: "flex", alignItems: "center", gap: 10, marginLeft: "auto", flexShrink: 0 },
 
-  askBtn: {
+  addBtn: {
     background: "#16c784", color: "#fff",
     padding: "6px 16px", borderRadius: 20,
     fontSize: 13, fontWeight: 700, textDecoration: "none", whiteSpace: "nowrap",
   },
-  rolePill: {
-    fontSize: 11, fontWeight: 700, padding: "3px 9px",
-    borderRadius: 20, textTransform: "uppercase", letterSpacing: ".4px",
+
+  avatarWrap: { display: "flex", alignItems: "center", gap: 7 },
+  avatar: {
+    width: 32, height: 32, borderRadius: "50%", color: "#fff",
+    display: "flex", alignItems: "center", justifyContent: "center",
+    fontSize: 13, fontWeight: 700, flexShrink: 0,
   },
-  userName: { color: "#cbd5e0", fontSize: 13, fontWeight: 500 },
+  userName: { color: "#282829", fontSize: 13, fontWeight: 600 },
+
   ghostBtn: {
-    background: "none", border: "1px solid #4a5568",
-    color: "#a0aec0", padding: "5px 12px",
+    background: "none", border: "1px solid #e8e8e8",
+    color: "#555", padding: "5px 12px",
     borderRadius: 6, fontSize: 13, cursor: "pointer",
     textDecoration: "none", display: "inline-block",
   },
   signUpBtn: {
     border: "1.5px solid #16c784", color: "#16c784",
-    padding: "5px 13px", borderRadius: 20,
-    fontSize: 13, fontWeight: 600, textDecoration: "none",
+    padding: "5px 14px", borderRadius: 20,
+    fontSize: 13, fontWeight: 700, textDecoration: "none",
     background: "transparent",
   },
 };

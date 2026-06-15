@@ -10,11 +10,8 @@ export default function RightPanel() {
   const [kb, setKb]                 = useState([]);
 
   useEffect(() => {
-    // Public: always grab a few KB articles
     api.get("/kb/").then(r => setKb((r.data || []).slice(0, 5))).catch(() => {});
-
     if (!user) return;
-
     if (user.role === "admin") {
       api.get("/dashboard/stats").then(r => setAdminStats(r.data)).catch(() => {});
     } else if (user.role === "user") {
@@ -25,10 +22,18 @@ export default function RightPanel() {
   return (
     <aside style={s.aside}>
 
+      {/* ── Add Question CTA ─────────────────── */}
+      <div style={s.addCard}>
+        <Link to="/ask" style={s.addBtn}>Add Question</Link>
+        {user?.role === "user" && (
+          <Link to="/new-ticket" style={s.ticketBtn}>Submit a Ticket</Link>
+        )}
+      </div>
+
       {/* ── Admin stats ─────────────────────── */}
       {user?.role === "admin" && adminStats && (
         <div style={s.card}>
-          <div style={s.cardHead}>Platform</div>
+          <div style={s.cardHead}>Platform Overview</div>
           {[
             ["Total Tickets",  adminStats.total_tickets],
             ["Resolved",       adminStats.resolved],
@@ -45,10 +50,10 @@ export default function RightPanel() {
         </div>
       )}
 
-      {/* ── Agent queue summary ──────────────── */}
+      {/* ── Agent quick links ────────────────── */}
       {user?.role === "agent" && (
         <div style={s.card}>
-          <div style={s.cardHead}>Quick links</div>
+          <div style={s.cardHead}>Quick Links</div>
           <Link to="/agent"    style={s.actionLink}>📋 View Queue</Link>
           <Link to="/admin/kb" style={s.actionLink}>📖 Knowledge Base</Link>
           <Link to="/ask"      style={s.actionLink}>🤖 Ask AI</Link>
@@ -62,43 +67,52 @@ export default function RightPanel() {
           {tickets.length === 0 ? (
             <div style={s.empty}>No tickets yet.</div>
           ) : (
-            <>
-              {[
-                ["Open",     tickets.filter(t => t.status === "open").length,    "#3182ce"],
-                ["Pending",  tickets.filter(t => t.status === "pending").length, "#d69e2e"],
-                ["Resolved", tickets.filter(t => ["resolved","closed"].includes(t.status)).length, "#16c784"],
-              ].map(([label, count, color]) => (
-                <div key={label} style={s.statRow}>
-                  <span style={s.statLabel}>{label}</span>
-                  <span style={{ ...s.statVal, color }}>{count}</span>
-                </div>
-              ))}
-            </>
+            [
+              ["Open",     tickets.filter(t => t.status === "open").length,    "#3182ce"],
+              ["Pending",  tickets.filter(t => t.status === "pending").length, "#d69e2e"],
+              ["Resolved", tickets.filter(t => ["resolved","closed"].includes(t.status)).length, "#16c784"],
+            ].map(([label, count, color]) => (
+              <div key={label} style={s.statRow}>
+                <span style={s.statLabel}>{label}</span>
+                <span style={{ ...s.statVal, color }}>{count}</span>
+              </div>
+            ))
           )}
-          <Link to="/new-ticket" style={s.ctaBtn}>+ Submit a Ticket</Link>
         </div>
       )}
 
       {/* ── Guest CTA ────────────────────────── */}
       {!user && (
-        <div style={{ ...s.card, ...s.guestCard }}>
-          <div style={s.guestTitle}>Get Help Fast</div>
+        <div style={s.card}>
+          <div style={s.cardHead}>What is AI Help Desk?</div>
           <p style={s.guestText}>
-            Sign in to submit a ticket or ask our AI — your question and its answer
-            are saved to help others too.
+            Ask questions and get instant AI-powered answers. Your questions and answers are shared to help everyone.
           </p>
-          <Link to="/register" style={s.ctaBtn}>Sign up free</Link>
-          <Link to="/login"    style={s.moreLink}>Already have an account? Sign in →</Link>
+          <Link to="/register" style={s.addBtn}>Sign up free</Link>
+          <Link to="/login"    style={s.moreLink}>Have an account? Sign in →</Link>
         </div>
       )}
 
-      {/* ── KB highlights ────────────────────── */}
+      {/* ── Topics ───────────────────────────── */}
+      <div style={s.card}>
+        <div style={s.cardHead}>Topics</div>
+        {["Password & Login", "Billing", "Security", "Account", "Technical"].map(topic => (
+          <Link
+            key={topic}
+            to={`/help?tab=${encodeURIComponent(topic.split(" ")[0])}`}
+            style={s.topicLink}
+          >
+            {topic}
+          </Link>
+        ))}
+      </div>
+
+      {/* ── Related Questions / KB ───────────── */}
       {kb.length > 0 && (
         <div style={s.card}>
-          <div style={s.cardHead}>From the Knowledge Base</div>
+          <div style={s.cardHead}>Related Questions</div>
           {kb.map(a => (
             <Link key={a.id} to={`/help?article=${a.id}`} style={s.kbLink}>
-              {a.category && <span style={s.kbCat}>{a.category}</span>}
               {a.title}
             </Link>
           ))}
@@ -111,9 +125,29 @@ export default function RightPanel() {
 }
 
 const s = {
-  aside: { width: 260, flexShrink: 0, display: "flex", flexDirection: "column", gap: 14, paddingTop: 0 },
+  aside: { width: 260, flexShrink: 0, display: "flex", flexDirection: "column", gap: 12 },
 
-  card: { background: "#fff", border: "1px solid #e8e8e8", borderRadius: 8, padding: "16px", display: "flex", flexDirection: "column", gap: 0 },
+  addCard: {
+    background: "#fff", border: "1px solid #e8e8e8", borderRadius: 8,
+    padding: "14px 16px", display: "flex", flexDirection: "column", gap: 8,
+  },
+  addBtn: {
+    display: "block", textAlign: "center",
+    background: "#16c784", color: "#fff",
+    padding: "9px 0", borderRadius: 20,
+    fontWeight: 700, fontSize: 14, textDecoration: "none",
+  },
+  ticketBtn: {
+    display: "block", textAlign: "center",
+    background: "none", border: "1.5px solid #e8e8e8", color: "#282829",
+    padding: "8px 0", borderRadius: 20,
+    fontWeight: 600, fontSize: 13, textDecoration: "none",
+  },
+
+  card: {
+    background: "#fff", border: "1px solid #e8e8e8", borderRadius: 8,
+    padding: "16px", display: "flex", flexDirection: "column", gap: 0,
+  },
   cardHead: { fontWeight: 700, fontSize: 14, color: "#282829", marginBottom: 12 },
 
   statRow: { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 0", borderBottom: "1px solid #f2f2f0" },
@@ -122,13 +156,7 @@ const s = {
 
   empty: { fontSize: 13, color: "#939598", paddingBottom: 8 },
 
-  ctaBtn: {
-    display: "block", marginTop: 14, textAlign: "center",
-    background: "#16c784", color: "#fff",
-    padding: "9px 0", borderRadius: 20,
-    fontWeight: 700, fontSize: 13, textDecoration: "none",
-  },
-  moreLink: { display: "block", marginTop: 10, fontSize: 12, color: "#16c784", textDecoration: "none", fontWeight: 600 },
+  moreLink: { display: "block", marginTop: 12, fontSize: 12, color: "#16c784", textDecoration: "none", fontWeight: 600 },
 
   actionLink: {
     display: "block", padding: "8px 0",
@@ -136,18 +164,17 @@ const s = {
     borderBottom: "1px solid #f2f2f0", fontWeight: 500,
   },
 
-  guestCard: { background: "#f0fdf8", border: "1.5px solid #c6f6d5" },
-  guestTitle: { fontWeight: 700, fontSize: 15, color: "#1a202c", marginBottom: 8 },
-  guestText: { fontSize: 13, color: "#4a5568", lineHeight: 1.55, margin: "0 0 4px" },
+  guestText: { fontSize: 13, color: "#555", lineHeight: 1.6, margin: "0 0 12px" },
+
+  topicLink: {
+    display: "block", padding: "7px 0",
+    fontSize: 13, color: "#282829", fontWeight: 500, textDecoration: "none",
+    borderBottom: "1px solid #f2f2f0",
+  },
 
   kbLink: {
     display: "block", padding: "7px 0",
     fontSize: 13, color: "#282829", textDecoration: "none",
     borderBottom: "1px solid #f2f2f0", lineHeight: 1.4,
-  },
-  kbCat: {
-    display: "inline-block", fontSize: 10, fontWeight: 700,
-    color: "#16c784", textTransform: "uppercase", letterSpacing: ".4px",
-    marginRight: 6,
   },
 };
