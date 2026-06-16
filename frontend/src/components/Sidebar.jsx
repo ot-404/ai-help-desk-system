@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useIsMobile } from "../hooks/useIsMobile";
 import { C, TOPICS } from "../theme";
@@ -25,13 +25,22 @@ function Icon({ name }) {
 }
 
 function Item({ to, label, icon, end, dot }) {
+  const location = useLocation();
+  const [toPath, toSearch] = to.split("?");
+
   return (
-    <NavLink to={to} end={end} style={({ isActive }) => ({
-      ...st.link,
-      color: isActive ? C.primary : C.text,
-      fontWeight: isActive ? 700 : 500,
-      background: isActive ? "#ff45001a" : "transparent",
-    })}>
+    <NavLink to={to} end={end} style={({ isActive }) => {
+      // Links with query params must also match the search string exactly
+      const active = toSearch
+        ? location.pathname === toPath && location.search === `?${toSearch}`
+        : isActive;
+      return {
+        ...st.link,
+        color: active ? C.primary : C.text,
+        fontWeight: active ? 700 : 500,
+        background: active ? "#ff45001a" : "transparent",
+      };
+    }}>
       {dot ? <span style={{ ...st.dot, background: dot }} /> : icon && <Icon name={icon} />}
       <span>{label}</span>
     </NavLink>
