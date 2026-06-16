@@ -1,5 +1,5 @@
 /* HD Systems service worker — app-shell offline support */
-const VERSION = "hds-v1";
+const VERSION = "hds-v2";
 const APP_SHELL = `${VERSION}-shell`;
 const RUNTIME = `${VERSION}-runtime`;
 
@@ -14,16 +14,17 @@ const PRECACHE = [
 ];
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(APP_SHELL).then((cache) => cache.addAll(PRECACHE)).then(() => self.skipWaiting())
-  );
+  // Do NOT auto-skipWaiting here — the page decides when to activate an update
+  // (see main.jsx), which lets us reload exactly once into the fresh version.
+  event.waitUntil(caches.open(APP_SHELL).then((cache) => cache.addAll(PRECACHE)));
 });
 
 self.addEventListener("activate", (event) => {
+  // Purge every cache that isn't the current version, then take control.
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => !k.startsWith(VERSION)).map((k) => caches.delete(k)))
-    ).then(() => self.clients.claim())
+    caches.keys()
+      .then((keys) => Promise.all(keys.filter((k) => !k.startsWith(VERSION)).map((k) => caches.delete(k))))
+      .then(() => self.clients.claim())
   );
 });
 
