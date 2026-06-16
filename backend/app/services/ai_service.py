@@ -48,9 +48,10 @@ def _call_anthropic(messages, api_key, model):
     return resp.json()["content"][0]["text"]
 
 
-def _call_openai(messages, api_key, model):
+def _call_openai(messages, api_key, model, base_url="https://api.openai.com/v1"):
+    """Works with OpenAI or any OpenAI-compatible provider (Groq, OpenRouter, …)."""
     resp = requests.post(
-        "https://api.openai.com/v1/chat/completions",
+        f"{base_url.rstrip('/')}/chat/completions",
         headers={
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
@@ -72,6 +73,7 @@ def _call_llm(messages):
     openai_key    = current_app.config.get("OPENAI_API_KEY", "")
     anthropic_model = current_app.config.get("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001")
     openai_model    = current_app.config.get("OPENAI_MODEL", "gpt-4o-mini")
+    openai_base_url = current_app.config.get("OPENAI_BASE_URL", "https://api.openai.com/v1")
 
     if anthropic_key:
         try:
@@ -81,9 +83,9 @@ def _call_llm(messages):
 
     if openai_key:
         try:
-            return _call_openai(messages, openai_key, openai_model), openai_model
+            return _call_openai(messages, openai_key, openai_model, openai_base_url), openai_model
         except Exception as exc:
-            current_app.logger.error("OpenAI failed: %s", exc)
+            current_app.logger.error("OpenAI-compatible call failed (%s): %s", openai_base_url, exc)
 
     return _FALLBACK
 

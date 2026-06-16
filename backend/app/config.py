@@ -23,3 +23,6 @@ class Config:
     ANTHROPIC_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001")
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
     OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+    # Base URL for any OpenAI-compatible provider (Groq, OpenRouter, Together,
+    # Mistral, etc.). Defaults to OpenAI itself. e.g. https://api.groq.com/openai/v1
+    OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1").rstrip("/")
