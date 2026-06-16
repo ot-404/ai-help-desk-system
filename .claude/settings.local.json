@@ -11,7 +11,11 @@
       "PowerShell(New-Item -ItemType Directory -Force \"C:\\\\Users\\\\ripp3\\\\OneDrive\\\\Desktop\\\\AI_HDS\\\\frontend\\\\src\\\\context\")",
       "mcp__Claude_Preview__preview_start",
       "PowerShell(where.exe python 2>$null; where.exe python3 2>$null; Get-ChildItem \"$env:LOCALAPPDATA\\\\Programs\\\\Python\" -ErrorAction SilentlyContinue | Select-Object FullName)",
-      "PowerShell($py = \"C:\\\\Users\\\\ripp3\\\\.cache\\\\codex-runtimes\\\\codex-primary-runtime\\\\dependencies\\\\python\\\\python.exe\"; & $py -c \"import flask; print\\(flask.__version__\\)\" 2>&1)"
+      "PowerShell($py = \"C:\\\\Users\\\\ripp3\\\\.cache\\\\codex-runtimes\\\\codex-primary-runtime\\\\dependencies\\\\python\\\\python.exe\"; & $py -c \"import flask; print\\(flask.__version__\\)\" 2>&1)",
+      "Bash(git add *)",
+      "Bash(npm run *)",
+      "Bash(git commit -m ' *)",
+      "WebSearch"
     ]
   }
 }

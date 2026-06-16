@@ -12,6 +12,8 @@ class KnowledgeBase(db.Model):
     category = db.Column(db.String(100), default="")
     tags = db.Column(db.Text, default="")  # comma-separated
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    views = db.Column(db.Integer, default=0, nullable=False)
+    vote_count = db.Column(db.Integer, default=0, nullable=False)
 
     def to_dict(self):
         return {
@@ -21,4 +23,6 @@ class KnowledgeBase(db.Model):
             "category": self.category or "",
             "tags": [t.strip() for t in (self.tags or "").split(",") if t.strip()],
             "created_at": self.created_at.isoformat() if self.created_at else None,
+            "views": self.views or 0,
+            "vote_count": self.vote_count or 0,
         }

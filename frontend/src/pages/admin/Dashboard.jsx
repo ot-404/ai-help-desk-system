@@ -50,7 +50,7 @@ export default function Dashboard() {
   const open = stats.by_status?.open ?? stats.open_tickets ?? 0;
   const bars = (stats.tickets_per_day && stats.tickets_per_day.length === 7)
     ? stats.tickets_per_day
-    : [4, 7, 5, 9, 6, 3, 8];
+    : null;
 
   return (
     <div style={s.page}>
@@ -59,15 +59,15 @@ export default function Dashboard() {
 
       <div style={s.kpiGrid}>
         <Kpi label="Users" value={stats.total_users} color={C.primary} />
-        <Kpi label="Posts" value={stats.total_tickets} color={C.text} />
-        <Kpi label="AI Queries" value={stats.ai_messages} color={C.ai} />
+        <Kpi label="Questions" value={stats.total_tickets} color={C.text} />
+        <Kpi label="AI Queries" value={stats.ai_messages} color={C.purple} />
         <Kpi label="Open Tickets" value={open} color="#f59e0b" />
       </div>
 
       <div style={s.grid2}>
         <div style={s.card}>
-          <div style={s.cardTitle}>Posts — last 7 days</div>
-          <BarChart values={bars} />
+          <div style={s.cardTitle}>Questions — last 7 days</div>
+          {bars ? <BarChart values={bars} /> : <div style={s.dim}>No daily data available.</div>}
         </div>
         <div style={s.card}>
           <div style={s.cardTitle}>Recent Activity</div>

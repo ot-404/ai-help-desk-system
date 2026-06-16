@@ -10,8 +10,8 @@ function Icon({ name }) {
   );
   switch (name) {
     case "home": return p(["M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z", "M9 22V12h6v10"]);
-    case "hot": return p(["M8.5 14.5A4.5 4.5 0 0 0 13 19c2.5 0 4-2 4-4.5 0-2-1-3.5-2-5-.5 1.5-1.5 2-2.5 2 0-2-1-4-3-5 .5 3-2 4-2 7.5 0 .5 0 1 .5 1.5z"]);
-    case "new": return p(["M12 5v14", "M5 12h14"]);
+    case "questions": return p(["M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"]);
+    case "ask": return p(["M12 5v14", "M5 12h14"]);
     case "ai": return p(["M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z", "M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3", "M12 17h.01"]);
     case "profile": return p(["M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2", "M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"]);
     default: return null;
@@ -24,9 +24,9 @@ export default function BottomNav() {
 
   const tabs = [
     { to: "/", icon: "home", label: "Home", end: true },
-    { to: "/help?tab=hot", icon: "hot", label: "Hot" },
-    { to: "/new-question", icon: "new", label: "New", big: true },
-    { to: "/ask", icon: "ai", label: "Ask AI" },
+    { to: "/help", icon: "questions", label: "Questions" },
+    { to: "/new-question", icon: "ask", label: "Ask", big: true },
+    { to: "/ask", icon: "ai", label: "AI" },
     { to: profileTo, icon: "profile", label: "Profile" },
   ];
 

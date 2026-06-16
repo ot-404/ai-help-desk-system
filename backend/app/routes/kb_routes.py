@@ -34,7 +34,15 @@ def _parse_txt(file_bytes):
 
 @kb_bp.get("/")
 def list_articles():
-    return jsonify([a.to_dict() for a in KnowledgeBase.query.order_by(KnowledgeBase.created_at.desc()).all()])
+    sort = request.args.get("sort", "newest")  # newest | votes | views
+    q = KnowledgeBase.query
+    if sort == "votes":
+        q = q.order_by(KnowledgeBase.vote_count.desc())
+    elif sort == "views":
+        q = q.order_by(KnowledgeBase.views.desc())
+    else:
+        q = q.order_by(KnowledgeBase.created_at.desc())
+    return jsonify([a.to_dict() for a in q.all()])
 
 
 @kb_bp.get("/search")
@@ -61,7 +69,24 @@ def get_article(kb_id):
     a = KnowledgeBase.query.get(kb_id)
     if not a:
         return jsonify(error="not found"), 404
+    a.views = (a.views or 0) + 1
+    db.session.commit()
     return jsonify(a.to_dict())
+
+
+@kb_bp.post("/<int:kb_id>/vote")
+@jwt_required()
+def vote_article(kb_id):
+    data = request.get_json() or {}
+    direction = data.get("direction")  # "up" or "down"
+    if direction not in ("up", "down"):
+        return jsonify(error="direction must be 'up' or 'down'"), 400
+    a = KnowledgeBase.query.get(kb_id)
+    if not a:
+        return jsonify(error="not found"), 404
+    a.vote_count = (a.vote_count or 0) + (1 if direction == "up" else -1)
+    db.session.commit()
+    return jsonify(vote_count=a.vote_count)
 
 
 @kb_bp.post("/")

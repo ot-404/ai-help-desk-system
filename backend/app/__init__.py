@@ -85,5 +85,25 @@ def create_app(config_object="app.config.Config"):
 
     with app.app_context():
         db.create_all()
+        _ensure_kb_columns()
 
     return app
+
+
+def _ensure_kb_columns():
+    """Lightweight migration: add new KB columns to an existing SQLite DB."""
+    from sqlalchemy import inspect, text
+    try:
+        insp = inspect(db.engine)
+        cols = {c["name"] for c in insp.get_columns("knowledge_base")}
+        with db.engine.begin() as conn:
+            if "views" not in cols:
+                conn.execute(text(
+                    "ALTER TABLE knowledge_base ADD COLUMN views INTEGER NOT NULL DEFAULT 0"
+                ))
+            if "vote_count" not in cols:
+                conn.execute(text(
+                    "ALTER TABLE knowledge_base ADD COLUMN vote_count INTEGER NOT NULL DEFAULT 0"
+                ))
+    except Exception:
+        pass

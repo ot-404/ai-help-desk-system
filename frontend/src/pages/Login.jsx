@@ -57,8 +57,8 @@ export default function Login() {
 
         <div style={s.divider}><span style={s.dividerText}>or continue with</span></div>
         <div style={s.ssoRow}>
-          <button style={s.sso} type="button">Google</button>
-          <button style={s.sso} type="button">GitHub</button>
+          <button style={s.sso} type="button">Continue with Google</button>
+          <button style={s.sso} type="button">Continue with GitHub</button>
         </div>
 
         <div style={s.foot}>New to HD Systems? <Link to="/register" style={s.footLink}>Create an account</Link></div>
@@ -108,7 +108,7 @@ const s = {
   submit: { background: C.primary, color: "#fff", border: "none", borderRadius: 8, padding: "13px 0", fontSize: 15, fontWeight: 700, width: "100%", marginTop: 4 },
   divider: { textAlign: "center", margin: "22px 0", borderTop: "1px solid " + C.border, position: "relative" },
   dividerText: { background: "#fff", color: C.light, fontSize: 12, padding: "0 12px", position: "relative", top: -10 },
-  ssoRow: { display: "flex", gap: 10 },
+  ssoRow: { display: "flex", flexDirection: "column", gap: 10 },
   sso: { flex: 1, background: "#fff", border: "1px solid " + C.border, borderRadius: 8, padding: "11px 0", fontSize: 14, fontWeight: 600, color: C.text },
   foot: { textAlign: "center", marginTop: 24, fontSize: 14, color: C.muted },
   footLink: { color: C.primary, fontWeight: 700, textDecoration: "none" },

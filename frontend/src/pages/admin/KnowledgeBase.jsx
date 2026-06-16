@@ -104,7 +104,7 @@ export default function KnowledgeBase() {
       <div style={s.tableWrap}>
         <table style={s.table}>
           <thead>
-            <tr style={s.thead}><th style={s.th}>Title</th><th style={s.th}>Category</th><th style={s.th}>Actions</th></tr>
+            <tr style={s.thead}><th style={s.th}>Title</th><th style={s.th}>Category</th><th style={s.th}>Views</th><th style={s.th}>Votes</th><th style={s.th}>Actions</th></tr>
           </thead>
           <tbody>
             {articles.map((a) => (
@@ -114,13 +114,15 @@ export default function KnowledgeBase() {
                   <div style={s.preview}>{a.content?.slice(0, 100)}…</div>
                 </td>
                 <td style={s.td}>{a.category && <span style={s.cat}>{a.category}</span>}</td>
+                <td style={s.td}>{a.views || 0}</td>
+                <td style={s.td}>{a.vote_count || 0}</td>
                 <td style={s.td}>
                   <button onClick={() => startEdit(a)} style={s.editBtn}>Edit</button>
                   <button onClick={() => deleteArticle(a.id)} style={s.deleteBtn}>Delete</button>
                 </td>
               </tr>
             ))}
-            {articles.length === 0 && <tr><td colSpan={3} style={s.center}>No articles found.</td></tr>}
+            {articles.length === 0 && <tr><td colSpan={5} style={s.center}>No articles found.</td></tr>}
           </tbody>
         </table>
       </div>
