@@ -220,7 +220,7 @@ const s = {
     cursor: "pointer", whiteSpace: "nowrap", minHeight: 34,
   },
   tabActive: {
-    background: C.primary, color: "#fff", border: `1px solid ${C.primary}`, fontWeight: 600,
+    background: C.gradient, color: "#fff", border: "1px solid transparent", fontWeight: 600,
   },
 
   loading: { textAlign: "center", color: C.light, padding: 48 },

@@ -6,7 +6,7 @@ import { C, timeAgo, deriveType, TYPE_BADGE } from "../theme";
 
 const STATUS_COLOR = { open: C.warning, pending: C.blue, resolved: C.success, closed: C.light };
 const STATUSES = ["open", "pending", "resolved", "closed"];
-const ROLE_BADGE = { agent: { bg: "#e8f4fd", color: C.blue, label: "Support Agent" }, admin: { bg: "#ffe9e0", color: C.primary, label: "Admin" }, ai: { bg: "#f3ecff", color: "#8250df", label: "AI" } };
+const ROLE_BADGE = { agent: { bg: "#e8f4fd", color: C.blue, label: "Support Agent" }, admin: { bg: "#ffe9e0", color: C.primary, label: "Admin" }, ai: { bg: "#e3f2f6", color: "#0e7490", label: "AI" } };
 
 function VoteStrip() {
   return (
@@ -142,7 +142,7 @@ export default function TicketDetail() {
         {aiLoading && (
           <div style={s.aiThinking}>
             <span style={s.aiDot} /><span style={s.aiDot} /><span style={s.aiDot} />
-            <span style={{ fontSize: 13, color: "#8250df", fontStyle: "italic" }}>HDS Bot is thinking…</span>
+            <span style={{ fontSize: 13, color: "#0e7490", fontStyle: "italic" }}>HDS Bot is thinking…</span>
           </div>
         )}
         {aiAnswer && (
@@ -227,15 +227,15 @@ const s = {
   actions: { display: "flex", flexWrap: "wrap", gap: 8 },
   actionBtn: { color: C.muted, fontSize: 12.5, fontWeight: 600, padding: "6px 8px", borderRadius: 6 },
   aiSection: { margin: "14px 0" },
-  aiBtn: { display: "inline-flex", alignItems: "center", gap: 8, background: "#f3ecff", border: "1px solid #d8c4f7", color: C.purple, borderRadius: 10, padding: "9px 18px", fontSize: 13, fontWeight: 600, cursor: "pointer" },
-  aiThinking: { display: "flex", alignItems: "center", gap: 6, padding: "11px 14px", background: "#f3ecff", borderRadius: 10, border: "1px solid #d8c4f7" },
+  aiBtn: { display: "inline-flex", alignItems: "center", gap: 8, background: "#e3f2f6", border: "1px solid #bcdfe8", color: C.purple, borderRadius: 10, padding: "9px 18px", fontSize: 13, fontWeight: 600, cursor: "pointer" },
+  aiThinking: { display: "flex", alignItems: "center", gap: 6, padding: "11px 14px", background: "#e3f2f6", borderRadius: 10, border: "1px solid #bcdfe8" },
   aiDot: { width: 6, height: 6, borderRadius: "50%", background: C.purple, display: "inline-block", opacity: 0.6 },
-  aiCard: { background: "#f3ecff", border: "1px solid #d8c4f7", borderRadius: 10, padding: 16 },
+  aiCard: { background: "#e3f2f6", border: "1px solid #bcdfe8", borderRadius: 10, padding: 16 },
   aiCardHead: { display: "flex", alignItems: "center", gap: 10, marginBottom: 10 },
   aiBadge: { fontSize: 13, fontWeight: 700, color: C.purple },
-  aiLabel: { fontSize: 11, color: "#a78bcc", fontStyle: "italic" },
+  aiLabel: { fontSize: 11, color: "#6b9aa6", fontStyle: "italic" },
   aiText: { fontSize: 15, color: C.text, lineHeight: 1.75, whiteSpace: "pre-wrap" },
-  aiDismiss: { marginTop: 10, background: "none", border: "none", color: "#a78bcc", fontSize: 12, cursor: "pointer", padding: 0 },
+  aiDismiss: { marginTop: 10, background: "none", border: "none", color: "#6b9aa6", fontSize: 12, cursor: "pointer", padding: 0 },
   answersHead: { fontSize: 16, fontWeight: 700, color: C.text, margin: "22px 0 12px" },
   answers: { display: "flex", flexDirection: "column", gap: 10 },
   noAnswers: { color: C.light, padding: "18px", fontSize: 15, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12 },
@@ -251,5 +251,5 @@ const s = {
   writeBox: { marginTop: 22, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, padding: 18 },
   writeTitle: { fontSize: 16, fontWeight: 700, color: C.text, marginBottom: 12 },
   textarea: { width: "100%", border: `1px solid ${C.border}`, borderRadius: 10, padding: "12px 14px", fontSize: 16, fontFamily: "inherit", resize: "vertical", boxSizing: "border-box", lineHeight: 1.6, minHeight: 220 },
-  submit: { marginTop: 12, display: "inline-block", background: C.primary, color: "#fff", border: "none", borderRadius: 10, padding: "10px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer", minHeight: 40, textDecoration: "none" },
+  submit: { marginTop: 12, display: "inline-block", background: C.gradient, color: "#fff", border: "none", borderRadius: 10, padding: "10px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer", minHeight: 40, textDecoration: "none" },
 };

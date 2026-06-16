@@ -59,11 +59,11 @@ export default function PostCard({ article, onVoteSuccess }) {
 
   return (
     <div
-      style={{ ...s.card, borderColor: hover ? "#d4d7db" : C.border, boxShadow: hover ? "0 1px 6px rgba(0,0,0,0.05)" : "none" }}
+      style={{ ...s.card, borderColor: hover ? "#9cccd6" : C.border, boxShadow: hover ? "0 2px 12px rgba(14,116,144,0.13)" : "none" }}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
-      <div style={s.voteCol}>
+      <div style={{ ...s.voteCol, background: hover ? "linear-gradient(180deg, #05966914, #0e749014)" : C.surfaceHover }}>
         <button style={s.voteBtn} onClick={() => vote("up")} aria-label="Upvote" disabled={busy}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={dir > 0 ? C.primary : C.muted} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="18 15 12 9 6 15" /></svg>
         </button>

@@ -106,7 +106,7 @@ const s = {
   heading: { fontSize: 20, fontWeight: 700, color: C.text, margin: "0 0 14px", letterSpacing: -0.3 },
   tabsCard: { display: "flex", gap: 4, background: C.surface, borderRadius: 12, border: `1px solid ${C.border}`, padding: 5, marginBottom: 14, overflowX: "auto" },
   tab: { display: "inline-flex", alignItems: "center", gap: 6, border: "none", background: "none", color: C.muted, padding: "8px 15px", fontSize: 14, fontWeight: 500, cursor: "pointer", borderRadius: 8, whiteSpace: "nowrap", minHeight: 36 },
-  tabActive: { background: C.primaryBg, color: C.primary, fontWeight: 600 },
+  tabActive: { background: C.gradient, color: "#fff", fontWeight: 600 },
   loading: { textAlign: "center", color: C.light, padding: 32 },
   empty: { display: "flex", flexDirection: "column", alignItems: "center", gap: 10, padding: 48, color: C.light, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12 },
   emptyTitle: { fontSize: 16, fontWeight: 700, color: C.muted },

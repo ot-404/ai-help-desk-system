@@ -204,12 +204,12 @@ const s = {
     minHeight: 0,
   },
   aiBubbleAvatar: {
-    width: 22, height: 22, borderRadius: "50%", background: "#eef1fb",
+    width: 22, height: 22, borderRadius: "50%", background: "#e3f2f6",
     display: "flex", alignItems: "center", justifyContent: "center",
     color: C.primary, flexShrink: 0, marginRight: 6, marginTop: 2,
   },
   aiBubble: {
-    background: "#eef1fb", color: C.text,
+    background: "#e3f2f6", color: C.text,
     borderRadius: "0 12px 12px 12px",
     padding: "8px 12px", fontSize: 13, lineHeight: 1.5,
     maxWidth: "85%", whiteSpace: "pre-wrap",
@@ -222,7 +222,7 @@ const s = {
   },
   quickBtn: {
     display: "block", width: "100%", textAlign: "left",
-    background: "#eef1fb", border: "none",
+    background: "#e3f2f6", border: "none",
     borderRadius: 6, padding: "8px 10px",
     fontSize: 12, color: C.primary, fontWeight: 600,
     cursor: "pointer", marginBottom: 4,

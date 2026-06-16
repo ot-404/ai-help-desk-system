@@ -8,15 +8,15 @@ export const C = {
   border:   "#e6e8eb",      // card borders
   divider:  "#eef0f2",      // lighter inner dividers
 
-  // Brand / actions — green→indigo identity
+  // Brand / actions — emerald→teal identity
   // `gradient` is the brand fill (logo, hero CTAs, avatars, AI, banners);
-  // `primary` is the solid indigo end, used for the many smaller accents.
-  primary:  "#3f51b5",      // primary CTAs, active states, upvotes (gradient's blue end)
-  primaryHover: "#36459c",
-  gradient: "linear-gradient(90deg, #16a34a 0%, #3f51b5 100%)",
-  gradientHover: "linear-gradient(90deg, #138a3e 0%, #36459c 100%)",
-  blue:     "#2563eb",      // links, secondary actions
-  blueHover:"#1d4ed8",
+  // `primary` is the solid teal end, used for the many smaller accents.
+  primary:  "#0e7490",      // primary CTAs, active states, upvotes (gradient's teal end)
+  primaryHover: "#0b5f78",
+  gradient: "linear-gradient(135deg, #059669 0%, #0e7490 100%)",   // emerald → teal, diagonal
+  gradientHover: "linear-gradient(135deg, #047857 0%, #0b5f78 100%)",
+  blue:     "#0284c7",      // links, secondary actions
+  blueHover:"#0369a1",
 
   // Text
   text:     "#1a1a1e",      // near-black
@@ -38,16 +38,16 @@ export const C = {
   anon:     "#9ca3af",
 
   // Legacy aliases (kept so older pages keep compiling)
-  primaryBg:   "#3f51b51a",
-  primaryDark: "#36459c",
+  primaryBg:   "#0e74901a",
+  primaryDark: "#0b5f78",
   pageBg:      "#f7f8fa",
   accepted:    "#16a34a",
   red:         "#dc2626",
-  purple:      "#7c3aed",
-  rep:         "#2563eb",
+  purple:      "#0e7490",   // AI accents now use the brand teal
+  rep:         "#0284c7",
   surface2:    "#f5f6f8",
-  accent:      "#3f51b5",
-  ai:          "#7c3aed",
+  accent:      "#0e7490",
+  ai:          "#0e7490",
   tagBg:       "#f1f2f4",
 };
 
@@ -74,7 +74,7 @@ export const TOPICS = [
 ];
 
 export const TYPE_BADGE = {
-  Question:        { bg: "#eef1fb", color: "#3f51b5" },
+  Question:        { bg: "#e3f2f6", color: "#0e7490" },
   Discussion:      { bg: "#f1f2f4", color: "#6b7280" },
   Tutorial:        { bg: "#ecfdf3", color: "#16a34a" },
   "Anonymous Ask": { bg: "#f1f2f4", color: "#6b7280" },
