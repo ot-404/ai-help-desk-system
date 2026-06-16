@@ -55,10 +55,6 @@ export default function Sidebar() {
         <Item to="/" label="Home" icon="home" end />
         <Item to="/help" label="Popular" icon="flame" />
 
-        <Group title="Resources" />
-        <Item to="/faq" label="FAQs" icon="faq" />
-        <Item to="/ask" label="Ask AI" icon="sparkle" />
-
         <Group title="Topics" />
         {TOPICS.map((t, i) => (
           <Item
@@ -68,6 +64,10 @@ export default function Sidebar() {
             dot={DOT_COLORS[i % DOT_COLORS.length]}
           />
         ))}
+
+        <Group title="Resources" />
+        <Item to="/faq" label="FAQs" icon="faq" />
+        <Item to="/ask" label="Ask AI" icon="sparkle" />
 
         {isStaff && (
           <>
