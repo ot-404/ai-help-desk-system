@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import api from "../api/client";
 import { C, timeAgo } from "../theme";
 
@@ -70,9 +71,10 @@ function AccordionItem({ article }) {
 }
 
 export default function FAQ() {
+  const [params] = useSearchParams();
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(params.get("topic") || "");
   const [activeCategory, setActiveCategory] = useState("All");
 
   useEffect(() => {
