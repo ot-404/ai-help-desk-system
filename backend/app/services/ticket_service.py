@@ -8,9 +8,10 @@ from app.services.ai_service import generate_response
 CONFIDENCE_MIN_CONTEXT = 1
 
 
-def create_ticket(user_id, subject, description, priority="medium"):
+def create_ticket(user_id, subject, description, priority="medium", is_anonymous=False):
     ticket = Ticket(
-        user_id=user_id, subject=subject, description=description, priority=priority
+        user_id=user_id, subject=subject, description=description, priority=priority,
+        is_anonymous=is_anonymous,
     )
     db.session.add(ticket)
     db.session.commit()

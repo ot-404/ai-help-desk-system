@@ -112,3 +112,12 @@ def _ensure_kb_columns():
                 ))
     except Exception:
         pass
+
+    # also patch tickets table
+    try:
+        t_cols = {c["name"] for c in insp.get_columns("tickets")}
+        with db.engine.begin() as conn:
+            if "is_anonymous" not in t_cols:
+                conn.execute(text("ALTER TABLE tickets ADD COLUMN is_anonymous BOOLEAN NOT NULL DEFAULT 0"))
+    except Exception:
+        pass

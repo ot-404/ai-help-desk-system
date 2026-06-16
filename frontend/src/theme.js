@@ -1,79 +1,95 @@
-// HD Systems design tokens — GitHub Issues meets Hacker News: clean, minimal.
 export const C = {
-  // Surfaces
-  bg:       "#f6f8fa",   // page background (very light gray)
-  surface:  "#ffffff",   // cards, panels
-  border:   "#d0d7de",   // borders
-  divider:  "#eaeef2",   // subtle dividers
+  // Reddit-style surfaces
+  bg:       "#dae0e6",      // Reddit's classic light gray page bg
+  surface:  "#ffffff",      // cards
+  surfaceHover: "#f8f9fa",  // card hover
+  nav:      "#1c1c1c",      // dark top navbar (Reddit dark)
+  navBorder:"#343536",      // navbar border
+  border:   "#edeff1",      // card borders
+  divider:  "#edeff1",
 
-  // Brand
-  primary:     "#0969da",   // links, active states, buttons
-  primaryDark: "#0550ae",   // button hover
-  primaryBg:   "#ddf4ff",   // light blue tint backgrounds
+  // Brand / actions
+  primary:  "#ff4500",      // Reddit orange — upvotes, CTAs, logo accent
+  primaryHover: "#e03d00",
+  blue:     "#0079d3",      // links, answers, secondary actions
+  blueHover:"#006cbf",
 
   // Text
-  text:    "#1f2328",   // primary text
-  muted:   "#656d76",   // secondary / meta text
-  light:   "#8c959f",   // placeholders, timestamps
+  text:     "#1c1c1c",
+  muted:    "#878a8c",
+  light:    "#a8aaab",
+  navText:  "#d7dadc",      // text on dark nav
 
   // Semantic
-  success: "#1a7f37",   // resolved, accepted, green
-  warning: "#9a6700",   // pending
-  danger:  "#d1242f",   // errors
+  success:  "#46d160",      // accepted, resolved
+  warning:  "#ffd635",
+  danger:   "#ff585b",
 
   // Tags
-  tag:     "#ddf4ff",
-  tagText: "#0550ae",
-  tagBorder: "#54aeff",
+  tag:      "#f3f4f6",
+  tagText:  "#0079d3",
+  tagBorder:"#edeff1",
+
+  // Anonymous
+  anon:     "#a8aaab",
 
   // Legacy aliases (kept so older pages keep compiling)
-  pageBg:       "#f6f8fa",
-  primaryHover: "#0550ae",
-  accepted:     "#1a7f37",
-  red:          "#d1242f",
-  purple:       "#8250df",
-  rep:          "#0969da",
-  surface2:     "#f6f8fa",
-  accent:       "#0969da",
-  ai:           "#8250df",
-  tagBg:        "#ddf4ff",
-};
-
-export const TYPE_BADGE = {
-  Blog:       { bg: "#ddf4ff", color: "#0550ae" },
-  "Q&A":      { bg: "#dafbe1", color: "#1a7f37" },
-  Tutorial:   { bg: "#fbefff", color: "#8250df" },
-  Discussion: { bg: "#eaeef2", color: "#656d76" },
+  primaryBg:   "#ff45001a",
+  primaryDark: "#e03d00",
+  pageBg:      "#dae0e6",
+  accepted:    "#46d160",
+  red:         "#ff585b",
+  purple:      "#8250df",
+  rep:         "#0079d3",
+  surface2:    "#f8f9fa",
+  accent:      "#0079d3",
+  ai:          "#8250df",
+  tagBg:       "#f3f4f6",
 };
 
 export function timeAgo(dateStr) {
   if (!dateStr) return "";
   const diff = Date.now() - new Date(dateStr).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "just now";
-  if (mins < 60) return `${mins}m ago`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
-  return `${Math.floor(hrs / 24)}d ago`;
+  const m = Math.floor(diff / 60000);
+  if (m < 1) return "just now";
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  const d = Math.floor(h / 24);
+  if (d < 30) return `${d}d ago`;
+  return `${Math.floor(d / 30)}mo ago`;
 }
 
-export function deriveType(article) {
-  const tags = (article.tags || []).join(" ").toLowerCase();
-  const title = (article.title || "").toLowerCase();
-  if (tags.includes("tutorial") || title.includes("how to")) return "Tutorial";
-  if (tags.includes("blog")) return "Blog";
-  if (tags.includes("discussion")) return "Discussion";
-  return "Q&A";
-}
+export const POST_TYPES = ["Question", "Discussion", "Tutorial", "Anonymous Ask"];
 
-export const COMMUNITIES = [
-  "Programming","DevOps & Cloud","Cybersecurity","Databases",
-  "Web Development","Mobile Dev","AI & Machine Learning",
-  "System Admin","Networking","Software Architecture",
-  "Career & Jobs","Open Source",
+export const TOPICS = [
+  "Programming", "DevOps & Cloud", "Cybersecurity", "Databases",
+  "Web Development", "Mobile Dev", "AI & Machine Learning",
+  "System Admin", "Networking", "Software Architecture",
+  "Career & Jobs", "Open Source", "Hardware", "Data Science",
 ];
 
+export const TYPE_BADGE = {
+  Question:        { bg: "#e8f4fd", color: "#0079d3" },
+  Discussion:      { bg: "#eaeef2", color: "#878a8c" },
+  Tutorial:        { bg: "#e6f7ea", color: "#1a7f37" },
+  "Anonymous Ask": { bg: "#eaeef2", color: "#878a8c" },
+  Blog:            { bg: "#e8f4fd", color: "#0079d3" },
+  "Q&A":           { bg: "#e6f7ea", color: "#1a7f37" },
+};
+
+export function deriveType(article) {
+  if (article?.is_anonymous) return "Anonymous Ask";
+  const tags = (article?.tags || []).join(" ").toLowerCase();
+  const title = (article?.title || "").toLowerCase();
+  if (tags.includes("tutorial") || title.includes("how to")) return "Tutorial";
+  if (tags.includes("discussion")) return "Discussion";
+  return "Question";
+}
+
+// Legacy aliases
+export const COMMUNITIES = TOPICS;
 export function communityFor(article) {
   const seed = (article?.id ?? 0) + (article?.title?.length ?? 0);
-  return COMMUNITIES[seed % COMMUNITIES.length];
+  return TOPICS[seed % TOPICS.length];
 }

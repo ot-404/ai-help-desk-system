@@ -2,7 +2,15 @@ import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { C } from "../theme";
-import Logo from "../components/Logo";
+
+function BigLogo() {
+  return (
+    <div style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+      <span style={{ background: C.primary, color: "#fff", fontWeight: 800, borderRadius: 6, padding: "5px 11px", fontSize: 22 }}>HD</span>
+      <span style={{ color: C.text, fontWeight: 700, fontSize: 24 }}>Systems</span>
+    </div>
+  );
+}
 
 export default function Login() {
   const { login } = useAuth();
@@ -30,23 +38,25 @@ export default function Login() {
   return (
     <div style={s.page}>
       <div style={s.card}>
-        <div style={s.logoRow}><Logo size="lg" /></div>
-        <h1 style={s.title}>Sign in to HD Systems</h1>
+        <div style={s.logoRow}><BigLogo /></div>
+        <h1 style={s.title}>Log in</h1>
+        <p style={s.legal}>
+          By continuing, you agree to our <a href="#" style={s.legalLink}>User Agreement</a> and <a href="#" style={s.legalLink}>Privacy Policy</a>.
+        </p>
+        <div style={s.sep} />
 
         <form onSubmit={handleSubmit} style={s.form}>
-          <div style={s.field}>
-            <label style={s.label}>Email</label>
-            <input type="email" style={s.input} value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" required autoFocus />
-          </div>
-          <div style={s.field}>
-            <label style={s.label}>Password</label>
-            <input type="password" style={s.input} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required />
-          </div>
+          <input type="email" style={s.input} value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required autoFocus />
+          <input type="password" style={s.input} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" required />
           {error && <div style={s.error}>{error}</div>}
-          <button type="submit" style={s.submit} disabled={loading}>{loading ? "Signing in…" : "Sign in"}</button>
+          <button type="submit" style={s.submit} disabled={loading}>{loading ? "LOGGING IN…" : "LOG IN"}</button>
         </form>
 
-        <div style={s.foot}>Don't have an account? <Link to="/register" style={s.footLink}>Sign up</Link></div>
+        <a href="#" style={s.forgot}>Forgot password?</a>
+
+        <div style={s.divider}><span style={s.dividerText}>NEW TO HD SYSTEMS?</span></div>
+
+        <Link to="/register" style={s.signupBtn}>SIGN UP</Link>
       </div>
     </div>
   );
@@ -54,15 +64,18 @@ export default function Login() {
 
 const s = {
   page: { minHeight: "100vh", background: C.bg, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 },
-  card: { width: "100%", maxWidth: 380, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, boxShadow: "0 1px 3px rgba(0,0,0,0.12)", padding: 32 },
-  logoRow: { display: "flex", justifyContent: "center", marginBottom: 16 },
-  title: { fontSize: 20, fontWeight: 600, color: C.text, textAlign: "center", margin: "0 0 24px" },
-  form: { display: "flex", flexDirection: "column", gap: 16 },
-  field: { display: "flex", flexDirection: "column", gap: 5 },
-  label: { fontSize: 13, fontWeight: 600, color: C.text },
-  input: { height: 40, borderRadius: 6, border: `1px solid ${C.border}`, padding: "0 12px", fontSize: 16, boxSizing: "border-box", width: "100%" },
+  card: { width: "100%", maxWidth: 440, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 4, padding: "48px 40px", boxSizing: "border-box" },
+  logoRow: { display: "flex", justifyContent: "center", marginBottom: 24 },
+  title: { fontSize: 20, fontWeight: 700, color: C.text, margin: "0 0 8px" },
+  legal: { fontSize: 12, color: C.muted, margin: "0 0 16px", lineHeight: 1.5 },
+  legalLink: { color: C.blue, textDecoration: "underline" },
+  sep: { borderTop: `1px solid ${C.border}`, margin: "0 0 20px" },
+  form: { display: "flex", flexDirection: "column", gap: 14 },
+  input: { height: 44, borderRadius: 8, border: `1px solid ${C.border}`, background: C.surfaceHover, padding: "0 14px", fontSize: 16, boxSizing: "border-box", width: "100%", color: C.text },
   error: { background: "#fff5f5", border: "1px solid #fed7d7", borderRadius: 6, padding: "10px 14px", fontSize: 14, color: C.danger },
-  submit: { background: C.primary, color: "#fff", border: "none", borderRadius: 6, padding: "11px 0", fontSize: 15, fontWeight: 600, width: "100%", minHeight: 40, cursor: "pointer" },
-  foot: { textAlign: "center", marginTop: 24, fontSize: 14, color: C.muted },
-  footLink: { color: C.primary, fontWeight: 600, textDecoration: "none" },
+  submit: { background: C.primary, color: "#fff", border: "none", borderRadius: 20, padding: 0, height: 38, fontSize: 14, fontWeight: 700, textTransform: "uppercase", width: "100%", cursor: "pointer" },
+  forgot: { display: "inline-block", marginTop: 16, color: C.blue, fontSize: 12, fontWeight: 600, textDecoration: "none" },
+  divider: { display: "flex", alignItems: "center", textAlign: "center", margin: "20px 0", color: C.muted },
+  dividerText: { flex: 1, fontSize: 11, fontWeight: 700, letterSpacing: 1, position: "relative" },
+  signupBtn: { display: "block", textAlign: "center", border: `1px solid ${C.primary}`, color: C.primary, borderRadius: 20, height: 38, lineHeight: "38px", fontSize: 14, fontWeight: 700, textTransform: "uppercase", textDecoration: "none" },
 };

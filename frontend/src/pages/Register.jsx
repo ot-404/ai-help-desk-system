@@ -2,12 +2,20 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api/client";
 import { C } from "../theme";
-import Logo from "../components/Logo";
 
 const ROLES = [
   { value: "user", label: "User" },
   { value: "agent", label: "Agent" },
 ];
+
+function BigLogo() {
+  return (
+    <div style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+      <span style={{ background: C.primary, color: "#fff", fontWeight: 800, borderRadius: 6, padding: "5px 11px", fontSize: 22 }}>HD</span>
+      <span style={{ color: C.text, fontWeight: 700, fontSize: 24 }}>Systems</span>
+    </div>
+  );
+}
 
 export default function Register() {
   const navigate = useNavigate();
@@ -38,39 +46,26 @@ export default function Register() {
   return (
     <div style={s.page}>
       <div style={s.card}>
-        <div style={s.logoRow}><Logo size="lg" /></div>
-        <h1 style={s.title}>Create your account</h1>
+        <div style={s.logoRow}><BigLogo /></div>
+        <h1 style={s.title}>Sign up</h1>
+        <p style={s.legal}>Join HD Systems — the tech community for programmers, DevOps, security, and data pros.</p>
+        <div style={s.sep} />
 
         <form onSubmit={handleSubmit} style={s.form}>
-          <div style={s.field}>
-            <label style={s.label}>Name</label>
-            <input style={s.input} value={name} onChange={(e) => setName(e.target.value)} placeholder="Jane Smith" required autoFocus />
-          </div>
-          <div style={s.field}>
-            <label style={s.label}>Email</label>
-            <input type="email" style={s.input} value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" required />
-          </div>
-          <div style={s.field}>
-            <label style={s.label}>Password</label>
-            <input type="password" style={s.input} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required />
-          </div>
-          <div style={s.field}>
-            <label style={s.label}>Confirm Password</label>
-            <input type="password" style={s.input} value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="••••••••" required />
-          </div>
-          <div style={s.field}>
-            <label style={s.label}>Account type</label>
-            <div style={s.roleRow}>
-              {ROLES.map((r) => (
-                <button key={r.value} type="button" onClick={() => setRole(r.value)} style={{ ...s.roleBtn, ...(role === r.value ? s.roleActive : {}) }}>{r.label}</button>
-              ))}
-            </div>
+          <input style={s.input} value={name} onChange={(e) => setName(e.target.value)} placeholder="Display name" required autoFocus />
+          <input type="email" style={s.input} value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required />
+          <input type="password" style={s.input} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" required />
+          <input type="password" style={s.input} value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="Confirm password" required />
+          <div style={s.roleRow}>
+            {ROLES.map((r) => (
+              <button key={r.value} type="button" onClick={() => setRole(r.value)} style={{ ...s.roleBtn, ...(role === r.value ? s.roleActive : {}) }}>{r.label}</button>
+            ))}
           </div>
           {error && <div style={s.error}>{error}</div>}
-          <button type="submit" style={s.submit} disabled={loading}>{loading ? "Creating account…" : "Create account"}</button>
+          <button type="submit" style={s.submit} disabled={loading}>{loading ? "SIGNING UP…" : "SIGN UP"}</button>
         </form>
 
-        <div style={s.foot}>Already have an account? <Link to="/login" style={s.footLink}>Sign in</Link></div>
+        <div style={s.foot}>Already a member? <Link to="/login" style={s.footLink}>Log in</Link></div>
       </div>
     </div>
   );
@@ -78,18 +73,18 @@ export default function Register() {
 
 const s = {
   page: { minHeight: "100vh", background: C.bg, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 },
-  card: { width: "100%", maxWidth: 380, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, boxShadow: "0 1px 3px rgba(0,0,0,0.12)", padding: 32 },
-  logoRow: { display: "flex", justifyContent: "center", marginBottom: 16 },
-  title: { fontSize: 20, fontWeight: 600, color: C.text, textAlign: "center", margin: "0 0 24px" },
+  card: { width: "100%", maxWidth: 440, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 4, padding: "48px 40px", boxSizing: "border-box" },
+  logoRow: { display: "flex", justifyContent: "center", marginBottom: 24 },
+  title: { fontSize: 20, fontWeight: 700, color: C.text, margin: "0 0 8px" },
+  legal: { fontSize: 12, color: C.muted, margin: "0 0 16px", lineHeight: 1.5 },
+  sep: { borderTop: `1px solid ${C.border}`, margin: "0 0 20px" },
   form: { display: "flex", flexDirection: "column", gap: 14 },
-  field: { display: "flex", flexDirection: "column", gap: 5 },
-  label: { fontSize: 13, fontWeight: 600, color: C.text },
-  input: { height: 40, borderRadius: 6, border: `1px solid ${C.border}`, padding: "0 12px", fontSize: 16, boxSizing: "border-box", width: "100%" },
+  input: { height: 44, borderRadius: 8, border: `1px solid ${C.border}`, background: C.surfaceHover, padding: "0 14px", fontSize: 16, boxSizing: "border-box", width: "100%", color: C.text },
   roleRow: { display: "flex", gap: 8 },
-  roleBtn: { flex: 1, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 6, padding: "9px 0", fontSize: 14, fontWeight: 600, color: C.muted, minHeight: 40, cursor: "pointer" },
-  roleActive: { borderColor: C.primary, background: C.primaryBg, color: C.primary },
+  roleBtn: { flex: 1, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 20, padding: 0, height: 44, fontSize: 14, fontWeight: 700, color: C.muted, cursor: "pointer" },
+  roleActive: { borderColor: C.primary, background: "#ff45001a", color: C.primary },
   error: { background: "#fff5f5", border: "1px solid #fed7d7", borderRadius: 6, padding: "10px 14px", fontSize: 14, color: C.danger },
-  submit: { background: C.primary, color: "#fff", border: "none", borderRadius: 6, padding: "11px 0", fontSize: 15, fontWeight: 600, width: "100%", minHeight: 40, cursor: "pointer", marginTop: 4 },
-  foot: { textAlign: "center", marginTop: 24, fontSize: 14, color: C.muted },
-  footLink: { color: C.primary, fontWeight: 600, textDecoration: "none" },
+  submit: { background: C.primary, color: "#fff", border: "none", borderRadius: 20, padding: 0, height: 38, fontSize: 14, fontWeight: 700, textTransform: "uppercase", width: "100%", cursor: "pointer", marginTop: 2 },
+  foot: { textAlign: "center", marginTop: 20, fontSize: 14, color: C.muted },
+  footLink: { color: C.blue, fontWeight: 700, textDecoration: "none" },
 };

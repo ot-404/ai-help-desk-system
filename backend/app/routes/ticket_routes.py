@@ -19,8 +19,10 @@ def create():
     priority = data.get("priority", "medium")
     if priority not in PRIORITIES:
         return jsonify(error=f"priority must be one of {PRIORITIES}"), 400
+    is_anonymous = bool(data.get("is_anonymous", False))
     ticket = ticket_service.create_ticket(
-        int(get_jwt_identity()), data["subject"], data["description"], priority
+        int(get_jwt_identity()), data["subject"], data["description"], priority,
+        is_anonymous=is_anonymous,
     )
     result = None
     if data.get("auto_answer", True):

@@ -1,16 +1,27 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import api from "../../api/client";
-import { C } from "../../theme";
+import { C, POST_TYPES, TOPICS } from "../../theme";
+
+const PLACEHOLDERS = {
+  "Question": "e.g. How do I fix a Kubernetes CrashLoopBackOff?",
+  "Discussion": "e.g. Is microservices overkill for small teams?",
+  "Tutorial": "e.g. How to set up CI/CD with GitHub Actions",
+  "Anonymous Ask": "Ask anything — your identity stays hidden",
+};
 
 export default function NewTicket() {
   const navigate = useNavigate();
+  const [type, setType] = useState("Question");
   const [title, setTitle] = useState("");
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState("");
   const [body, setBody] = useState("");
+  const [topic, setTopic] = useState(TOPICS[0]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+
+  const isAnon = type === "Anonymous Ask";
 
   function addTag(e) {
     if (e.key === "Enter") {
@@ -24,16 +35,22 @@ export default function NewTicket() {
   async function handleSubmit(e) {
     e.preventDefault();
     if (!title.trim()) { setError("Please enter a title."); return; }
-    if (!body.trim()) { setError("Please describe your question."); return; }
+    if (!body.trim()) { setError("Please describe your post."); return; }
     setSubmitting(true);
     setError("");
     const description = [
+      `Topic: ${topic}`,
       tags.length ? `Tags: ${tags.join(", ")}` : "",
       "",
       body,
     ].filter(Boolean).join("\n");
     try {
-      const { data } = await api.post("/tickets/", { subject: title, description, priority: "medium" });
+      const { data } = await api.post("/tickets/", {
+        subject: title,
+        description,
+        priority: "medium",
+        is_anonymous: isAnon,
+      });
       navigate(`/question/${data.ticket.id}`);
     } catch (err) {
       setError(err?.response?.data?.error || "Failed to post. Try again.");
@@ -44,30 +61,42 @@ export default function NewTicket() {
 
   return (
     <div>
-      <Link to="/" style={s.back}>← Back to Questions</Link>
-      <h1 style={s.heading}>Ask a Question</h1>
+      <h1 style={s.heading}>Create Post</h1>
 
-      <form onSubmit={handleSubmit} style={s.form}>
-        <div>
-          <label style={s.label}>Title</label>
-          <input
-            style={s.titleInput}
-            placeholder="e.g. How do I reset my account password?"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            maxLength={200}
-          />
-        </div>
+      <div style={s.tabBar}>
+        {POST_TYPES.map((t) => (
+          <button
+            key={t}
+            type="button"
+            onClick={() => setType(t)}
+            style={{ ...s.tab, ...(type === t ? s.tabActive : {}) }}
+          >
+            {t}
+          </button>
+        ))}
+      </div>
 
-        <div>
-          <label style={s.label}>Details</label>
-          <textarea
-            style={s.body}
-            placeholder="Describe what you've tried and what you expect to happen…"
-            value={body}
-            onChange={(e) => setBody(e.target.value)}
-          />
+      {isAnon && (
+        <div style={s.anonBox}>
+          Your identity will be hidden. This is inspired by Ask.fm and Tellonym — ask anything without revealing who you are.
         </div>
+      )}
+
+      <form onSubmit={handleSubmit} style={s.card}>
+        <input
+          style={s.titleInput}
+          placeholder={PLACEHOLDERS[type]}
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          maxLength={200}
+        />
+
+        <textarea
+          style={s.body}
+          placeholder="Add details. Code is welcome — share what you tried and what you expect."
+          value={body}
+          onChange={(e) => setBody(e.target.value)}
+        />
 
         <div>
           <label style={s.label}>Tags</label>
@@ -83,34 +112,39 @@ export default function NewTicket() {
           </div>
         </div>
 
-        {error && <div style={s.error}>{error}</div>}
         <div>
-          <button type="submit" style={s.submit} disabled={submitting}>{submitting ? "Posting…" : "Post Your Question"}</button>
+          <label style={s.label}>Topic</label>
+          <select style={s.select} value={topic} onChange={(e) => setTopic(e.target.value)}>
+            {TOPICS.map((t) => <option key={t} value={t}>{t}</option>)}
+          </select>
+        </div>
+
+        {error && <div style={s.error}>{error}</div>}
+
+        <div style={s.submitRow}>
+          <button type="submit" style={s.submit} disabled={submitting}>{submitting ? "POSTING…" : "POST"}</button>
         </div>
       </form>
-
-      <div style={s.tipsCard}>
-        <strong style={s.tipsTitle}>Writing a good question</strong>
-        <span style={s.tipsText}> Be specific. Include error messages. Describe what you tried.</span>
-      </div>
     </div>
   );
 }
 
 const s = {
-  back: { color: C.muted, textDecoration: "none", fontSize: 13, display: "block", marginBottom: 12 },
-  heading: { fontSize: 20, fontWeight: 600, color: C.text, margin: "0 0 18px" },
-  form: { display: "flex", flexDirection: "column", gap: 16 },
-  label: { fontSize: 14, fontWeight: 600, color: C.text, display: "block", marginBottom: 6 },
-  titleInput: { width: "100%", height: 42, fontSize: 16, padding: "0 12px", border: `1px solid ${C.border}`, borderRadius: 6, boxSizing: "border-box", fontFamily: "inherit", color: C.text },
-  body: { width: "100%", minHeight: 200, fontSize: 16, padding: "10px 12px", border: `1px solid ${C.border}`, borderRadius: 6, resize: "vertical", fontFamily: "inherit", boxSizing: "border-box", color: C.text, lineHeight: 1.6 },
-  tagBox: { display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center", border: `1px solid ${C.border}`, borderRadius: 6, padding: "8px 10px", minHeight: 40, boxSizing: "border-box" },
-  tagChip: { display: "inline-flex", alignItems: "center", gap: 4, background: C.tag, color: C.tagText, border: `1px solid ${C.tagBorder}`, fontSize: 13, padding: "3px 8px", borderRadius: 4 },
+  heading: { fontSize: 20, fontWeight: 700, color: C.text, margin: "0 0 16px", borderBottom: `1px solid ${C.border}`, paddingBottom: 12 },
+  tabBar: { display: "flex", background: C.surface, border: `1px solid ${C.border}`, borderRadius: 4, marginBottom: 12, overflowX: "auto" },
+  tab: { flex: 1, minWidth: 110, background: "none", border: "none", borderBottom: "2px solid transparent", padding: "12px 8px", fontSize: 14, fontWeight: 600, color: C.muted, cursor: "pointer", whiteSpace: "nowrap" },
+  tabActive: { color: C.primary, borderBottom: `2px solid ${C.primary}` },
+  anonBox: { background: "#eaeef2", border: `1px solid ${C.border}`, borderRadius: 4, padding: "12px 14px", fontSize: 13, color: C.muted, lineHeight: 1.5, marginBottom: 12 },
+  card: { background: C.surface, border: `1px solid ${C.border}`, borderRadius: 4, padding: 16, display: "flex", flexDirection: "column", gap: 16 },
+  titleInput: { width: "100%", height: 44, fontSize: 16, padding: "0 12px", border: `1px solid ${C.border}`, borderRadius: 4, boxSizing: "border-box", fontFamily: "inherit", color: C.text },
+  body: { width: "100%", minHeight: 300, fontSize: 16, padding: "12px", border: `1px solid ${C.border}`, borderRadius: 4, resize: "vertical", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", boxSizing: "border-box", color: C.text, lineHeight: 1.6 },
+  label: { fontSize: 13, fontWeight: 700, color: C.text, display: "block", marginBottom: 6 },
+  tagBox: { display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center", border: `1px solid ${C.border}`, borderRadius: 4, padding: "8px 10px", minHeight: 44, boxSizing: "border-box" },
+  tagChip: { display: "inline-flex", alignItems: "center", gap: 4, background: C.tag, color: C.tagText, fontSize: 13, padding: "3px 8px", borderRadius: 2 },
   tagX: { background: "none", border: "none", color: C.tagText, fontSize: 15, lineHeight: 1, padding: 0, cursor: "pointer" },
   tagInput: { flex: 1, minWidth: 140, border: "none", fontSize: 16, padding: "4px 2px", outline: "none" },
-  error: { background: "#fff5f5", border: `1px solid #fed7d7`, borderRadius: 6, padding: "10px 14px", fontSize: 14, color: C.danger },
-  submit: { background: C.primary, color: "#fff", border: "none", borderRadius: 6, padding: "11px 18px", fontSize: 14, fontWeight: 600, cursor: "pointer", minHeight: 40 },
-  tipsCard: { background: C.bg, border: `1px solid ${C.border}`, borderRadius: 6, padding: 14, marginTop: 20, fontSize: 13, color: C.muted, lineHeight: 1.6 },
-  tipsTitle: { color: C.text },
-  tipsText: {},
+  select: { width: "100%", height: 44, fontSize: 16, padding: "0 12px", border: `1px solid ${C.border}`, borderRadius: 4, boxSizing: "border-box", background: C.surface, color: C.text },
+  error: { background: "#fff5f5", border: "1px solid #fed7d7", borderRadius: 6, padding: "10px 14px", fontSize: 14, color: C.danger },
+  submitRow: { display: "flex", justifyContent: "flex-end" },
+  submit: { background: C.primary, color: "#fff", border: "none", borderRadius: 20, padding: "8px 28px", fontSize: 14, fontWeight: 700, cursor: "pointer", minHeight: 38 },
 };

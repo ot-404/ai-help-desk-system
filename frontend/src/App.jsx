@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, Link } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import NavBar from "./components/NavBar";
 import Sidebar from "./components/Sidebar";
@@ -29,26 +29,66 @@ function HomeOrRedirect() {
   return <Home />;
 }
 
+function RightSummary() {
+  return (
+    <div style={{ width: 312, flexShrink: 0 }}>
+      {/* Create Post card */}
+      <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 4, overflow: "hidden", marginBottom: 16 }}>
+        <div style={{ background: "linear-gradient(to bottom, #46d160, #1a7f37)", height: 64 }} />
+        <div style={{ padding: 12 }}>
+          <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 8 }}>Home</div>
+          <div style={{ fontSize: 14, color: C.muted, marginBottom: 12 }}>The front page of HD Systems — the tech knowledge hub.</div>
+          <Link to="/new-question" style={{ display: "block", textAlign: "center", background: C.primary, color: "#fff", borderRadius: 20, padding: "6px 0", textDecoration: "none", fontWeight: 700, fontSize: 14, marginBottom: 8 }}>Create Post</Link>
+          <Link to="/ask" style={{ display: "block", textAlign: "center", border: `1px solid ${C.primary}`, color: C.primary, borderRadius: 20, padding: "6px 0", textDecoration: "none", fontWeight: 700, fontSize: 14 }}>Ask AI</Link>
+        </div>
+      </div>
+
+      {/* Community Rules card */}
+      <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 4, padding: 12, marginBottom: 16 }}>
+        <div style={{ fontWeight: 700, fontSize: 14, borderBottom: `1px solid ${C.border}`, paddingBottom: 8, marginBottom: 8 }}>HD Systems Rules</div>
+        {["Be respectful and professional","Stay on-topic (tech, programming, IT)","No spam or self-promotion without value","Share knowledge, not just opinions","Credit sources and original authors"].map((r, i) => (
+          <div key={i} style={{ fontSize: 14, padding: "4px 0", borderBottom: `1px solid ${C.divider}`, color: C.text }}>
+            <span style={{ fontWeight: 700, color: C.primary }}>{i+1}. </span>{r}
+          </div>
+        ))}
+      </div>
+
+      {/* Topics card */}
+      <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 4, padding: 12 }}>
+        <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 8 }}>Popular Topics</div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+          {["#javascript","#python","#devops","#kubernetes","#security","#rust","#react","#systemdesign","#linux","#cloud"].map(t => (
+            <span key={t} style={{ background: C.tag, color: C.tagText, border: `1px solid ${C.tagBorder}`, borderRadius: 2, padding: "2px 8px", fontSize: 12, cursor: "pointer" }}>{t}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /**
- * Single-column + BottomNav on mobile; left sidebar + main on desktop.
- * No right panel anywhere.
+ * Sidebar + main + right summary on desktop; main + BottomNav on mobile.
  */
 function Layout({ children }) {
   const isMobile = useIsMobile();
   return (
     <>
       <NavBar />
-      <div style={{ paddingTop: 52, paddingBottom: isMobile ? 72 : 0, minHeight: "100vh", background: C.bg }}>
+      <div style={{ background: C.bg, minHeight: "100vh", paddingTop: 48, paddingBottom: isMobile ? 72 : 0 }}>
         <div style={{
-          maxWidth: 1060, margin: "0 auto",
-          display: "flex", gap: isMobile ? 0 : 24,
-          padding: isMobile ? "16px 0" : "24px 16px",
+          maxWidth: 1200, margin: "0 auto",
+          display: "flex", gap: 24,
+          padding: isMobile ? "16px 0" : "20px 16px",
           alignItems: "flex-start",
         }}>
           {!isMobile && <Sidebar />}
-          <main style={{ flex: 1, minWidth: 0, padding: isMobile ? "0 16px" : 0 }}>
+          <main style={{
+            flex: 1, minWidth: 0,
+            padding: isMobile ? "0 8px" : 0,
+          }}>
             {children}
           </main>
+          {!isMobile && <RightSummary />}
         </div>
       </div>
       {isMobile && <BottomNav />}

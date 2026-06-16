@@ -4,14 +4,18 @@ import api from "../api/client";
 import PostCard from "../components/PostCard";
 import { C } from "../theme";
 
-const TABS = ["Newest", "Active", "Votes"];
+const TABS = [
+  { key: "Hot", sort: "votes" },
+  { key: "New", sort: "newest" },
+  { key: "Top", sort: "votes" },
+];
 
 export default function PublicHelp() {
   const [params, setParams] = useSearchParams();
   const [all, setAll] = useState([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState(params.get("q") || "");
-  const [tab, setTab] = useState("Newest");
+  const [tab, setTab] = useState("Hot");
 
   useEffect(() => {
     setLoading(true);
@@ -35,24 +39,24 @@ export default function PublicHelp() {
   };
 
   let articles = [...all];
-  if (tab === "Votes") articles.sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0));
+  if (tab === "Top" || tab === "Hot") articles.sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0));
 
   return (
     <div>
       <h1 style={s.title}>Knowledge Base</h1>
 
-      <form onSubmit={handleSearch} style={s.searchRow}>
+      <form onSubmit={handleSearch} style={s.searchCard}>
+        <span style={s.searchIcon}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.muted} strokeWidth="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+        </span>
         <input style={s.searchInput} placeholder="Search the knowledge base…" value={query} onChange={(e) => setQuery(e.target.value)} />
         <button type="submit" style={s.searchBtn}>Search</button>
       </form>
 
-      <div style={s.subRow}>
-        <span style={s.count}>{articles.length} articles</span>
-        <div style={s.tabs}>
-          {TABS.map((t) => (
-            <button key={t} onClick={() => setTab(t)} style={{ ...s.tab, ...(tab === t ? s.tabActive : {}) }}>{t}</button>
-          ))}
-        </div>
+      <div style={s.tabsCard}>
+        {TABS.map((t) => (
+          <button key={t.key} onClick={() => setTab(t.key)} style={{ ...s.tab, ...(tab === t.key ? s.tabActive : {}) }}>{t.key}</button>
+        ))}
       </div>
 
       {loading ? (
@@ -74,18 +78,17 @@ export default function PublicHelp() {
 }
 
 const s = {
-  title: { fontSize: 20, fontWeight: 600, color: C.text, margin: "0 0 16px" },
-  searchRow: { display: "flex", alignItems: "center", gap: 8, marginBottom: 16 },
-  searchInput: { flex: 1, minWidth: 0, height: 40, border: `1px solid ${C.border}`, borderRadius: 6, padding: "0 12px", fontSize: 16, background: C.surface, boxSizing: "border-box" },
-  searchBtn: { background: C.primary, color: "#fff", border: "none", borderRadius: 6, padding: "0 18px", height: 40, fontSize: 14, fontWeight: 600, cursor: "pointer" },
-  subRow: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 },
-  count: { fontSize: 14, color: C.muted },
-  tabs: { display: "flex", gap: 0 },
-  tab: { border: "none", background: "none", color: C.muted, padding: "6px 10px", fontSize: 14, cursor: "pointer", borderBottom: "2px solid transparent" },
-  tabActive: { color: C.primary, fontWeight: 600, borderBottom: `2px solid ${C.primary}` },
+  title: { fontSize: 20, fontWeight: 700, color: C.text, margin: "0 0 12px" },
+  searchCard: { display: "flex", alignItems: "center", gap: 8, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 4, padding: 8, marginBottom: 12, position: "relative" },
+  searchIcon: { position: "absolute", left: 18, display: "flex", pointerEvents: "none" },
+  searchInput: { flex: 1, minWidth: 0, height: 40, border: `1px solid ${C.border}`, borderRadius: 20, padding: "0 14px 0 38px", fontSize: 16, background: C.surfaceHover, boxSizing: "border-box" },
+  searchBtn: { background: C.primary, color: "#fff", border: "none", borderRadius: 20, padding: "0 20px", height: 40, fontSize: 14, fontWeight: 700, cursor: "pointer", flexShrink: 0 },
+  tabsCard: { display: "flex", gap: 4, background: C.surface, borderRadius: 4, border: `1px solid ${C.border}`, padding: 4, marginBottom: 12 },
+  tab: { border: "none", background: "none", color: C.muted, padding: "8px 14px", fontSize: 14, fontWeight: 600, cursor: "pointer", borderRadius: 20, minHeight: 36 },
+  tabActive: { background: C.border, color: C.text, fontWeight: 700 },
   loading: { textAlign: "center", color: C.light, padding: 48 },
-  empty: { textAlign: "center", padding: 48, display: "flex", flexDirection: "column", gap: 10, alignItems: "center" },
-  emptyTitle: { fontSize: 16, fontWeight: 600, color: C.muted },
-  emptyLink: { color: C.primary, fontWeight: 600, textDecoration: "none" },
-  feed: { display: "flex", flexDirection: "column", gap: 8 },
+  empty: { textAlign: "center", padding: 48, display: "flex", flexDirection: "column", gap: 10, alignItems: "center", background: C.surface, border: `1px solid ${C.border}`, borderRadius: 4 },
+  emptyTitle: { fontSize: 16, fontWeight: 700, color: C.muted },
+  emptyLink: { color: C.blue, fontWeight: 700, textDecoration: "none" },
+  feed: { display: "flex", flexDirection: "column", gap: 4 },
 };
