@@ -41,7 +41,7 @@ function RightSummary() {
       <div style={{ ...card, padding: 16 }}>
         <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 6, color: C.text }}>HD Systems</div>
         <div style={{ fontSize: 13.5, color: C.muted, marginBottom: 14, lineHeight: 1.6 }}>The tech knowledge hub — ask questions, share answers, and learn together.</div>
-        <Link to="/new-question" style={{ display: "block", textAlign: "center", background: C.primary, color: "#fff", borderRadius: 10, padding: "9px 0", textDecoration: "none", fontWeight: 600, fontSize: 14, marginBottom: 8 }}>Create Post</Link>
+        <Link to="/new-question" style={{ display: "block", textAlign: "center", background: C.gradient, color: "#fff", borderRadius: 10, padding: "9px 0", textDecoration: "none", fontWeight: 600, fontSize: 14, marginBottom: 8 }}>Create Post</Link>
         <Link to="/ask" style={{ display: "block", textAlign: "center", border: `1px solid ${C.border}`, color: C.text, borderRadius: 10, padding: "9px 0", textDecoration: "none", fontWeight: 600, fontSize: 14 }}>Ask AI</Link>
       </div>
 

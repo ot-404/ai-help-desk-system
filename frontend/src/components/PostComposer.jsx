@@ -133,7 +133,7 @@ const s = {
     marginBottom: 14, cursor: "pointer",
   },
   avatar: {
-    width: 34, height: 34, borderRadius: "50%", background: C.primary, color: "#fff",
+    width: 34, height: 34, borderRadius: "50%", background: C.gradient, color: "#fff",
     display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700,
     fontSize: 14, flexShrink: 0,
   },
@@ -153,7 +153,7 @@ const s = {
     background: C.surface, color: C.muted, fontSize: 13, fontWeight: 500,
     cursor: "pointer", whiteSpace: "nowrap", minHeight: 34,
   },
-  tabActive: { background: C.primary, color: "#fff", border: `1px solid ${C.primary}`, fontWeight: 600 },
+  tabActive: { background: C.gradient, color: "#fff", border: `1px solid transparent`, fontWeight: 600 },
   titleInput: {
     width: "100%", height: 46, fontSize: 16, padding: "0 14px",
     border: `1px solid ${C.border}`, borderRadius: 10, boxSizing: "border-box",
@@ -173,7 +173,7 @@ const s = {
   error: { background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 8, padding: "9px 13px", fontSize: 13.5, color: C.danger },
   actions: { display: "flex", justifyContent: "flex-end", gap: 8 },
   cancel: { background: "none", border: `1px solid ${C.border}`, color: C.muted, borderRadius: 10, padding: "9px 18px", fontSize: 14, fontWeight: 600, cursor: "pointer" },
-  submit: { background: C.primary, color: "#fff", border: "none", borderRadius: 10, padding: "9px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer", minHeight: 40 },
+  submit: { background: C.gradient, color: "#fff", border: "none", borderRadius: 10, padding: "9px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer", minHeight: 40 },
 
   guest: {
     display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
@@ -181,5 +181,5 @@ const s = {
     padding: "12px 16px", marginBottom: 14, flexWrap: "wrap",
   },
   guestText: { fontSize: 14, color: C.muted },
-  guestBtn: { background: C.primary, color: "#fff", borderRadius: 10, padding: "8px 16px", fontSize: 14, fontWeight: 600, textDecoration: "none", whiteSpace: "nowrap" },
+  guestBtn: { background: C.gradient, color: "#fff", borderRadius: 10, padding: "8px 16px", fontSize: 14, fontWeight: 600, textDecoration: "none", whiteSpace: "nowrap" },
 };

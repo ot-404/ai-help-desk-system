@@ -35,9 +35,9 @@ export default function Profile() {
   return (
     <div>
       <div style={s.card}>
-        <div style={{ ...s.banner, background: `linear-gradient(135deg, ${ROLE_BG[user.role] || C.primary}, ${C.primaryHover})` }} />
+        <div style={{ ...s.banner, background: C.gradient }} />
         <div style={s.body}>
-          <div style={{ ...s.avatar, background: ROLE_BG[user.role] || C.primary }}>{initial}</div>
+          <div style={{ ...s.avatar, background: C.gradient }}>{initial}</div>
           <div style={s.identity}>
             <h1 style={s.name}>{user.name || "User"}</h1>
             <div style={s.handle}>{handle}</div>

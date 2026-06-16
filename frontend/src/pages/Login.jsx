@@ -6,7 +6,7 @@ import { C } from "../theme";
 function BigLogo() {
   return (
     <div style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-      <span style={{ background: C.primary, color: "#fff", fontWeight: 800, borderRadius: 6, padding: "5px 11px", fontSize: 22 }}>HD</span>
+      <span style={{ background: C.gradient, color: "#fff", fontWeight: 800, borderRadius: 8, padding: "5px 11px", fontSize: 22 }}>HD</span>
       <span style={{ color: C.text, fontWeight: 700, fontSize: 24 }}>Systems</span>
     </div>
   );
@@ -73,7 +73,7 @@ const s = {
   form: { display: "flex", flexDirection: "column", gap: 12 },
   input: { height: 46, borderRadius: 10, border: `1px solid ${C.border}`, background: C.surfaceHover, padding: "0 14px", fontSize: 16, boxSizing: "border-box", width: "100%", color: C.text },
   error: { background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 8, padding: "10px 14px", fontSize: 14, color: C.danger },
-  submit: { background: C.primary, color: "#fff", border: "none", borderRadius: 10, padding: 0, height: 44, fontSize: 15, fontWeight: 600, width: "100%", cursor: "pointer", marginTop: 2 },
+  submit: { background: C.gradient, color: "#fff", border: "none", borderRadius: 10, padding: 0, height: 44, fontSize: 15, fontWeight: 600, width: "100%", cursor: "pointer", marginTop: 2 },
   forgot: { display: "inline-block", marginTop: 16, color: C.blue, fontSize: 13, fontWeight: 600, textDecoration: "none" },
   divider: { display: "flex", alignItems: "center", textAlign: "center", margin: "20px 0", color: C.light },
   dividerText: { flex: 1, fontSize: 12, fontWeight: 600, position: "relative" },

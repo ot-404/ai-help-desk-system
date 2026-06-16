@@ -11,7 +11,7 @@ const ROLES = [
 function BigLogo() {
   return (
     <div style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-      <span style={{ background: C.primary, color: "#fff", fontWeight: 800, borderRadius: 6, padding: "5px 11px", fontSize: 22 }}>HD</span>
+      <span style={{ background: C.gradient, color: "#fff", fontWeight: 800, borderRadius: 8, padding: "5px 11px", fontSize: 22 }}>HD</span>
       <span style={{ color: C.text, fontWeight: 700, fontSize: 24 }}>Systems</span>
     </div>
   );
@@ -84,7 +84,7 @@ const s = {
   roleBtn: { flex: 1, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, padding: 0, height: 44, fontSize: 14, fontWeight: 600, color: C.muted, cursor: "pointer" },
   roleActive: { borderColor: C.primary, background: C.primaryBg, color: C.primary },
   error: { background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 8, padding: "10px 14px", fontSize: 14, color: C.danger },
-  submit: { background: C.primary, color: "#fff", border: "none", borderRadius: 10, padding: 0, height: 44, fontSize: 15, fontWeight: 600, width: "100%", cursor: "pointer", marginTop: 2 },
+  submit: { background: C.gradient, color: "#fff", border: "none", borderRadius: 10, padding: 0, height: 44, fontSize: 15, fontWeight: 600, width: "100%", cursor: "pointer", marginTop: 2 },
   foot: { textAlign: "center", marginTop: 20, fontSize: 14, color: C.muted },
   footLink: { color: C.blue, fontWeight: 600, textDecoration: "none" },
 };

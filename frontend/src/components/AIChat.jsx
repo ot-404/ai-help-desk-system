@@ -81,7 +81,7 @@ export default function AIChat() {
         style={{
           position: "fixed", bottom: 76, right: 16, zIndex: 200,
           width: 52, height: 52, borderRadius: "50%",
-          background: open ? C.muted : "#8250df",
+          background: open ? C.muted : C.gradient,
           border: "none", cursor: "pointer",
           display: "flex", alignItems: "center", justifyContent: "center",
           boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
@@ -187,7 +187,7 @@ const s = {
   header: {
     display: "flex", alignItems: "center", justifyContent: "space-between",
     padding: "12px 14px", borderBottom: `1px solid ${C.border}`,
-    background: "#8250df", borderRadius: "8px 8px 0 0",
+    background: C.gradient, borderRadius: "8px 8px 0 0",
   },
   botAvatar: {
     width: 30, height: 30, borderRadius: "50%", background: "rgba(255,255,255,0.2)",
@@ -204,27 +204,27 @@ const s = {
     minHeight: 0,
   },
   aiBubbleAvatar: {
-    width: 22, height: 22, borderRadius: "50%", background: "#f3ecff",
+    width: 22, height: 22, borderRadius: "50%", background: "#eef1fb",
     display: "flex", alignItems: "center", justifyContent: "center",
-    color: "#8250df", flexShrink: 0, marginRight: 6, marginTop: 2,
+    color: C.primary, flexShrink: 0, marginRight: 6, marginTop: 2,
   },
   aiBubble: {
-    background: "#f3ecff", color: C.text,
+    background: "#eef1fb", color: C.text,
     borderRadius: "0 12px 12px 12px",
     padding: "8px 12px", fontSize: 13, lineHeight: 1.5,
     maxWidth: "85%", whiteSpace: "pre-wrap",
   },
   userBubble: {
-    background: "#8250df", color: "#fff",
+    background: C.primary, color: "#fff",
     borderRadius: "12px 0 12px 12px",
     padding: "8px 12px", fontSize: 13, lineHeight: 1.5,
     maxWidth: "85%", whiteSpace: "pre-wrap",
   },
   quickBtn: {
     display: "block", width: "100%", textAlign: "left",
-    background: "#f3ecff", border: "none",
+    background: "#eef1fb", border: "none",
     borderRadius: 6, padding: "8px 10px",
-    fontSize: 12, color: "#8250df", fontWeight: 600,
+    fontSize: 12, color: C.primary, fontWeight: 600,
     cursor: "pointer", marginBottom: 4,
   },
   loginBanner: {
@@ -243,7 +243,7 @@ const s = {
     maxHeight: 80, overflowY: "auto",
   },
   sendBtn: {
-    width: 36, height: 36, borderRadius: "50%", background: "#8250df",
+    width: 36, height: 36, borderRadius: "50%", background: C.gradient,
     border: "none", cursor: "pointer", color: "#fff",
     display: "flex", alignItems: "center", justifyContent: "center",
     flexShrink: 0, transition: "opacity 0.15s",

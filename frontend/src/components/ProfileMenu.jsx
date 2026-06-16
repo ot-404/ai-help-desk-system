@@ -33,7 +33,7 @@ export default function ProfileMenu({ user, logout }) {
   const location = useLocation();
 
   const initial = (user.name || user.email || "?")[0].toUpperCase();
-  const avatarBg = ROLE_BG[user.role] || C.blue;
+  const avatarBg = C.gradient;
   const isStaff = user.role === "admin" || user.role === "agent";
 
   // Close on outside click, Escape, or navigation.

@@ -111,7 +111,7 @@ const s = {
   empty: { display: "flex", flexDirection: "column", alignItems: "center", gap: 10, padding: 48, color: C.light, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12 },
   emptyTitle: { fontSize: 16, fontWeight: 700, color: C.muted },
   emptySub: { fontSize: 14, color: C.light },
-  emptyBtn: { background: C.primary, color: "#fff", borderRadius: 10, padding: "9px 22px", fontWeight: 600, fontSize: 14, textDecoration: "none", marginTop: 4 },
+  emptyBtn: { background: C.gradient, color: "#fff", borderRadius: 10, padding: "9px 22px", fontWeight: 600, fontSize: 14, textDecoration: "none", marginTop: 4 },
   feed: { display: "flex", flexDirection: "column", gap: 10 },
   loadMoreRow: { display: "flex", justifyContent: "center", padding: "14px 0" },
   loadMore: { background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, color: C.primary, fontWeight: 600, fontSize: 14, cursor: "pointer", padding: "12px 24px", width: "100%" },

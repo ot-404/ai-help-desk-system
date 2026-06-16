@@ -100,6 +100,6 @@ const s = {
   title: { fontSize: 14, fontWeight: 700, color: C.text },
   sub: { fontSize: 12.5, color: C.muted, lineHeight: 1.35 },
   actions: { display: "flex", alignItems: "center", gap: 6, flexShrink: 0 },
-  installBtn: { background: C.primary, color: "#fff", border: "none", borderRadius: 9, padding: "8px 16px", fontSize: 13, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" },
+  installBtn: { background: C.gradient, color: "#fff", border: "none", borderRadius: 9, padding: "8px 16px", fontSize: 13, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" },
   dismissBtn: { background: "none", border: "none", color: C.muted, cursor: "pointer", padding: 6, display: "flex", borderRadius: 8 },
 };
