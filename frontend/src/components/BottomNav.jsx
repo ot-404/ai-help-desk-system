@@ -46,7 +46,7 @@ export default function BottomNav() {
 }
 
 const s = {
-  bar: { position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 200, height: 58, background: C.surface, borderTop: "1px solid " + C.border, display: "flex", alignItems: "stretch" },
+  bar: { position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 200, height: 56, background: C.surface, borderTop: "1px solid " + C.border, display: "flex", alignItems: "stretch" },
   tab: { flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3, textDecoration: "none", paddingBottom: "env(safe-area-inset-bottom, 0px)" },
   label: { fontSize: 10, fontWeight: 600 },
   plus: { width: 40, height: 40, borderRadius: "50%", background: C.primary, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center" },

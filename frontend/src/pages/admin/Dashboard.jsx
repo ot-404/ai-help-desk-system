@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../../api/client";
+import { useIsMobile } from "../../hooks/useIsMobile";
 import { C } from "../../theme";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -37,6 +38,7 @@ function Kpi({ label, value, color }) {
 }
 
 export default function Dashboard() {
+  const isMobile = useIsMobile();
   const [stats, setStats] = useState(null);
   const [activity, setActivity] = useState([]);
 
@@ -57,14 +59,14 @@ export default function Dashboard() {
       <h1 style={s.h1}>Admin Overview</h1>
       <p style={s.sub}>HD Systems platform analytics</p>
 
-      <div style={s.kpiGrid}>
+      <div style={{ ...s.kpiGrid, gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)" }}>
         <Kpi label="Users" value={stats.total_users} color={C.primary} />
         <Kpi label="Questions" value={stats.total_tickets} color={C.text} />
         <Kpi label="AI Queries" value={stats.ai_messages} color={C.purple} />
-        <Kpi label="Open Tickets" value={open} color="#f59e0b" />
+        <Kpi label="Open Tickets" value={open} color={C.warning} />
       </div>
 
-      <div style={s.grid2}>
+      <div style={{ ...s.grid2, gridTemplateColumns: isMobile ? "1fr" : "1.4fr 1fr" }}>
         <div style={s.card}>
           <div style={s.cardTitle}>Questions — last 7 days</div>
           {bars ? <BarChart values={bars} /> : <div style={s.dim}>No daily data available.</div>}
@@ -98,11 +100,11 @@ export default function Dashboard() {
 const s = {
   page: { display: "flex", flexDirection: "column", gap: 14 },
   loading: { textAlign: "center", color: C.light, marginTop: 60 },
-  h1: { fontSize: 22, fontWeight: 800, color: C.text, margin: 0 },
+  h1: { fontSize: 20, fontWeight: 600, color: C.text, margin: 0 },
   sub: { fontSize: 14, color: C.muted, margin: "-8px 0 0" },
   kpiGrid: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 },
-  kpi: { background: C.surface, border: "1px solid " + C.border, borderRadius: 8, padding: "18px 20px" },
-  kpiNum: { fontSize: 28, fontWeight: 800, lineHeight: 1 },
+  kpi: { background: C.surface, border: "1px solid " + C.border, borderRadius: 8, padding: "16px 18px" },
+  kpiNum: { fontSize: 26, fontWeight: 700, lineHeight: 1 },
   kpiLabel: { fontSize: 12, color: C.muted, marginTop: 6, fontWeight: 600 },
   grid2: { display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 12 },
   card: { background: C.surface, border: "1px solid " + C.border, borderRadius: 8, padding: 18 },

@@ -15,7 +15,7 @@ export default function Home({ heading }) {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState("Newest");
-  const [limit, setLimit] = useState(15);
+  const [limit, setLimit] = useState(10);
 
   const current = TABS.find((t) => t.key === tab) || TABS[0];
 
@@ -37,11 +37,8 @@ export default function Home({ heading }) {
   const shown = view.slice(0, limit);
 
   return (
-    <div style={s.page}>
-      <div style={s.head}>
-        <h1 style={s.heading}>{heading || "All Questions"}</h1>
-        <Link to="/new-question" style={s.askBtn}>Ask Question</Link>
-      </div>
+    <div>
+      {heading && <h1 style={s.heading}>{heading}</h1>}
 
       <div style={s.subRow}>
         <span style={s.count}>{view.length} questions</span>
@@ -49,7 +46,7 @@ export default function Home({ heading }) {
           {TABS.map((t) => (
             <button
               key={t.key}
-              onClick={() => { setTab(t.key); setLimit(15); }}
+              onClick={() => { setTab(t.key); setLimit(10); }}
               style={{ ...s.tab, ...(tab === t.key ? s.tabActive : {}) }}
             >
               {t.key}
@@ -75,7 +72,7 @@ export default function Home({ heading }) {
 
       {!loading && limit < view.length && (
         <div style={s.loadMoreRow}>
-          <button style={s.loadMore} onClick={() => setLimit((l) => l + 15)}>Load more</button>
+          <button style={s.loadMore} onClick={() => setLimit((l) => l + 10)}>Load 10 more ↓</button>
         </div>
       )}
     </div>
@@ -83,20 +80,17 @@ export default function Home({ heading }) {
 }
 
 const s = {
-  page: { display: "flex", flexDirection: "column" },
-  head: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 },
-  heading: { fontSize: 24, fontWeight: 500, color: C.text, margin: 0 },
-  askBtn: { background: C.primary, color: "#fff", textDecoration: "none", fontSize: 13, fontWeight: 500, padding: "9px 12px", borderRadius: 4, whiteSpace: "nowrap" },
-  subRow: { display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 8, flexWrap: "wrap", gap: 8 },
-  count: { fontSize: 17, color: C.text },
-  tabs: { display: "flex", border: `1px solid ${C.primary}`, borderRadius: 4, overflow: "hidden" },
-  tab: { border: "none", background: C.surface, color: C.primary, padding: "8px 12px", fontSize: 13, cursor: "pointer", borderRight: `1px solid #cfe3f3` },
-  tabActive: { background: "#e1ecf4", color: "#2c5777", fontWeight: 500 },
+  heading: { fontSize: 20, fontWeight: 600, color: C.text, margin: "0 0 16px" },
+  subRow: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 },
+  count: { fontSize: 14, color: C.muted },
+  tabs: { display: "flex", gap: 0 },
+  tab: { border: "none", background: "none", color: C.muted, padding: "6px 10px", fontSize: 14, cursor: "pointer", borderBottom: "2px solid transparent" },
+  tabActive: { color: C.primary, fontWeight: 600, borderBottom: `2px solid ${C.primary}` },
   loading: { textAlign: "center", color: C.light, padding: 32 },
   empty: { display: "flex", flexDirection: "column", alignItems: "center", gap: 10, padding: 48, color: C.light },
-  emptyTitle: { fontSize: 18, fontWeight: 600, color: C.muted },
+  emptyTitle: { fontSize: 16, fontWeight: 600, color: C.muted },
   emptyLink: { color: C.primary, fontWeight: 600, textDecoration: "none" },
-  feed: { display: "flex", flexDirection: "column", border: `1px solid ${C.border}`, borderBottom: "none", borderRadius: 4, overflow: "hidden" },
-  loadMoreRow: { display: "flex", justifyContent: "center", padding: "16px 0 20px" },
-  loadMore: { background: C.surface, border: `1px solid ${C.border}`, color: C.primary, fontWeight: 500, fontSize: 13, padding: "10px 28px", borderRadius: 4, cursor: "pointer" },
+  feed: { display: "flex", flexDirection: "column", gap: 8 },
+  loadMoreRow: { display: "flex", justifyContent: "center", padding: "20px 0" },
+  loadMore: { background: "none", border: "none", color: C.primary, fontWeight: 500, fontSize: 14, cursor: "pointer" },
 };

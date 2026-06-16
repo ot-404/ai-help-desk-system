@@ -2,11 +2,11 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import NavBar from "./components/NavBar";
 import Sidebar from "./components/Sidebar";
-import RightPanel from "./components/RightPanel";
 import BottomNav from "./components/BottomNav";
 import PrivateRoute from "./components/PrivateRoute";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { useIsMobile } from "./hooks/useIsMobile";
+import { C } from "./theme";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
@@ -30,32 +30,31 @@ function HomeOrRedirect() {
 }
 
 /**
- * Three-column shell on desktop, single-column + BottomNav on mobile.
- *  wide    → suppresses right panel (full-width content like Dashboard)
- *  noRight → suppresses right panel without widening main
+ * Single-column + BottomNav on mobile; left sidebar + main on desktop.
+ * No right panel anywhere.
  */
-function Layout({ children, wide, noRight }) {
+function Layout({ children }) {
   const isMobile = useIsMobile();
   return (
     <>
       <NavBar />
-      <div style={{ ...s.page, paddingBottom: isMobile ? 72 : 0 }}>
-        <div style={{ ...s.container, maxWidth: wide ? 1260 : 1180, gap: isMobile ? 0 : 20, padding: isMobile ? "12px 0" : "20px 16px" }}>
-          <Sidebar />
-          <main style={{ ...s.main, padding: isMobile ? "0 12px" : 0 }}>{children}</main>
-          {!wide && !noRight && <RightPanel />}
+      <div style={{ paddingTop: 52, paddingBottom: isMobile ? 72 : 0, minHeight: "100vh", background: C.bg }}>
+        <div style={{
+          maxWidth: 1060, margin: "0 auto",
+          display: "flex", gap: isMobile ? 0 : 24,
+          padding: isMobile ? "16px 0" : "24px 16px",
+          alignItems: "flex-start",
+        }}>
+          {!isMobile && <Sidebar />}
+          <main style={{ flex: 1, minWidth: 0, padding: isMobile ? "0 16px" : 0 }}>
+            {children}
+          </main>
         </div>
       </div>
       {isMobile && <BottomNav />}
     </>
   );
 }
-
-const s = {
-  page: { paddingTop: 60, minHeight: "100vh", background: "#f0f2f5" },
-  container: { margin: "0 auto", display: "flex", alignItems: "flex-start" },
-  main: { flex: 1, minWidth: 0 },
-};
 
 export default function App() {
   return (
@@ -69,30 +68,30 @@ export default function App() {
 
           {/* Public pages — shell visible, no login required */}
           <Route path="/"    element={<Layout><HomeOrRedirect /></Layout>} />
-          <Route path="/help" element={<Layout noRight><PublicHelp /></Layout>} />
-          <Route path="/ask"  element={<Layout noRight><AskAI /></Layout>} />
+          <Route path="/help" element={<Layout><PublicHelp /></Layout>} />
+          <Route path="/ask"  element={<Layout><AskAI /></Layout>} />
 
           {/* User-only */}
           <Route path="/my-questions" element={<PrivateRoute roles={["user"]}><Layout><MyTickets /></Layout></PrivateRoute>} />
-          <Route path="/new-question" element={<PrivateRoute roles={["user"]}><Layout noRight><NewTicket /></Layout></PrivateRoute>} />
+          <Route path="/new-question" element={<PrivateRoute roles={["user"]}><Layout><NewTicket /></Layout></PrivateRoute>} />
 
           {/* Legacy redirects */}
           <Route path="/my-tickets"  element={<Navigate to="/my-questions" replace />} />
           <Route path="/new-ticket"  element={<Navigate to="/new-question" replace />} />
 
           {/* Any authenticated user */}
-          <Route path="/question/:id" element={<PrivateRoute><Layout noRight><TicketDetail /></Layout></PrivateRoute>} />
-          <Route path="/ticket/:id"   element={<PrivateRoute><Layout noRight><TicketDetail /></Layout></PrivateRoute>} />
+          <Route path="/question/:id" element={<PrivateRoute><Layout><TicketDetail /></Layout></PrivateRoute>} />
+          <Route path="/ticket/:id"   element={<PrivateRoute><Layout><TicketDetail /></Layout></PrivateRoute>} />
 
           {/* Agent + Admin */}
-          <Route path="/agent"    element={<PrivateRoute roles={["agent","admin"]}><Layout noRight><AgentQueue /></Layout></PrivateRoute>} />
-          <Route path="/admin/kb" element={<PrivateRoute roles={["agent","admin"]}><Layout noRight><KnowledgeBase /></Layout></PrivateRoute>} />
+          <Route path="/agent"    element={<PrivateRoute roles={["agent","admin"]}><Layout><AgentQueue /></Layout></PrivateRoute>} />
+          <Route path="/admin/kb" element={<PrivateRoute roles={["agent","admin"]}><Layout><KnowledgeBase /></Layout></PrivateRoute>} />
 
           {/* Admin only */}
-          <Route path="/admin"       element={<PrivateRoute roles={["admin"]}><Layout wide><Dashboard /></Layout></PrivateRoute>} />
-          <Route path="/admin/users" element={<PrivateRoute roles={["admin"]}><Layout noRight><AdminPanel /></Layout></PrivateRoute>} />
+          <Route path="/admin"       element={<PrivateRoute roles={["admin"]}><Layout><Dashboard /></Layout></PrivateRoute>} />
+          <Route path="/admin/users" element={<PrivateRoute roles={["admin"]}><Layout><AdminPanel /></Layout></PrivateRoute>} />
 
-          <Route path="*" element={<Layout noRight><div style={{ textAlign:"center", marginTop:80, color:"#939598" }}><h2>404 — Page not found</h2></div></Layout>} />
+          <Route path="*" element={<Layout><div style={{ textAlign:"center", marginTop:80, color:"#939598" }}><h2>404 — Page not found</h2></div></Layout>} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

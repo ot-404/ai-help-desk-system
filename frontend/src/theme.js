@@ -1,60 +1,53 @@
-// HD Systems shared design tokens — Quora x Stack Exchange hybrid
+// HD Systems design tokens — GitHub Issues meets Hacker News: clean, minimal.
 export const C = {
-  bg:       "#ffffff",
-  pageBg:   "#f6f6f6",
-  surface:  "#ffffff",
-  border:   "#e3e6e8",
-  divider:  "#d6d9dc",
-  primary:  "#0074cc",          // Stack Overflow blue
-  primaryHover: "#005999",
-  tag:      "#e1ecf4",          // SO tag background
-  tagText:  "#39739d",          // SO tag text
-  accepted: "#2e7d32",          // green checkmark
-  rep:      "#f48024",          // SO orange (reputation/hot)
-  text:     "#242729",
-  muted:    "#6a737c",
-  light:    "#9199a1",
-  red:      "#b92b27",          // Quora red (used for destructive only)
-  purple:   "#7c3aed",          // AI purple
-  surface2: "#f8f9f9",
+  // Surfaces
+  bg:       "#f6f8fa",   // page background (very light gray)
+  surface:  "#ffffff",   // cards, panels
+  border:   "#d0d7de",   // borders
+  divider:  "#eaeef2",   // subtle dividers
 
-  // legacy aliases kept for backwards compatibility
-  accent:   "#f48024",
-  ai:       "#7c3aed",
-  tagBg:    "#e1ecf4",
+  // Brand
+  primary:     "#0969da",   // links, active states, buttons
+  primaryDark: "#0550ae",   // button hover
+  primaryBg:   "#ddf4ff",   // light blue tint backgrounds
+
+  // Text
+  text:    "#1f2328",   // primary text
+  muted:   "#656d76",   // secondary / meta text
+  light:   "#8c959f",   // placeholders, timestamps
+
+  // Semantic
+  success: "#1a7f37",   // resolved, accepted, green
+  warning: "#9a6700",   // pending
+  danger:  "#d1242f",   // errors
+
+  // Tags
+  tag:     "#ddf4ff",
+  tagText: "#0550ae",
+  tagBorder: "#54aeff",
+
+  // Legacy aliases (kept so older pages keep compiling)
+  pageBg:       "#f6f8fa",
+  primaryHover: "#0550ae",
+  accepted:     "#1a7f37",
+  red:          "#d1242f",
+  purple:       "#8250df",
+  rep:          "#0969da",
+  surface2:     "#f6f8fa",
+  accent:       "#0969da",
+  ai:           "#8250df",
+  tagBg:        "#ddf4ff",
 };
 
 export const TYPE_BADGE = {
-  Blog:       { bg: "#e1ecf4", color: "#39739d" },
-  "Q&A":      { bg: "#e6f6ed", color: "#2e7d32" },
-  Tutorial:   { bg: "#f1e9fd", color: "#7c3aed" },
-  Discussion: { bg: "#eef0f3", color: "#6a737c" },
+  Blog:       { bg: "#ddf4ff", color: "#0550ae" },
+  "Q&A":      { bg: "#dafbe1", color: "#1a7f37" },
+  Tutorial:   { bg: "#fbefff", color: "#8250df" },
+  Discussion: { bg: "#eaeef2", color: "#656d76" },
 };
 
-// Map a KB category to a feed post type label
-export function deriveType(cat = "") {
-  const c = (cat || "").toLowerCase();
-  if (c.includes("blog")) return "Blog";
-  if (c.includes("tutorial") || c.includes("guide")) return "Tutorial";
-  if (c.includes("faq") || c.includes("q&a") || c.includes("question")) return "Q&A";
-  return "Discussion";
-}
-
-// Topic groupings, represented as tags (not Reddit communities)
-export const COMMUNITIES = [
-  "Programming", "DevOps & Cloud", "Cybersecurity", "Databases",
-  "Web Development", "Mobile Dev", "AI & Machine Learning", "System Admin",
-  "Networking", "Software Architecture", "Career & Jobs", "Open Source",
-];
-
-export function communityFor(article) {
-  const list = COMMUNITIES;
-  const seed = (article?.id ?? 0) + (article?.title?.length ?? 0);
-  return list[seed % list.length];
-}
-
 export function timeAgo(dateStr) {
-  if (!dateStr) return "recently";
+  if (!dateStr) return "";
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60000);
   if (mins < 1) return "just now";
@@ -62,4 +55,25 @@ export function timeAgo(dateStr) {
   const hrs = Math.floor(mins / 60);
   if (hrs < 24) return `${hrs}h ago`;
   return `${Math.floor(hrs / 24)}d ago`;
+}
+
+export function deriveType(article) {
+  const tags = (article.tags || []).join(" ").toLowerCase();
+  const title = (article.title || "").toLowerCase();
+  if (tags.includes("tutorial") || title.includes("how to")) return "Tutorial";
+  if (tags.includes("blog")) return "Blog";
+  if (tags.includes("discussion")) return "Discussion";
+  return "Q&A";
+}
+
+export const COMMUNITIES = [
+  "Programming","DevOps & Cloud","Cybersecurity","Databases",
+  "Web Development","Mobile Dev","AI & Machine Learning",
+  "System Admin","Networking","Software Architecture",
+  "Career & Jobs","Open Source",
+];
+
+export function communityFor(article) {
+  const seed = (article?.id ?? 0) + (article?.title?.length ?? 0);
+  return COMMUNITIES[seed % COMMUNITIES.length];
 }

@@ -27,9 +27,6 @@ export default function NavBar() {
 
       {!isMobile && (
         <form onSubmit={submit} style={s.searchForm}>
-          <span style={s.searchIcon}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.light} strokeWidth="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
-          </span>
           <input style={s.searchInput} placeholder="Search…" value={q} onChange={(e) => setQ(e.target.value)} />
         </form>
       )}
@@ -43,21 +40,10 @@ export default function NavBar() {
 
         {user ? (
           <>
-            {!isMobile && (
-              <>
-                <Link to="/new-question" style={s.askBtn}>Ask Question</Link>
-                <button style={s.iconBtn} aria-label="Notifications">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.muted} strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>
-                </button>
-              </>
-            )}
+            {!isMobile && <Link to="/new-question" style={s.askBtn}>Ask Question</Link>}
             <div style={s.userWrap}>
-              <button style={s.userBtn} onClick={() => setMenuOpen((v) => !v)}>
+              <button style={s.userBtn} onClick={() => setMenuOpen((v) => !v)} aria-label="Account">
                 <div style={s.avatar} title={user.role}>{avatarChar}</div>
-                {!isMobile && <span style={s.username}>{user.name || user.email}</span>}
-                {!isMobile && (
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.muted} strokeWidth="2"><polyline points="6 9 12 15 18 9" /></svg>
-                )}
               </button>
               {menuOpen && (
                 <div style={s.menu}>
@@ -88,21 +74,19 @@ export default function NavBar() {
 }
 
 const s = {
-  nav: { position: "fixed", top: 0, left: 0, right: 0, height: 60, background: C.surface, borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "center", padding: "0 16px", gap: 14, zIndex: 100, boxShadow: "0 1px 0 rgba(0,0,0,0.03)" },
-  searchForm: { flex: 1, maxWidth: 600, position: "relative", display: "flex", alignItems: "center" },
-  searchIcon: { position: "absolute", left: 12, display: "flex" },
-  searchInput: { width: "100%", height: 36, borderRadius: 4, border: `1px solid #babfc4`, background: C.surface, padding: "0 14px 0 36px", fontSize: 14, boxSizing: "border-box" },
-  right: { display: "flex", alignItems: "center", gap: 8, marginLeft: "auto", flexShrink: 0 },
-  iconBtn: { background: "none", border: "none", padding: 7, borderRadius: "50%", display: "flex", cursor: "pointer" },
-  askBtn: { background: C.primary, color: "#fff", border: "none", borderRadius: 4, padding: "8px 12px", fontSize: 13, fontWeight: 500, textDecoration: "none", display: "inline-flex", alignItems: "center", whiteSpace: "nowrap" },
-  avatar: { width: 30, height: 30, borderRadius: 3, background: C.rep, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 14, flexShrink: 0 },
+  nav: { position: "fixed", top: 0, left: 0, right: 0, height: 52, background: C.surface, borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "center", padding: "0 16px", gap: 16, zIndex: 100 },
+  searchForm: { flex: 1, maxWidth: 400, display: "flex", alignItems: "center" },
+  searchInput: { width: "100%", height: 32, borderRadius: 6, border: `1px solid ${C.border}`, background: C.surface, padding: "0 12px", fontSize: 14, boxSizing: "border-box", color: C.text },
+  right: { display: "flex", alignItems: "center", gap: 10, marginLeft: "auto", flexShrink: 0 },
+  iconBtn: { background: "none", border: "none", padding: 6, borderRadius: 6, display: "flex", cursor: "pointer" },
+  askBtn: { background: C.primary, color: "#fff", border: "none", borderRadius: 6, padding: "5px 12px", fontSize: 13, fontWeight: 600, textDecoration: "none", display: "inline-flex", alignItems: "center", whiteSpace: "nowrap" },
+  avatar: { width: 28, height: 28, borderRadius: "50%", background: C.primary, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 600, fontSize: 13, flexShrink: 0 },
   userWrap: { position: "relative" },
-  userBtn: { background: "none", border: "none", display: "flex", alignItems: "center", gap: 7, cursor: "pointer", padding: 2 },
-  username: { fontSize: 13, fontWeight: 500, color: C.text, maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" },
+  userBtn: { background: "none", border: "none", display: "flex", alignItems: "center", cursor: "pointer", padding: 0 },
   menu: { position: "absolute", top: "calc(100% + 8px)", right: 0, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 6, boxShadow: "0 4px 16px rgba(0,0,0,0.12)", minWidth: 160, display: "flex", flexDirection: "column", padding: 4, zIndex: 110 },
-  menuItem: { display: "block", padding: "9px 12px", fontSize: 13, color: C.text, textDecoration: "none", borderRadius: 4, textAlign: "left" },
+  menuItem: { display: "block", padding: "9px 12px", fontSize: 14, color: C.text, textDecoration: "none", borderRadius: 6, textAlign: "left" },
   menuBtn: { background: "none", border: "none", cursor: "pointer", width: "100%" },
-  ghostBtn: { background: C.tag, color: C.tagText, border: `1px solid #7aa7c7`, borderRadius: 4, padding: "7px 12px", fontSize: 13, fontWeight: 500, textDecoration: "none", display: "inline-flex", alignItems: "center" },
-  mobileSearch: { position: "absolute", top: 0, left: 0, right: 0, height: 60, background: C.surface, display: "flex", alignItems: "center", padding: "0 12px", gap: 8, zIndex: 101 },
-  mobileInput: { flex: 1, height: 36, borderRadius: 4, border: `1px solid #babfc4`, background: C.surface, padding: "0 14px", fontSize: 14 },
+  ghostBtn: { color: C.primary, fontSize: 14, fontWeight: 500, textDecoration: "none", display: "inline-flex", alignItems: "center" },
+  mobileSearch: { position: "absolute", top: 0, left: 0, right: 0, height: 52, background: C.surface, display: "flex", alignItems: "center", padding: "0 12px", gap: 8, zIndex: 101 },
+  mobileInput: { flex: 1, height: 36, borderRadius: 6, border: `1px solid ${C.border}`, background: C.surface, padding: "0 12px", fontSize: 16, boxSizing: "border-box" },
 };

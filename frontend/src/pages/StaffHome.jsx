@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import api from "../api/client";
 import { C } from "../theme";
 
-const STATUS_COLOR = { open: "#f59e0b", pending: "#3b82f6", resolved: "#1a7f45", closed: C.light };
+const STATUS_COLOR = { open: C.warning, pending: C.primary, resolved: C.success, closed: C.light };
 
 export default function StaffHome() {
   const { user } = useAuth();
@@ -22,9 +22,9 @@ export default function StaffHome() {
   const active = tickets.filter((t) => ["open", "pending"].includes(t.status));
 
   const stats = [
-    { label: "Open", value: open, color: "#f59e0b" },
-    { label: "Pending", value: pending, color: "#3b82f6" },
-    { label: "Resolved Today", value: resolvedToday, color: "#1a7f45" },
+    { label: "Open", value: open, color: C.warning },
+    { label: "Pending", value: pending, color: C.primary },
+    { label: "Resolved", value: resolvedToday, color: C.success },
   ];
 
   return (
@@ -77,17 +77,17 @@ export default function StaffHome() {
 
 const s = {
   page: { display: "flex", flexDirection: "column", gap: 14 },
-  h1: { fontSize: 22, fontWeight: 800, color: C.text, margin: 0 },
+  h1: { fontSize: 20, fontWeight: 600, color: C.text, margin: 0 },
   sub: { fontSize: 14, color: C.muted, margin: "-8px 0 0" },
   statGrid: { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 },
-  statCard: { background: C.surface, border: "1px solid " + C.border, borderRadius: 8, padding: "18px 20px" },
-  statNum: { fontSize: 30, fontWeight: 800, lineHeight: 1 },
+  statCard: { background: C.surface, border: "1px solid " + C.border, borderRadius: 8, padding: "16px 18px" },
+  statNum: { fontSize: 28, fontWeight: 700, lineHeight: 1 },
   statLabel: { fontSize: 12, color: C.muted, marginTop: 6, fontWeight: 600 },
   sectionRow: { display: "flex", justifyContent: "space-between", alignItems: "center" },
   sectionTitle: { fontSize: 13, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: ".6px" },
   seeAll: { fontSize: 13, color: C.primary, fontWeight: 700, textDecoration: "none" },
-  tableWrap: { background: C.surface, border: "1px solid " + C.border, borderRadius: 8, overflow: "hidden" },
-  table: { width: "100%", borderCollapse: "collapse" },
+  tableWrap: { background: C.surface, border: "1px solid " + C.border, borderRadius: 8, overflowX: "auto" },
+  table: { width: "100%", borderCollapse: "collapse", minWidth: 480 },
   thead: { background: C.bg },
   th: { textAlign: "left", padding: "10px 14px", fontSize: 11, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: ".5px" },
   tr: { borderTop: "1px solid " + C.bg },

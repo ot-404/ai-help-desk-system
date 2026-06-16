@@ -4,9 +4,9 @@ import { C } from "../theme";
 export default function Logo({ size = "md" }) {
   const big = size === "lg";
   return (
-    <span style={{ display: "inline-flex", alignItems: "center", fontSize: big ? 22 : 18 }}>
-      <span style={{ background: C.primary, color: "#fff", fontWeight: 800, borderRadius: 6, padding: big ? "5px 12px" : "4px 10px" }}>HD</span>
-      <span style={{ color: C.primary, fontWeight: 700, marginLeft: 4 }}>Systems</span>
+    <span style={{ display: "inline-flex", alignItems: "center", fontSize: big ? 20 : 16 }}>
+      <span style={{ background: C.primary, color: "#fff", fontWeight: 700, borderRadius: 6, padding: big ? "4px 10px" : "3px 8px" }}>HD</span>
+      <span style={{ color: C.text, fontWeight: 600, marginLeft: 6 }}>Systems</span>
     </span>
   );
 }
