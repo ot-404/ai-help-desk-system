@@ -1,32 +1,46 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../../api/client";
+import { C, COMMUNITIES } from "../../theme";
 
-const PRIORITIES = [
-  { value: "low", label: "Low", color: "#939598" },
-  { value: "medium", label: "Medium", color: "#3b82f6" },
-  { value: "high", label: "High", color: "#f97316" },
-  { value: "urgent", label: "Urgent", color: "#ef4444" },
-];
+const TYPES = ["Discussion", "Q&A", "Blog", "Tutorial"];
 
 export default function NewTicket() {
   const navigate = useNavigate();
-  const [subject, setSubject] = useState("");
-  const [description, setDescription] = useState("");
-  const [priority, setPriority] = useState("medium");
+  const [type, setType] = useState("Q&A");
+  const [community, setCommunity] = useState(COMMUNITIES[0]);
+  const [title, setTitle] = useState("");
+  const [tags, setTags] = useState([]);
+  const [tagInput, setTagInput] = useState("");
+  const [body, setBody] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
+  function addTag(e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const t = tagInput.trim().replace(/^#/, "");
+      if (t && !tags.includes(t)) setTags((p) => [...p, t]);
+      setTagInput("");
+    }
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
-    if (!subject.trim()) { setError("Please enter a question."); return; }
+    if (!title.trim()) { setError("Please enter a title."); return; }
     setSubmitting(true);
     setError("");
+    const description = [
+      `[${type}] · r/${community}`,
+      tags.length ? `Tags: ${tags.map((t) => "#" + t).join(" ")}` : "",
+      "",
+      body,
+    ].filter(Boolean).join("\n");
     try {
-      const { data } = await api.post("/tickets/", { subject, description, priority });
+      const { data } = await api.post("/tickets/", { subject: title, description, priority: "medium" });
       navigate(`/question/${data.ticket.id}`);
     } catch (err) {
-      setError(err?.response?.data?.error || "Failed to submit. Try again.");
+      setError(err?.response?.data?.error || "Failed to post. Try again.");
     } finally {
       setSubmitting(false);
     }
@@ -34,58 +48,42 @@ export default function NewTicket() {
 
   return (
     <div style={s.page}>
-      <Link to="/" style={s.backLink}>← Back to Feed</Link>
-
-      <div style={s.headingSection}>
-        <h1 style={s.heading}>Add Question</h1>
-        <p style={s.subtitle}>Ask anything — our AI answers instantly</p>
-      </div>
+      <Link to="/" style={s.back}>← Back to feed</Link>
+      <h1 style={s.heading}>Create Post</h1>
 
       <div style={s.card}>
+        <div style={s.typeTabs}>
+          {TYPES.map((t) => (
+            <button key={t} type="button" onClick={() => setType(t)} style={{ ...s.typeTab, ...(type === t ? s.typeActive : {}) }}>{t}</button>
+          ))}
+        </div>
+
         <form onSubmit={handleSubmit} style={s.form}>
-          <input
-            style={s.titleInput}
-            placeholder="Start your question with 'What', 'How', 'Why'..."
-            value={subject}
-            onChange={e => setSubject(e.target.value)}
-            maxLength={200}
-          />
+          <div style={s.field}>
+            <label style={s.label}>Community</label>
+            <select style={s.select} value={community} onChange={(e) => setCommunity(e.target.value)}>
+              {COMMUNITIES.map((c) => <option key={c} value={c}>r/{c}</option>)}
+            </select>
+          </div>
 
-          <textarea
-            style={s.descInput}
-            placeholder="Add more details... (optional but helps get better answers)"
-            value={description}
-            onChange={e => setDescription(e.target.value)}
-            rows={5}
-          />
+          <input style={s.titleInput} placeholder="An interesting title" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={200} />
 
-          <div style={s.prioritySection}>
-            <div style={s.priorityLabel}>Priority</div>
-            <div style={s.priorityRow}>
-              {PRIORITIES.map(p => (
-                <button
-                  key={p.value}
-                  type="button"
-                  onClick={() => setPriority(p.value)}
-                  style={{
-                    ...s.priorityBtn,
-                    borderColor: priority === p.value ? p.color : "#e8e8e8",
-                    background: priority === p.value ? p.color + "18" : "#fff",
-                    color: priority === p.value ? p.color : "#555",
-                    fontWeight: priority === p.value ? 700 : 400,
-                  }}
-                >
-                  {p.label}
-                </button>
+          <div style={s.field}>
+            <label style={s.label}>Tags</label>
+            <div style={s.tagBox}>
+              {tags.map((t) => (
+                <span key={t} style={s.tagChip}>#{t}
+                  <button type="button" style={s.tagX} onClick={() => setTags((p) => p.filter((x) => x !== t))}>×</button>
+                </span>
               ))}
+              <input style={s.tagInput} placeholder="Add tag, press Enter" value={tagInput} onChange={(e) => setTagInput(e.target.value)} onKeyDown={addTag} />
             </div>
           </div>
 
-          {error && <div style={s.error}>{error}</div>}
+          <textarea style={s.body} placeholder="Share your thoughts, code, or question…" value={body} onChange={(e) => setBody(e.target.value)} rows={8} />
 
-          <button type="submit" style={s.submitBtn} disabled={submitting || !subject.trim()}>
-            {submitting ? "Submitting..." : "Add Question"}
-          </button>
+          {error && <div style={s.error}>{error}</div>}
+          <button type="submit" style={s.submit} disabled={submitting || !title.trim()}>{submitting ? "Posting…" : "Post"}</button>
         </form>
       </div>
     </div>
@@ -93,47 +91,23 @@ export default function NewTicket() {
 }
 
 const s = {
-  page: { maxWidth: 680, margin: "0 auto", paddingBottom: 60 },
-  backLink: { color: "#aaa", textDecoration: "none", fontSize: 13, display: "block", marginBottom: 20 },
-  headingSection: { marginBottom: 20 },
-  heading: { fontSize: 28, fontWeight: 800, color: "#111", margin: "0 0 6px" },
-  subtitle: { fontSize: 15, color: "#888", margin: 0 },
-  card: {
-    background: "#fff", border: "1px solid #e8e8e8",
-    borderRadius: 10, padding: "28px 28px",
-  },
+  page: { maxWidth: 700, margin: "0 auto" },
+  back: { color: C.muted, textDecoration: "none", fontSize: 13, display: "block", marginBottom: 14 },
+  heading: { fontSize: 24, fontWeight: 800, color: C.text, margin: "0 0 16px" },
+  card: { background: C.surface, border: "1px solid " + C.border, borderRadius: 10, padding: 22 },
+  typeTabs: { display: "flex", gap: 6, marginBottom: 18, borderBottom: "1px solid " + C.border, paddingBottom: 14 },
+  typeTab: { background: C.bg, border: "none", color: C.muted, padding: "8px 16px", borderRadius: 20, fontSize: 13, fontWeight: 600 },
+  typeActive: { background: C.primary, color: "#fff" },
   form: { display: "flex", flexDirection: "column", gap: 16 },
-  titleInput: {
-    width: "100%", fontSize: 18, padding: "14px 16px",
-    border: "none", borderBottom: "2px solid #e8e8e8",
-    outline: "none", boxSizing: "border-box",
-    fontFamily: "inherit", fontWeight: 500, color: "#111",
-    background: "transparent",
-  },
-  descInput: {
-    width: "100%", fontSize: 15, padding: "12px 16px",
-    border: "1px solid #e8e8e8", borderRadius: 8,
-    outline: "none", resize: "vertical", fontFamily: "inherit",
-    background: "#f7f7f5", boxSizing: "border-box",
-    color: "#444", lineHeight: 1.6,
-  },
-  prioritySection: { display: "flex", flexDirection: "column", gap: 8 },
-  priorityLabel: { fontSize: 13, fontWeight: 600, color: "#888" },
-  priorityRow: { display: "flex", gap: 8, flexWrap: "wrap" },
-  priorityBtn: {
-    padding: "7px 20px", borderRadius: 20, border: "1.5px solid #e8e8e8",
-    cursor: "pointer", fontSize: 14, background: "#fff",
-    transition: "all 0.15s",
-  },
-  error: {
-    background: "#fff5f5", border: "1px solid #fed7d7",
-    borderRadius: 8, padding: "10px 14px",
-    fontSize: 14, color: "#c53030",
-  },
-  submitBtn: {
-    background: "#16c784", color: "#fff", border: "none",
-    borderRadius: 24, padding: "13px 0", fontSize: 16,
-    fontWeight: 700, cursor: "pointer", width: "100%",
-    marginTop: 4,
-  },
+  field: { display: "flex", flexDirection: "column", gap: 6 },
+  label: { fontSize: 13, fontWeight: 600, color: C.muted },
+  select: { height: 42, borderRadius: 8, border: "1px solid " + C.border, padding: "0 12px", fontSize: 14, background: "#fff" },
+  titleInput: { width: "100%", fontSize: 18, padding: "12px 14px", border: "1px solid " + C.border, borderRadius: 8, boxSizing: "border-box", fontFamily: "inherit", fontWeight: 600, color: C.text },
+  tagBox: { display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center", border: "1px solid " + C.border, borderRadius: 8, padding: "8px 10px" },
+  tagChip: { display: "inline-flex", alignItems: "center", gap: 4, background: C.tagBg, color: C.tagText, fontSize: 13, fontWeight: 600, padding: "3px 8px", borderRadius: 6 },
+  tagX: { background: "none", border: "none", color: C.tagText, fontSize: 15, lineHeight: 1, padding: 0 },
+  tagInput: { flex: 1, minWidth: 120, border: "none", fontSize: 14, padding: "4px 2px" },
+  body: { width: "100%", fontSize: 15, padding: "12px 14px", border: "1px solid " + C.border, borderRadius: 8, resize: "vertical", fontFamily: "inherit", boxSizing: "border-box", color: C.text, lineHeight: 1.6 },
+  error: { background: "#fff5f5", border: "1px solid #fed7d7", borderRadius: 8, padding: "10px 14px", fontSize: 14, color: "#c53030" },
+  submit: { background: C.primary, color: "#fff", border: "none", borderRadius: 8, padding: "13px 0", fontSize: 15, fontWeight: 700, width: "100%" },
 };

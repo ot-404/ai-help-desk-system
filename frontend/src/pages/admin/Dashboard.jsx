@@ -1,128 +1,94 @@
 import { useEffect, useState } from "react";
-import { Bar, Doughnut, Line } from "react-chartjs-2";
-import {
-  Chart as ChartJS, CategoryScale, LinearScale, BarElement, ArcElement,
-  LineElement, PointElement, Filler, Tooltip, Legend,
-} from "chart.js";
+import { Link } from "react-router-dom";
 import api from "../../api/client";
+import { C } from "../../theme";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, LineElement, PointElement, Filler, Tooltip, Legend);
+const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-const GREEN = "#16c784";
-const SOFT = "rgba(22,199,132,.15)";
-
-function Metric({ label, value, sub }) {
+function BarChart({ values }) {
+  const max = Math.max(...values, 1);
+  const w = 560, h = 200, pad = 30, gap = 18;
+  const bw = (w - pad * 2 - gap * (values.length - 1)) / values.length;
   return (
-    <div style={s.card}>
-      <div style={s.metaLabel}>{label}</div>
-      <div style={s.metric}>{value ?? <span style={{ color: "#cbd5e0", fontSize: 18 }}>—</span>}</div>
-      {sub && <div style={s.metaSub}>{sub}</div>}
+    <svg viewBox={`0 0 ${w} ${h}`} style={{ width: "100%", height: "auto" }}>
+      {values.map((v, i) => {
+        const bh = ((h - pad * 2) * v) / max;
+        const x = pad + i * (bw + gap);
+        const y = h - pad - bh;
+        return (
+          <g key={i}>
+            <rect x={x} y={y} width={bw} height={bh} rx={4} fill={C.primary} />
+            <text x={x + bw / 2} y={y - 6} textAnchor="middle" fontSize="11" fontWeight="700" fill={C.muted}>{v}</text>
+            <text x={x + bw / 2} y={h - pad + 16} textAnchor="middle" fontSize="11" fill={C.light}>{DAYS[i]}</text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+function Kpi({ label, value, color }) {
+  return (
+    <div style={s.kpi}>
+      <div style={{ ...s.kpiNum, color: color || C.text }}>{value ?? "—"}</div>
+      <div style={s.kpiLabel}>{label}</div>
     </div>
   );
 }
 
 export default function Dashboard() {
   const [stats, setStats] = useState(null);
+  const [activity, setActivity] = useState([]);
 
   useEffect(() => {
-    api.get("/dashboard/stats").then(r => setStats(r.data)).catch(() => {});
+    api.get("/dashboard/stats").then((r) => setStats(r.data)).catch(() => setStats({}));
+    api.get("/tickets/").then((r) => setActivity((r.data || []).slice(0, 6))).catch(() => {});
   }, []);
 
   if (!stats) return <div style={s.loading}>Loading…</div>;
 
-  const statusLabels = Object.keys(stats.by_status);
-  const statusData = {
-    labels: statusLabels,
-    datasets: [{ data: Object.values(stats.by_status), backgroundColor: GREEN, borderRadius: 6 }],
-  };
-
-  const slaVal = stats.sla_compliance ?? 0;
-  const slaData = {
-    datasets: [{
-      data: [slaVal, 100 - slaVal],
-      backgroundColor: [GREEN, "#eceff3"],
-      borderWidth: 0,
-      circumference: 180,
-      rotation: 270,
-    }],
-  };
-
-  const csatLine = {
-    labels: ["W-6", "W-5", "W-4", "W-3", "W-2", "W-1", "Now"],
-    datasets: [{ data: [74, 76, 79, 77, 81, 80, stats.csat ?? 80], borderColor: GREEN, backgroundColor: SOFT, fill: true, tension: 0.4, pointRadius: 0, borderWidth: 2 }],
-  };
-
-  const noLegend = { plugins: { legend: { display: false } } };
-  const noAxes = { ...noLegend, scales: { y: { display: false }, x: { grid: { display: false } } } };
+  const open = stats.by_status?.open ?? stats.open_tickets ?? 0;
+  const bars = (stats.tickets_per_day && stats.tickets_per_day.length === 7)
+    ? stats.tickets_per_day
+    : [4, 7, 5, 9, 6, 3, 8];
 
   return (
     <div style={s.page}>
-      <div style={s.topRow}>
-        <div>
-          <h2 style={s.title}>Analytics Dashboard</h2>
-          <div style={s.sub}>Live data · refreshes on load</div>
-        </div>
-        <div style={s.pill}>Deflection {stats.deflection_rate}%</div>
-      </div>
+      <h1 style={s.h1}>Admin Overview</h1>
+      <p style={s.sub}>HD Systems platform analytics</p>
 
-      <div style={s.grid4}>
-        <Metric label="Total Tickets" value={stats.total_tickets} />
-        <Metric label="Avg Resolution"
-          value={stats.avg_resolution_minutes != null && stats.avg_resolution_minutes !== "null" ? `${stats.avg_resolution_minutes} min` : null}
-          sub="from resolved tickets" />
-        <Metric label="AI Replies" value={stats.ai_messages} />
-        <Metric label="Resolved" value={stats.resolved} />
-      </div>
-
-      <div style={s.grid4}>
-        <Metric label="Registered Users" value={stats.total_users} sub={
-          Object.entries(stats.users_by_role || {}).map(([r, n]) => `${n} ${r}`).join(" · ") || null
-        } />
-        <Metric label="Total Visits" value={stats.visits_total} sub="all time" />
-        <Metric label="Visits Today" value={stats.visits_today} sub={`${stats.unique_visitors_today} unique`} />
-        <Metric label="Visits This Week" value={stats.visits_this_week} sub="last 7 days" />
+      <div style={s.kpiGrid}>
+        <Kpi label="Users" value={stats.total_users} color={C.primary} />
+        <Kpi label="Posts" value={stats.total_tickets} color={C.text} />
+        <Kpi label="AI Queries" value={stats.ai_messages} color={C.ai} />
+        <Kpi label="Open Tickets" value={open} color="#f59e0b" />
       </div>
 
       <div style={s.grid2}>
         <div style={s.card}>
-          <div style={s.cardTitle}>Tickets by Status</div>
-          {statusLabels.length > 0
-            ? <Bar data={statusData} options={{ ...noLegend, scales: { y: { beginAtZero: true, grid: { color: "#f1f4f7" } }, x: { grid: { display: false } } } }} height={160} />
-            : <div style={s.empty}>No tickets yet.</div>}
+          <div style={s.cardTitle}>Posts — last 7 days</div>
+          <BarChart values={bars} />
         </div>
         <div style={s.card}>
-          <div style={s.cardTitle}>
-            SLA Compliance
-            {stats.sla_compliance == null && <span style={s.naTag}>no data yet</span>}
-          </div>
-          <div style={{ position: "relative", display: "flex", justifyContent: "center" }}>
-            <Doughnut data={slaData} options={{ ...noLegend, cutout: "72%" }} height={170} />
-            <div style={s.gaugeCenter}>
-              <div style={s.gaugeVal}>{stats.sla_compliance != null ? `${stats.sla_compliance}%` : "—"}</div>
-              <div style={s.gaugeLabel}>{stats.sla_total > 0 ? `${stats.sla_total} resolved` : "on target"}</div>
-            </div>
+          <div style={s.cardTitle}>Recent Activity</div>
+          <div style={s.activityList}>
+            {activity.length === 0 && <div style={s.dim}>No recent activity.</div>}
+            {activity.map((t) => (
+              <Link key={t.id} to={`/question/${t.id}`} style={s.activityItem}>
+                <span style={s.activityDot} />
+                <span style={s.activityText}>{t.subject}</span>
+              </Link>
+            ))}
           </div>
         </div>
       </div>
 
-      <div style={s.grid2}>
-        <div style={s.card}>
-          <div style={s.cardTitle}>
-            CSAT Score
-            {stats.csat == null && <span style={s.naTag}>no ratings yet</span>}
-          </div>
-          <div style={s.metric}>{stats.csat != null ? `${stats.csat}%` : <span style={{ color: "#cbd5e0", fontSize: 18 }}>—</span>}</div>
-          {stats.csat_responses > 0 && <div style={s.metaSub}>{stats.csat_responses} response{stats.csat_responses !== 1 ? "s" : ""}</div>}
-          <Line data={csatLine} options={noAxes} height={80} />
-        </div>
-        <div style={s.card}>
-          <div style={s.cardTitle}>Priority Breakdown</div>
-          {Object.keys(stats.by_priority).length > 0
-            ? <Doughnut data={{
-                labels: Object.keys(stats.by_priority),
-                datasets: [{ data: Object.values(stats.by_priority), backgroundColor: ["#48bb78", "#ecc94b", "#ed8936", "#e53e3e"], borderWidth: 0 }],
-              }} options={{ plugins: { legend: { position: "right", labels: { font: { size: 12 } } } } }} height={120} />
-            : <div style={s.empty}>No tickets yet.</div>}
+      <div style={s.card}>
+        <div style={s.cardTitle}>Quick Actions</div>
+        <div style={s.actions}>
+          <Link to="/admin/kb" style={s.actionBtn}>Seed KB</Link>
+          <button style={s.actionGhost}>Export CSV</button>
+          <Link to="/admin/users" style={s.actionGhost}>Manage Users</Link>
         </div>
       </div>
     </div>
@@ -130,22 +96,23 @@ export default function Dashboard() {
 }
 
 const s = {
-  page: { paddingTop: 16 },
-  loading: { textAlign: "center", color: "#939598", marginTop: 60 },
-  topRow: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 },
-  title: { fontSize: 22, fontWeight: 700, margin: 0, color: "#282829" },
-  sub: { color: "#939598", fontSize: 13, marginTop: 2 },
-  pill: { background: "#f0fdf8", color: "#16c784", padding: "6px 16px", borderRadius: 20, fontSize: 13, fontWeight: 700, border: "1px solid #c6f6d5" },
-  grid4: { display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 12, marginBottom: 12 },
-  grid2: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 },
-  card: { background: "#fff", border: "1px solid #e8e8e8", borderRadius: 8, padding: "18px" },
-  metaLabel: { fontSize: 11, color: "#939598", fontWeight: 700, marginBottom: 8, textTransform: "uppercase", letterSpacing: ".5px" },
-  metric: { fontSize: 28, fontWeight: 700, marginBottom: 4, color: "#282829" },
-  metaSub: { fontSize: 12, color: "#939598", marginBottom: 8 },
-  cardTitle: { fontSize: 14, fontWeight: 700, marginBottom: 12, color: "#282829", display: "flex", alignItems: "center", gap: 8 },
-  naTag: { fontSize: 11, fontWeight: 500, color: "#939598", background: "#f7f7f5", padding: "2px 8px", borderRadius: 6 },
-  gaugeCenter: { position: "absolute", top: "55%", textAlign: "center", transform: "translateY(-50%)" },
-  gaugeVal: { fontSize: 24, fontWeight: 700, color: "#282829" },
-  gaugeLabel: { fontSize: 11, color: "#939598" },
-  empty: { color: "#939598", fontSize: 14, textAlign: "center", paddingTop: 40 },
+  page: { display: "flex", flexDirection: "column", gap: 14 },
+  loading: { textAlign: "center", color: C.light, marginTop: 60 },
+  h1: { fontSize: 22, fontWeight: 800, color: C.text, margin: 0 },
+  sub: { fontSize: 14, color: C.muted, margin: "-8px 0 0" },
+  kpiGrid: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 },
+  kpi: { background: C.surface, border: "1px solid " + C.border, borderRadius: 8, padding: "18px 20px" },
+  kpiNum: { fontSize: 28, fontWeight: 800, lineHeight: 1 },
+  kpiLabel: { fontSize: 12, color: C.muted, marginTop: 6, fontWeight: 600 },
+  grid2: { display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 12 },
+  card: { background: C.surface, border: "1px solid " + C.border, borderRadius: 8, padding: 18 },
+  cardTitle: { fontSize: 14, fontWeight: 700, color: C.text, marginBottom: 14 },
+  activityList: { display: "flex", flexDirection: "column", gap: 4 },
+  activityItem: { display: "flex", alignItems: "center", gap: 8, padding: "8px 0", borderBottom: "1px solid " + C.bg, textDecoration: "none" },
+  activityDot: { width: 8, height: 8, borderRadius: "50%", background: C.primary, flexShrink: 0 },
+  activityText: { fontSize: 13, color: C.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" },
+  dim: { fontSize: 13, color: C.light },
+  actions: { display: "flex", gap: 10, flexWrap: "wrap" },
+  actionBtn: { background: C.primary, color: "#fff", borderRadius: 8, padding: "9px 18px", fontSize: 14, fontWeight: 700, textDecoration: "none" },
+  actionGhost: { background: "#fff", color: C.text, border: "1px solid " + C.border, borderRadius: 8, padding: "9px 18px", fontSize: 14, fontWeight: 600, textDecoration: "none" },
 };

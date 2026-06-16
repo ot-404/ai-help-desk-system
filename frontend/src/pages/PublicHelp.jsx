@@ -1,335 +1,121 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 import api from "../api/client";
+import { C, TYPE_BADGE, deriveType, timeAgo } from "../theme";
 
-const TABS = ["All", "Blog", "FAQ", "Technical", "Account", "Billing", "General"];
-
-const CAT_COLOR = {
-  Blog:      { bg: "#faf5ff", color: "#805ad5" },
-  FAQ:       { bg: "#f0fff4", color: "#276749" },
-  Technical: { bg: "#ebf8ff", color: "#2b6cb0" },
-  Account:   { bg: "#fffff0", color: "#744210" },
-  Billing:   { bg: "#fff5f5", color: "#c53030" },
-  General:   { bg: "#f7fafc", color: "#4a5568" },
-};
+const CATS = ["All", "Blog", "FAQ", "Technical", "Account", "Billing", "General"];
 
 export default function PublicHelp() {
-  const { user } = useAuth();
   const [params, setParams] = useSearchParams();
-  const [allArticles, setAllArticles] = useState([]);
+  const [all, setAll] = useState([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState(params.get("q") || "");
-  const [tab, setTab] = useState(params.get("tab") || "All");
+  const [cat, setCat] = useState("All");
   const [expanded, setExpanded] = useState(params.get("article") ? parseInt(params.get("article")) : null);
 
   useEffect(() => {
     setLoading(true);
     const q = params.get("q");
     const req = q ? api.get(`/kb/search?q=${encodeURIComponent(q)}`) : api.get("/kb/");
-    req.then(r => {
+    req.then((r) => {
       const data = Array.isArray(r.data) ? r.data : (r.data.results || []);
-      setAllArticles(data);
-    }).catch(() => setAllArticles([])).finally(() => setLoading(false));
-  }, [params]);
-
-  useEffect(() => {
-    const articleId = params.get("article");
-    if (articleId) setExpanded(parseInt(articleId));
-    const t = params.get("tab");
-    if (t) setTab(t);
+      setAll(data);
+    }).catch(() => setAll([])).finally(() => setLoading(false));
+    const a = params.get("article");
+    if (a) setExpanded(parseInt(a));
   }, [params]);
 
   function handleSearch(e) {
     e.preventDefault();
     const next = new URLSearchParams();
     if (query) next.set("q", query);
-    if (tab !== "All") next.set("tab", tab);
     setParams(next);
     setExpanded(null);
   }
 
-  function switchTab(t) {
-    setTab(t);
-    const next = new URLSearchParams(params);
-    if (t === "All") next.delete("tab"); else next.set("tab", t);
-    setParams(next);
-    setExpanded(null);
-  }
-
-  function openArticle(id) {
-    setExpanded(id === expanded ? null : id);
-  }
-
-  const articles = tab === "All"
-    ? allArticles
-    : allArticles.filter(a => (a.category || "").toLowerCase() === tab.toLowerCase());
-
-  const ticketLink = user?.role === "user" ? "/new-question" : "/login?next=/new-question";
+  const articles = cat === "All" ? all : all.filter((a) => (a.category || "").toLowerCase() === cat.toLowerCase());
 
   return (
     <div style={s.page}>
+      <h1 style={s.title}>Knowledge Base</h1>
+      <p style={s.sub}>The hub for tech professionals — browse {all.length} articles and guides.</p>
 
-      {/* ── Page header (Quora Topics style) ── */}
-      <div style={s.header}>
-        <div style={s.headerInner}>
-          <div style={s.breadcrumb}>
-            <Link to="/" style={s.breadLink}>Home</Link>
-            <span style={s.breadSep}>/</span>
-            <span style={s.breadCurrent}>Help Center</span>
-          </div>
-          <h1 style={s.pageTitle}>Help Center</h1>
-          <p style={s.pageSub}>
-            {allArticles.length > 0
-              ? `${allArticles.length} questions answered · Browse or search below`
-              : "Browse articles, guides, and AI-generated answers"}
-          </p>
-          <form onSubmit={handleSearch} style={s.searchRow}>
-            <span style={s.searchIcon}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#939598" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            </span>
-            <input
-              style={s.searchInput}
-              placeholder="Search questions and articles…"
-              value={query}
-              onChange={e => setQuery(e.target.value)}
-            />
-            <button type="submit" style={s.searchBtn}>Search</button>
-            {params.get("q") && (
-              <button type="button" style={s.clearBtn}
-                onClick={() => { setQuery(""); setParams(tab !== "All" ? { tab } : {}); }}>
-                Clear
-              </button>
-            )}
-          </form>
-          <div style={s.askRow}>
-            <span style={s.askHint}>Can't find what you're looking for?</span>
-            <Link to="/ask" style={s.askLink}>Ask AI →</Link>
-          </div>
-        </div>
+      <form onSubmit={handleSearch} style={s.searchRow}>
+        <span style={s.searchIcon}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.light} strokeWidth="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+        </span>
+        <input style={s.searchInput} placeholder="Search the knowledge base…" value={query} onChange={(e) => setQuery(e.target.value)} />
+        <button type="submit" style={s.searchBtn}>Search</button>
+      </form>
+
+      <div style={s.pills}>
+        {CATS.map((t) => (
+          <button key={t} onClick={() => { setCat(t); setExpanded(null); }} style={{ ...s.pill, ...(cat === t ? s.pillActive : {}) }}>{t}</button>
+        ))}
       </div>
 
-      {/* ── Body ─────────────────────────────── */}
-      <div style={s.body}>
-        <div style={s.inner}>
-
-          {/* Tabs */}
-          <div style={s.tabs}>
-            {TABS.map(t => {
-              const count = t === "All"
-                ? null
-                : allArticles.filter(a => (a.category || "").toLowerCase() === t.toLowerCase()).length;
-              return (
-                <button
-                  key={t}
-                  style={{ ...s.tabBtn, ...(tab === t ? s.tabActive : {}) }}
-                  onClick={() => switchTab(t)}
-                >
-                  {t === "Blog" ? "Blog" : t}
-                  {count != null && count > 0 && (
-                    <span style={{ ...s.tabCount, ...(tab === t ? s.tabCountActive : {}) }}>
-                      {count}
-                    </span>
-                  )}
+      {loading ? (
+        <div style={s.loading}>Loading…</div>
+      ) : articles.length === 0 ? (
+        <div style={s.empty}>
+          <div style={s.emptyTitle}>No articles found</div>
+          <Link to="/ask" style={s.emptyLink}>Ask AI instead →</Link>
+        </div>
+      ) : (
+        <div style={s.grid}>
+          {articles.map((a) => {
+            const type = deriveType(a.category);
+            const badge = TYPE_BADGE[type];
+            const open = expanded === a.id;
+            return (
+              <div key={a.id} style={{ ...s.articleCard, gridColumn: open ? "1 / -1" : "auto" }}>
+                <button style={s.cardHead} onClick={() => setExpanded(open ? null : a.id)}>
+                  <span style={{ ...s.catBadge, background: badge.bg, color: badge.color }}>{a.category || type}</span>
+                  <span style={s.artTitle}>{a.title}</span>
                 </button>
-              );
-            })}
-          </div>
-
-          {params.get("q") && !loading && (
-            <div style={s.resultNote}>
-              {articles.length} result{articles.length !== 1 ? "s" : ""} for &ldquo;{params.get("q")}&rdquo;
-            </div>
-          )}
-
-          {loading ? (
-            <div style={s.loading}>Loading…</div>
-          ) : articles.length === 0 ? (
-            <div style={s.empty}>
-              <div style={s.emptyIcon}>
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#cbd5e0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              </div>
-              <div style={s.emptyTitle}>No articles found</div>
-              <p style={s.emptySub}>Try a different search, or ask our AI to generate an answer.</p>
-              <div style={s.emptyBtns}>
-                <Link to="/ask"        style={s.btnPrimary}>Ask AI →</Link>
-                <Link to={ticketLink}  style={s.btnOutline}>
-                  {user ? "Ask a Question" : "Sign In to Get Help"}
-                </Link>
-              </div>
-            </div>
-          ) : (
-            <div style={s.list}>
-              {articles.map(a => {
-                const cc = CAT_COLOR[a.category] || CAT_COLOR.General;
-                return (
-                  <div key={a.id} style={s.articleCard}>
-                    <button style={s.articleHeader} onClick={() => openArticle(a.id)}>
-                      <div style={s.articleLeft}>
-                        {a.category && (
-                          <span style={{ ...s.catTag, background: cc.bg, color: cc.color }}>
-                            {a.category}
-                          </span>
-                        )}
-                        <span style={s.articleTitle}>{a.title}</span>
-                      </div>
-                      <span style={s.chevron}>{expanded === a.id ? "▲" : "▼"}</span>
-                    </button>
-                    {expanded === a.id && (
-                      <div style={s.articleBody}>
-                        <div style={s.authorLine}>
-                          <div style={s.authorAvatar}>AI</div>
-                          <span style={s.authorName}>AI Help Desk</span>
-                          {a.created_at && (
-                            <span style={s.authorDate}>
-                              · {new Date(a.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-                            </span>
-                          )}
-                        </div>
-                        <div style={s.articleContent}>{a.content}</div>
-                        {a.tags?.length > 0 && (
-                          <div style={s.tags}>
-                            {a.tags.map(t => <span key={t} style={s.tag}>{t}</span>)}
-                          </div>
-                        )}
-                      </div>
+                {!open && <div style={s.excerpt}>{(a.content || "").slice(0, 120)}…</div>}
+                {open && (
+                  <div style={s.fullBody}>
+                    <div style={s.byline}>HDS Bot · {a.created_at ? timeAgo(a.created_at) : "recently"}</div>
+                    <div style={s.content}>{a.content}</div>
+                    {a.tags?.length > 0 && (
+                      <div style={s.tags}>{a.tags.map((t) => <span key={t} style={s.tag}>#{String(t).replace(/^#/, "")}</span>)}</div>
                     )}
                   </div>
-                );
-              })}
-            </div>
-          )}
-
-          {/* Bottom CTA */}
-          <div style={s.ctaBanner}>
-            <div style={s.ctaLeft}>
-              <strong style={s.ctaTitle}>Still need help?</strong>
-              <span style={s.ctaSub}>Our support team usually responds within a few hours.</span>
-            </div>
-            <div style={s.ctaBtns}>
-              <Link to="/ask"       style={s.btnPrimary}>Ask AI</Link>
-              <Link to={ticketLink} style={s.btnOutline}>
-                {user?.role === "user" ? "Ask a Question" : user ? "Go to Queue" : "Sign In to Get Help"}
-              </Link>
-            </div>
-          </div>
+                )}
+              </div>
+            );
+          })}
         </div>
-      </div>
+      )}
     </div>
   );
 }
 
 const s = {
-  page: { minHeight: "100%" },
-
-  /* Quora-style white header */
-  header: {
-    background: "#fff",
-    borderBottom: "1px solid #e8e8e8",
-    padding: "24px 20px 20px",
-    marginBottom: 20,
-  },
-  headerInner: { maxWidth: 720, margin: "0 auto" },
-  breadcrumb: { display: "flex", alignItems: "center", gap: 6, marginBottom: 12 },
-  breadLink:    { fontSize: 13, color: "#16c784", textDecoration: "none", fontWeight: 600 },
-  breadSep:     { color: "#ccc", fontSize: 13 },
-  breadCurrent: { fontSize: 13, color: "#939598" },
-  pageTitle: { fontSize: 26, fontWeight: 800, margin: "0 0 6px", color: "#282829" },
-  pageSub:   { color: "#939598", fontSize: 14, margin: "0 0 18px" },
-
-  searchRow: { display: "flex", alignItems: "center", gap: 8, marginBottom: 12 },
-  searchIcon: { color: "#939598", fontSize: 15, flexShrink: 0 },
-  searchInput: {
-    flex: 1, border: "1.5px solid #e8e8e8", borderRadius: 24,
-    padding: "10px 16px", fontSize: 14, outline: "none", color: "#282829", background: "#f9f9f9",
-  },
-  searchBtn: {
-    background: "#16c784", color: "#fff", border: "none",
-    borderRadius: 20, padding: "10px 20px",
-    fontSize: 13, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap",
-  },
-  clearBtn: {
-    background: "none", border: "1px solid #e8e8e8", color: "#939598",
-    borderRadius: 20, padding: "10px 14px", fontSize: 13, cursor: "pointer",
-  },
-  askRow:  { display: "flex", alignItems: "center", gap: 10 },
-  askHint: { fontSize: 13, color: "#939598" },
-  askLink: { fontSize: 13, fontWeight: 700, color: "#16c784", textDecoration: "none" },
-
-  body:  { padding: "0 20px 60px" },
-  inner: { maxWidth: 720, margin: "0 auto" },
-
-  /* Tabs */
-  tabs: { display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 16 },
-  tabBtn: {
-    background: "#fff", border: "1.5px solid #e8e8e8",
-    borderRadius: 20, padding: "6px 14px",
-    fontSize: 13, fontWeight: 500, cursor: "pointer", color: "#555",
-    display: "flex", alignItems: "center", gap: 6,
-  },
-  tabActive: { background: "#282829", color: "#fff", border: "1.5px solid #282829" },
-  tabCount: {
-    background: "#f2f2f0", color: "#939598",
-    fontSize: 11, fontWeight: 700, padding: "1px 6px", borderRadius: 10,
-  },
-  tabCountActive: { background: "rgba(255,255,255,.2)", color: "#fff" },
-
-  resultNote: { fontSize: 13, color: "#939598", marginBottom: 14 },
-  loading:    { textAlign: "center", color: "#939598", padding: "60px 0", fontSize: 14 },
-
-  empty:      { textAlign: "center", padding: "60px 0" },
-  emptyIcon:  { fontSize: 40, marginBottom: 12 },
-  emptyTitle: { fontSize: 18, fontWeight: 700, color: "#282829", marginBottom: 8 },
-  emptySub:   { color: "#939598", fontSize: 14, marginBottom: 24 },
-  emptyBtns:  { display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" },
-
-  /* Article list */
-  list: { display: "flex", flexDirection: "column", gap: 8, marginBottom: 24 },
-  articleCard: {
-    background: "#fff", border: "1px solid #e8e8e8",
-    borderRadius: 8, overflow: "hidden",
-  },
-  articleHeader: {
-    width: "100%", background: "none", border: "none", cursor: "pointer",
-    padding: "16px 20px", display: "flex", alignItems: "center",
-    justifyContent: "space-between", gap: 12, textAlign: "left",
-  },
-  articleLeft: { display: "flex", alignItems: "center", gap: 10, flex: 1, flexWrap: "wrap" },
-  catTag: {
-    fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 20,
-    textTransform: "uppercase", letterSpacing: ".3px", whiteSpace: "nowrap",
-  },
-  articleTitle: { fontSize: 15, fontWeight: 600, color: "#282829" },
-  chevron: { color: "#939598", fontSize: 12, flexShrink: 0 },
-
-  articleBody: { borderTop: "1px solid #f2f2f0", padding: "16px 20px" },
-  authorLine: { display: "flex", alignItems: "center", gap: 6, marginBottom: 12 },
-  authorAvatar: { width: 22, height: 22, borderRadius: "50%", background: "#16c784", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 700, flexShrink: 0 },
-  authorName: { fontSize: 13, fontWeight: 700, color: "#282829" },
-  authorDate: { fontSize: 13, color: "#939598" },
-  articleContent: { fontSize: 14, color: "#282829", lineHeight: 1.75, whiteSpace: "pre-wrap" },
-  tags: { display: "flex", gap: 6, marginTop: 14, flexWrap: "wrap" },
-  tag:  { background: "#f7fafc", color: "#718096", fontSize: 12, padding: "3px 10px", borderRadius: 20, border: "1px solid #e2e8f0" },
-
-  /* CTA Banner */
-  ctaBanner: {
-    background: "#fff", border: "1px solid #e8e8e8", borderRadius: 8,
-    padding: "20px 24px", display: "flex",
-    alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap",
-  },
-  ctaLeft:  { display: "flex", flexDirection: "column", gap: 2 },
-  ctaTitle: { fontSize: 15, color: "#282829" },
-  ctaSub:   { fontSize: 13, color: "#939598" },
-  ctaBtns:  { display: "flex", gap: 10, flexWrap: "wrap" },
-
-  btnPrimary: {
-    background: "#16c784", color: "#fff", borderRadius: 20,
-    padding: "10px 22px", fontSize: 14, fontWeight: 700, textDecoration: "none",
-    display: "inline-block",
-  },
-  btnOutline: {
-    background: "#fff", color: "#282829", border: "1.5px solid #e8e8e8",
-    borderRadius: 20, padding: "10px 22px", fontSize: 14, fontWeight: 600,
-    textDecoration: "none", display: "inline-block",
-  },
+  page: { display: "flex", flexDirection: "column", gap: 14 },
+  title: { fontSize: 24, fontWeight: 800, color: C.text, margin: 0 },
+  sub: { fontSize: 14, color: C.muted, margin: "-8px 0 0" },
+  searchRow: { display: "flex", alignItems: "center", gap: 8, position: "relative" },
+  searchIcon: { position: "absolute", left: 12, display: "flex" },
+  searchInput: { flex: 1, height: 42, border: "1px solid " + C.border, borderRadius: 8, padding: "0 14px 0 36px", fontSize: 14, background: "#fff", boxSizing: "border-box" },
+  searchBtn: { background: C.primary, color: "#fff", border: "none", borderRadius: 8, padding: "0 20px", height: 42, fontSize: 14, fontWeight: 700 },
+  pills: { display: "flex", gap: 8, flexWrap: "wrap" },
+  pill: { background: C.surface, border: "1px solid " + C.border, borderRadius: 20, padding: "6px 14px", fontSize: 13, fontWeight: 600, color: C.muted },
+  pillActive: { background: C.primary, color: "#fff", borderColor: C.primary },
+  loading: { textAlign: "center", color: C.light, padding: 48 },
+  empty: { textAlign: "center", padding: 48, display: "flex", flexDirection: "column", gap: 10, alignItems: "center" },
+  emptyTitle: { fontSize: 18, fontWeight: 700, color: C.muted },
+  emptyLink: { color: C.primary, fontWeight: 700, textDecoration: "none" },
+  grid: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 12 },
+  articleCard: { background: C.surface, border: "1px solid " + C.border, borderRadius: 8, padding: 16, display: "flex", flexDirection: "column", gap: 8 },
+  cardHead: { display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 8, background: "none", border: "none", textAlign: "left", padding: 0, width: "100%" },
+  catBadge: { fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 4 },
+  artTitle: { fontSize: 15, fontWeight: 700, color: C.text, lineHeight: 1.35 },
+  excerpt: { fontSize: 13, color: C.muted, lineHeight: 1.5 },
+  fullBody: { borderTop: "1px solid " + C.bg, paddingTop: 12 },
+  byline: { fontSize: 12, color: C.light, marginBottom: 10 },
+  content: { fontSize: 14, color: C.text, lineHeight: 1.75, whiteSpace: "pre-wrap" },
+  tags: { display: "flex", gap: 6, flexWrap: "wrap", marginTop: 12 },
+  tag: { background: C.tagBg, color: C.tagText, fontSize: 12, padding: "2px 8px", borderRadius: 4 },
 };

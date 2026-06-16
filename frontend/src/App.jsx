@@ -52,7 +52,7 @@ function Layout({ children, wide, noRight }) {
 }
 
 const s = {
-  page: { paddingTop: 56, minHeight: "100vh", background: "#f2f2f0" },
+  page: { paddingTop: 60, minHeight: "100vh", background: "#f0f2f5" },
   container: { margin: "0 auto", display: "flex", alignItems: "flex-start" },
   main: { flex: 1, minWidth: 0 },
 };

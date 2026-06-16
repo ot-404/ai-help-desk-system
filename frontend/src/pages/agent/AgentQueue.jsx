@@ -31,7 +31,7 @@ export default function AgentQueue() {
               onClick={() => setFilter(st)}
               style={{
                 ...s.fBtn,
-                ...(filter === st ? { background: "#f0fdf8", color: "#16c784", fontWeight: 700 } : {}),
+                ...(filter === st ? { background: "#e8f0fe", color: "#0045ac", fontWeight: 700 } : {}),
               }}
             >
               {st.charAt(0).toUpperCase() + st.slice(1)}
