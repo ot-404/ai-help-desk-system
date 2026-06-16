@@ -32,35 +32,33 @@ function HomeOrRedirect() {
 }
 
 function RightSummary() {
+  const card = { background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, marginBottom: 16 };
   return (
-    <div style={{ width: 312, flexShrink: 0 }}>
-      {/* Create Post card */}
-      <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 4, overflow: "hidden", marginBottom: 16 }}>
-        <div style={{ background: "linear-gradient(to bottom, #46d160, #1a7f37)", height: 64 }} />
-        <div style={{ padding: 12 }}>
-          <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 8 }}>Home</div>
-          <div style={{ fontSize: 14, color: C.muted, marginBottom: 12 }}>The front page of HD Systems — the tech knowledge hub.</div>
-          <Link to="/new-question" style={{ display: "block", textAlign: "center", background: C.primary, color: "#fff", borderRadius: 20, padding: "6px 0", textDecoration: "none", fontWeight: 700, fontSize: 14, marginBottom: 8 }}>Create Post</Link>
-          <Link to="/ask" style={{ display: "block", textAlign: "center", border: `1px solid ${C.primary}`, color: C.primary, borderRadius: 20, padding: "6px 0", textDecoration: "none", fontWeight: 700, fontSize: 14 }}>Ask AI</Link>
-        </div>
+    <div style={{ width: 300, flexShrink: 0 }}>
+      {/* About card */}
+      <div style={{ ...card, padding: 16 }}>
+        <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 6, color: C.text }}>HD Systems</div>
+        <div style={{ fontSize: 13.5, color: C.muted, marginBottom: 14, lineHeight: 1.6 }}>The tech knowledge hub — ask questions, share answers, and learn together.</div>
+        <Link to="/new-question" style={{ display: "block", textAlign: "center", background: C.primary, color: "#fff", borderRadius: 10, padding: "9px 0", textDecoration: "none", fontWeight: 600, fontSize: 14, marginBottom: 8 }}>Create Post</Link>
+        <Link to="/ask" style={{ display: "block", textAlign: "center", border: `1px solid ${C.border}`, color: C.text, borderRadius: 10, padding: "9px 0", textDecoration: "none", fontWeight: 600, fontSize: 14 }}>Ask AI</Link>
       </div>
 
       {/* Community Rules card */}
-      <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 4, padding: 12, marginBottom: 16 }}>
-        <div style={{ fontWeight: 700, fontSize: 14, borderBottom: `1px solid ${C.border}`, paddingBottom: 8, marginBottom: 8 }}>HD Systems Rules</div>
-        {["Be respectful and professional","Stay on-topic (tech, programming, IT)","No spam or self-promotion without value","Share knowledge, not just opinions","Credit sources and original authors"].map((r, i) => (
-          <div key={i} style={{ fontSize: 14, padding: "4px 0", borderBottom: `1px solid ${C.divider}`, color: C.text }}>
-            <span style={{ fontWeight: 700, color: C.primary }}>{i+1}. </span>{r}
+      <div style={{ ...card, padding: 16 }}>
+        <div style={{ fontWeight: 700, fontSize: 13, color: C.muted, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 10 }}>Community Guidelines</div>
+        {["Be respectful and professional","Stay on-topic (tech, programming, IT)","No spam or low-value self-promotion","Share knowledge, not just opinions","Credit sources and original authors"].map((r, i, arr) => (
+          <div key={i} style={{ display: "flex", gap: 8, fontSize: 13.5, padding: "7px 0", borderBottom: i < arr.length - 1 ? `1px solid ${C.divider}` : "none", color: C.text, lineHeight: 1.45 }}>
+            <span style={{ fontWeight: 700, color: C.primary, flexShrink: 0 }}>{i+1}</span>{r}
           </div>
         ))}
       </div>
 
       {/* Topics card */}
-      <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 4, padding: 12 }}>
-        <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 8 }}>Popular Topics</div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-          {["#javascript","#python","#devops","#kubernetes","#security","#rust","#react","#systemdesign","#linux","#cloud"].map(t => (
-            <span key={t} style={{ background: C.tag, color: C.tagText, border: `1px solid ${C.tagBorder}`, borderRadius: 2, padding: "2px 8px", fontSize: 12, cursor: "pointer" }}>{t}</span>
+      <div style={{ ...card, padding: 16, marginBottom: 0 }}>
+        <div style={{ fontWeight: 700, fontSize: 13, color: C.muted, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 10 }}>Popular Tags</div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
+          {["javascript","python","devops","kubernetes","security","rust","react","systemdesign","linux","cloud"].map(t => (
+            <span key={t} style={{ background: C.tag, color: C.tagText, border: `1px solid ${C.tagBorder}`, borderRadius: 6, padding: "3px 9px", fontSize: 12, fontWeight: 500, cursor: "pointer" }}>#{t}</span>
           ))}
         </div>
       </div>
@@ -76,11 +74,11 @@ function Layout({ children }) {
   return (
     <>
       <NavBar />
-      <div style={{ background: C.bg, minHeight: "100vh", paddingTop: 48, paddingBottom: isMobile ? 72 : 0 }}>
+      <div style={{ background: C.bg, minHeight: "100vh", paddingTop: 52, paddingBottom: isMobile ? 80 : 0 }}>
         <div style={{
-          maxWidth: 1200, margin: "0 auto",
-          display: "flex", gap: 24,
-          padding: isMobile ? "16px 0" : "20px 16px",
+          maxWidth: 1180, margin: "0 auto",
+          display: "flex", gap: 20,
+          padding: isMobile ? "14px 0" : "24px 16px",
           alignItems: "flex-start",
         }}>
           {!isMobile && <Sidebar />}

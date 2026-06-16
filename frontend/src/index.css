@@ -1,12 +1,22 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+:root {
+  --accent: #4f46e5;
+  --bg: #f7f8fa;
+  --text: #1a1a1e;
+  --border: #e6e8eb;
+}
+
+html { scroll-behavior: smooth; }
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, sans-serif;
-  background: #f2f2f0;
-  color: #282829;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
+  background: var(--bg);
+  color: var(--text);
   font-size: 15px;
-  line-height: 1.5;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   /* Prevent text size inflation on mobile */
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
@@ -17,34 +27,38 @@ body {
 
 #root { min-height: 100vh; }
 
-a { color: #16c784; text-decoration: none; }
+a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
 button { font-family: inherit; cursor: pointer; }
 
 input, textarea, select {
   font-family: inherit;
-  font-size: 15px;
-  outline: none;
-  /* Prevent iOS zoom on focus when font-size < 16px */
+  /* 16px minimum prevents iOS zoom on focus */
   font-size: max(16px, 1em);
+  outline: none;
 }
 
-/* Ensure minimum tap target size on mobile */
+/* Subtle focus ring for keyboard users (accessibility) */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Give interactive controls a comfortable tap target on mobile,
+   WITHOUT forcing inline text links to become flex blocks. */
 @media (max-width: 768px) {
-  button, a, [role="button"] {
-    min-height: 44px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+  button, [role="button"] {
+    min-height: 40px;
   }
-  /* Override for inline items like badges */
-  span[style], small { min-height: unset; display: inline; }
 }
 
-::-webkit-scrollbar { width: 6px; }
+/* Minimal scrollbars */
+::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #d0d0cf; border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: #d4d7db; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #b9bdc2; }
+* { scrollbar-width: thin; scrollbar-color: #d4d7db transparent; }
 
 /* Safe area padding for notched phones (iPhone X+) */
 @supports (padding-bottom: env(safe-area-inset-bottom)) {

@@ -62,7 +62,7 @@ export default function Register() {
             ))}
           </div>
           {error && <div style={s.error}>{error}</div>}
-          <button type="submit" style={s.submit} disabled={loading}>{loading ? "SIGNING UP…" : "SIGN UP"}</button>
+          <button type="submit" style={s.submit} disabled={loading}>{loading ? "Creating account…" : "Create account"}</button>
         </form>
 
         <div style={s.foot}>Already a member? <Link to="/login" style={s.footLink}>Log in</Link></div>
@@ -73,18 +73,18 @@ export default function Register() {
 
 const s = {
   page: { minHeight: "100vh", background: C.bg, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 },
-  card: { width: "100%", maxWidth: 440, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 4, padding: "48px 40px", boxSizing: "border-box" },
+  card: { width: "100%", maxWidth: 420, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 16, padding: "44px 36px", boxSizing: "border-box", boxShadow: "0 4px 24px rgba(0,0,0,0.04)" },
   logoRow: { display: "flex", justifyContent: "center", marginBottom: 24 },
-  title: { fontSize: 20, fontWeight: 700, color: C.text, margin: "0 0 8px" },
+  title: { fontSize: 21, fontWeight: 700, color: C.text, margin: "0 0 8px", letterSpacing: -0.3 },
   legal: { fontSize: 12, color: C.muted, margin: "0 0 16px", lineHeight: 1.5 },
   sep: { borderTop: `1px solid ${C.border}`, margin: "0 0 20px" },
-  form: { display: "flex", flexDirection: "column", gap: 14 },
-  input: { height: 44, borderRadius: 8, border: `1px solid ${C.border}`, background: C.surfaceHover, padding: "0 14px", fontSize: 16, boxSizing: "border-box", width: "100%", color: C.text },
+  form: { display: "flex", flexDirection: "column", gap: 12 },
+  input: { height: 46, borderRadius: 10, border: `1px solid ${C.border}`, background: C.surfaceHover, padding: "0 14px", fontSize: 16, boxSizing: "border-box", width: "100%", color: C.text },
   roleRow: { display: "flex", gap: 8 },
-  roleBtn: { flex: 1, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 20, padding: 0, height: 44, fontSize: 14, fontWeight: 700, color: C.muted, cursor: "pointer" },
-  roleActive: { borderColor: C.primary, background: "#ff45001a", color: C.primary },
-  error: { background: "#fff5f5", border: "1px solid #fed7d7", borderRadius: 6, padding: "10px 14px", fontSize: 14, color: C.danger },
-  submit: { background: C.primary, color: "#fff", border: "none", borderRadius: 20, padding: 0, height: 38, fontSize: 14, fontWeight: 700, textTransform: "uppercase", width: "100%", cursor: "pointer", marginTop: 2 },
+  roleBtn: { flex: 1, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, padding: 0, height: 44, fontSize: 14, fontWeight: 600, color: C.muted, cursor: "pointer" },
+  roleActive: { borderColor: C.primary, background: C.primaryBg, color: C.primary },
+  error: { background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 8, padding: "10px 14px", fontSize: 14, color: C.danger },
+  submit: { background: C.primary, color: "#fff", border: "none", borderRadius: 10, padding: 0, height: 44, fontSize: 15, fontWeight: 600, width: "100%", cursor: "pointer", marginTop: 2 },
   foot: { textAlign: "center", marginTop: 20, fontSize: 14, color: C.muted },
-  footLink: { color: C.blue, fontWeight: 700, textDecoration: "none" },
+  footLink: { color: C.blue, fontWeight: 600, textDecoration: "none" },
 };

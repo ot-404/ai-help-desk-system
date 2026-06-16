@@ -47,8 +47,8 @@ function Item({ to, label, icon, end }) {
       return {
         ...st.link,
         color: active ? C.primary : C.text,
-        fontWeight: active ? 700 : 500,
-        background: active ? "#ff45001a" : "transparent",
+        fontWeight: active ? 600 : 500,
+        background: active ? C.primaryBg : "transparent",
       };
     }}>
       {icon && <Icon name={icon} />}
@@ -152,16 +152,16 @@ export default function Sidebar() {
 }
 
 const st = {
-  sidebar: { width: 270, flexShrink: 0, position: "sticky", top: 68, alignSelf: "flex-start", background: C.surface, border: `1px solid ${C.border}`, borderRadius: 4, padding: "8px 8px 0", maxHeight: "calc(100vh - 80px)", overflowY: "auto" },
-  nav: { display: "flex", flexDirection: "column", gap: 2 },
-  link: { display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", borderRadius: 4, fontSize: 14, textDecoration: "none" },
-  group: { fontSize: 10, fontWeight: 700, color: C.muted, letterSpacing: 1, textTransform: "uppercase", padding: "12px 12px 4px" },
-  footer: { fontSize: 11, color: C.light, padding: "12px", borderTop: `1px solid ${C.divider}`, marginTop: 8 },
+  sidebar: { width: 248, flexShrink: 0, position: "sticky", top: 64, alignSelf: "flex-start", background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, padding: "8px 8px 0", maxHeight: "calc(100vh - 84px)", overflowY: "auto" },
+  nav: { display: "flex", flexDirection: "column", gap: 1 },
+  link: { display: "flex", alignItems: "center", gap: 11, padding: "8px 12px", borderRadius: 8, fontSize: 14, textDecoration: "none" },
+  group: { fontSize: 10.5, fontWeight: 700, color: C.light, letterSpacing: 0.8, textTransform: "uppercase", padding: "14px 12px 5px" },
+  footer: { fontSize: 11, color: C.light, padding: "14px 12px", borderTop: `1px solid ${C.divider}`, marginTop: 8 },
 
-  extLink: { display: "flex", alignItems: "center", gap: 8, padding: "7px 12px", borderRadius: 4, fontSize: 13, textDecoration: "none", color: C.text, fontWeight: 500 },
-  extEmoji: { fontSize: 14, flexShrink: 0, width: 20, textAlign: "center" },
+  extLink: { display: "flex", alignItems: "center", gap: 9, padding: "7px 12px", borderRadius: 8, fontSize: 13.5, textDecoration: "none", color: C.text, fontWeight: 500 },
+  extEmoji: { fontSize: 14, flexShrink: 0, width: 18, textAlign: "center" },
   extLabel: { flex: 1, minWidth: 0 },
 
   tagCloud: { display: "flex", flexWrap: "wrap", gap: 6, padding: "4px 12px 12px" },
-  tagChip: { background: C.tag, color: C.tagText, border: `1px solid ${C.tagBorder}`, borderRadius: 2, padding: "2px 7px", fontSize: 11, fontWeight: 600, cursor: "default" },
+  tagChip: { background: C.tag, color: C.tagText, border: `1px solid ${C.tagBorder}`, borderRadius: 6, padding: "3px 8px", fontSize: 11.5, fontWeight: 500, cursor: "default" },
 };

@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { useIsMobile } from "../hooks/useIsMobile";
 import { C } from "../theme";
 
-const ROLE_BG = { admin: "#ff4500", agent: "#0079d3", user: "#46d160" };
+const ROLE_BG = { admin: C.primary, agent: C.blue, user: C.success };
 
 export default function NavBar() {
   const { user, logout } = useAuth();
@@ -20,7 +20,7 @@ export default function NavBar() {
   };
 
   const avatarChar = user ? (user.name || user.email || "?")[0].toUpperCase() : "?";
-  const avatarBg = user ? (ROLE_BG[user.role] || "#0079d3") : "#0079d3";
+  const avatarBg = user ? (ROLE_BG[user.role] || C.blue) : C.blue;
 
   const Logo = (
     <Link to="/" style={s.logo}>
@@ -36,7 +36,7 @@ export default function NavBar() {
       {!isMobile && (
         <form onSubmit={submit} style={s.searchForm}>
           <span style={s.searchIcon}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#878a8c" strokeWidth="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={C.light} strokeWidth="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
           </span>
           <input style={s.searchInput} placeholder="Search HD Systems" value={q} onChange={(e) => setQ(e.target.value)} />
         </form>
@@ -51,7 +51,12 @@ export default function NavBar() {
 
         {user ? (
           <>
-            {!isMobile && <Link to="/new-question" style={s.createBtn}>Create Post</Link>}
+            {!isMobile && (
+              <Link to="/new-question" style={s.createBtn}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                Create
+              </Link>
+            )}
             <Link to="/my-questions" aria-label="Profile">
               <div style={{ ...s.avatar, background: avatarBg }} title={user.role}>{avatarChar}</div>
             </Link>
@@ -78,20 +83,20 @@ export default function NavBar() {
 }
 
 const s = {
-  nav: { position: "fixed", top: 0, left: 0, right: 0, height: 48, background: C.nav, borderBottom: `1px solid ${C.navBorder}`, display: "flex", alignItems: "center", padding: "0 16px", gap: 16, zIndex: 100 },
-  logo: { textDecoration: "none", flexShrink: 0, display: "inline-flex", alignItems: "center", gap: 6 },
-  logoBadge: { background: C.primary, color: "#fff", fontWeight: 800, borderRadius: 4, padding: "3px 7px", fontSize: 15 },
-  logoText: { color: "#fff", fontWeight: 700, fontSize: 18 },
-  searchForm: { flex: 1, maxWidth: 690, position: "relative", display: "flex", alignItems: "center" },
-  searchIcon: { position: "absolute", left: 12, display: "flex", pointerEvents: "none" },
-  searchInput: { width: "100%", height: 36, borderRadius: 20, border: "1px solid #343536", background: "#272729", padding: "0 12px 0 36px", fontSize: 14, boxSizing: "border-box", color: "#fff", outline: "none" },
+  nav: { position: "fixed", top: 0, left: 0, right: 0, height: 52, background: C.nav, borderBottom: `1px solid ${C.navBorder}`, display: "flex", alignItems: "center", padding: "0 16px", gap: 16, zIndex: 100 },
+  logo: { textDecoration: "none", flexShrink: 0, display: "inline-flex", alignItems: "center", gap: 7 },
+  logoBadge: { background: C.primary, color: "#fff", fontWeight: 800, borderRadius: 7, padding: "4px 8px", fontSize: 14, letterSpacing: 0.3 },
+  logoText: { color: C.text, fontWeight: 700, fontSize: 17, letterSpacing: -0.2 },
+  searchForm: { flex: 1, maxWidth: 560, position: "relative", display: "flex", alignItems: "center" },
+  searchIcon: { position: "absolute", left: 13, display: "flex", pointerEvents: "none" },
+  searchInput: { width: "100%", height: 38, borderRadius: 10, border: `1px solid ${C.border}`, background: C.surfaceHover, padding: "0 12px 0 38px", fontSize: 14, boxSizing: "border-box", color: C.text, outline: "none" },
   right: { display: "flex", alignItems: "center", gap: 10, marginLeft: "auto", flexShrink: 0 },
-  iconBtn: { background: "none", border: "none", padding: 8, borderRadius: 6, display: "flex", cursor: "pointer", minHeight: 44, minWidth: 44, alignItems: "center", justifyContent: "center" },
-  createBtn: { background: C.primary, color: "#fff", border: "none", borderRadius: 20, padding: "5px 16px", fontSize: 14, fontWeight: 700, textDecoration: "none", display: "inline-flex", alignItems: "center", whiteSpace: "nowrap", minHeight: 32 },
-  avatar: { width: 28, height: 28, borderRadius: "50%", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 13, flexShrink: 0 },
-  signOut: { background: "none", border: "none", color: C.navText, fontSize: 13, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" },
-  loginBtn: { border: "1px solid #818384", color: C.navText, borderRadius: 20, padding: "5px 16px", fontSize: 14, fontWeight: 600, textDecoration: "none", display: "inline-flex", alignItems: "center", whiteSpace: "nowrap" },
-  signupBtn: { background: C.primary, color: "#fff", borderRadius: 20, padding: "5px 16px", fontSize: 14, fontWeight: 700, textDecoration: "none", display: "inline-flex", alignItems: "center", whiteSpace: "nowrap" },
-  mobileSearch: { position: "absolute", top: 0, left: 0, right: 0, height: 48, background: C.nav, display: "flex", alignItems: "center", padding: "0 12px", gap: 8, zIndex: 101 },
-  mobileInput: { flex: 1, height: 36, borderRadius: 20, border: "1px solid #343536", background: "#272729", padding: "0 14px", fontSize: 16, boxSizing: "border-box", color: "#fff", outline: "none" },
+  iconBtn: { background: "none", border: "none", padding: 8, borderRadius: 8, display: "flex", cursor: "pointer", minHeight: 44, minWidth: 44, alignItems: "center", justifyContent: "center" },
+  createBtn: { background: C.primary, color: "#fff", border: "none", borderRadius: 10, padding: "8px 16px", fontSize: 14, fontWeight: 600, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6, whiteSpace: "nowrap" },
+  avatar: { width: 32, height: 32, borderRadius: "50%", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 14, flexShrink: 0 },
+  signOut: { background: "none", border: "none", color: C.muted, fontSize: 13, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" },
+  loginBtn: { border: `1px solid ${C.border}`, color: C.navText, borderRadius: 10, padding: "8px 16px", fontSize: 14, fontWeight: 600, textDecoration: "none", display: "inline-flex", alignItems: "center", whiteSpace: "nowrap" },
+  signupBtn: { background: C.primary, color: "#fff", borderRadius: 10, padding: "8px 16px", fontSize: 14, fontWeight: 600, textDecoration: "none", display: "inline-flex", alignItems: "center", whiteSpace: "nowrap" },
+  mobileSearch: { position: "absolute", top: 0, left: 0, right: 0, height: 52, background: C.nav, display: "flex", alignItems: "center", padding: "0 12px", gap: 8, zIndex: 101, borderBottom: `1px solid ${C.navBorder}` },
+  mobileInput: { flex: 1, height: 38, borderRadius: 10, border: `1px solid ${C.border}`, background: C.surfaceHover, padding: "0 14px", fontSize: 16, boxSizing: "border-box", color: C.text, outline: "none" },
 };

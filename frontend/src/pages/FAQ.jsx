@@ -50,10 +50,10 @@ function AccordionItem({ article }) {
           </div>
           {article.tags?.length > 0 && (
             <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 12 }}>
-              {article.tags.map(t => (
-                <span key={t} style={{
+              {article.tags.map((t, i) => (
+                <span key={`${t}-${i}`} style={{
                   background: C.tag, color: C.tagText, border: `1px solid ${C.tagBorder}`,
-                  borderRadius: 2, padding: "2px 8px", fontSize: 12, fontWeight: 500,
+                  borderRadius: 6, padding: "2px 9px", fontSize: 12, fontWeight: 500,
                 }}>
                   {t}
                 </span>
@@ -192,18 +192,18 @@ export default function FAQ() {
 
 const s = {
   header: {
-    background: C.surface, border: `1px solid ${C.border}`, borderRadius: 4,
-    padding: "24px 20px", marginBottom: 12,
+    background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12,
+    padding: "24px 20px", marginBottom: 14,
   },
-  title: { fontSize: 22, fontWeight: 800, color: C.text, margin: "0 0 6px" },
+  title: { fontSize: 22, fontWeight: 700, color: C.text, margin: "0 0 6px", letterSpacing: -0.4 },
   subtitle: { fontSize: 14, color: C.muted, margin: 0 },
 
   searchWrap: {
     position: "relative", marginBottom: 12,
   },
   searchInput: {
-    width: "100%", height: 44, borderRadius: 4, border: `1px solid ${C.border}`,
-    background: C.surface, padding: "0 40px 0 38px", fontSize: 15,
+    width: "100%", height: 46, borderRadius: 10, border: `1px solid ${C.border}`,
+    background: C.surface, padding: "0 40px 0 40px", fontSize: 15,
     outline: "none", boxSizing: "border-box", color: C.text,
   },
   clearBtn: {
@@ -212,32 +212,33 @@ const s = {
     fontSize: 16, padding: 4,
   },
 
-  tabsScroll: { overflowX: "auto", marginBottom: 12, WebkitOverflowScrolling: "touch" },
-  tabs: { display: "flex", gap: 6, padding: "2px 0", minWidth: "max-content" },
+  tabsScroll: { overflowX: "auto", marginBottom: 14, WebkitOverflowScrolling: "touch" },
+  tabs: { display: "flex", gap: 7, padding: "2px 0", minWidth: "max-content" },
   tab: {
-    padding: "7px 14px", borderRadius: 20, border: `1px solid ${C.border}`,
-    background: C.surface, color: C.muted, fontSize: 13, fontWeight: 600,
+    padding: "7px 15px", borderRadius: 20, border: `1px solid ${C.border}`,
+    background: C.surface, color: C.muted, fontSize: 13, fontWeight: 500,
     cursor: "pointer", whiteSpace: "nowrap", minHeight: 34,
   },
   tabActive: {
-    background: C.primary, color: "#fff", border: `1px solid ${C.primary}`,
+    background: C.primary, color: "#fff", border: `1px solid ${C.primary}`, fontWeight: 600,
   },
 
   loading: { textAlign: "center", color: C.light, padding: 48 },
   empty: {
     textAlign: "center", padding: 48, background: C.surface,
-    border: `1px solid ${C.border}`, borderRadius: 4,
+    border: `1px solid ${C.border}`, borderRadius: 12,
   },
 
-  section: { marginBottom: 12 },
+  section: { marginBottom: 14 },
   sectionHeader: {
     display: "flex", alignItems: "center", justifyContent: "space-between",
-    padding: "10px 16px", background: C.nav, borderRadius: "4px 4px 0 0",
+    padding: "10px 16px", background: C.surfaceHover, borderRadius: "12px 12px 0 0",
+    border: `1px solid ${C.border}`, borderBottom: "none",
   },
-  sectionTitle: { fontSize: 13, fontWeight: 700, color: "#d7dadc", letterSpacing: 0.5, textTransform: "uppercase" },
-  sectionCount: { fontSize: 12, color: "#818384", fontWeight: 600 },
+  sectionTitle: { fontSize: 12, fontWeight: 700, color: C.muted, letterSpacing: 0.5, textTransform: "uppercase" },
+  sectionCount: { fontSize: 12, color: C.light, fontWeight: 600 },
   accordion: {
     background: C.surface, border: `1px solid ${C.border}`,
-    borderTop: "none", borderRadius: "0 0 4px 4px",
+    borderTop: "none", borderRadius: "0 0 12px 12px",
   },
 };

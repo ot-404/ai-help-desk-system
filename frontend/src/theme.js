@@ -1,50 +1,50 @@
 export const C = {
-  // Reddit-style surfaces
-  bg:       "#dae0e6",      // Reddit's classic light gray page bg
+  // Minimal light surfaces
+  bg:       "#f7f8fa",      // soft neutral page background
   surface:  "#ffffff",      // cards
-  surfaceHover: "#f8f9fa",  // card hover
-  nav:      "#1c1c1c",      // dark top navbar (Reddit dark)
-  navBorder:"#343536",      // navbar border
-  border:   "#edeff1",      // card borders
-  divider:  "#edeff1",
+  surfaceHover: "#f5f6f8",  // card / row hover
+  nav:      "#ffffff",      // clean white top navbar
+  navBorder:"#e6e8eb",      // navbar hairline border
+  border:   "#e6e8eb",      // card borders
+  divider:  "#eef0f2",      // lighter inner dividers
 
-  // Brand / actions
-  primary:  "#ff4500",      // Reddit orange — upvotes, CTAs, logo accent
-  primaryHover: "#e03d00",
-  blue:     "#0079d3",      // links, answers, secondary actions
-  blueHover:"#006cbf",
+  // Brand / actions — single refined indigo accent
+  primary:  "#4f46e5",      // primary CTAs, active states, upvotes
+  primaryHover: "#4338ca",
+  blue:     "#2563eb",      // links, secondary actions
+  blueHover:"#1d4ed8",
 
   // Text
-  text:     "#1c1c1c",
-  muted:    "#878a8c",
-  light:    "#a8aaab",
-  navText:  "#d7dadc",      // text on dark nav
+  text:     "#1a1a1e",      // near-black
+  muted:    "#6b7280",      // secondary text
+  light:    "#9ca3af",      // tertiary / meta text
+  navText:  "#374151",      // text on the light nav
 
   // Semantic
-  success:  "#46d160",      // accepted, resolved
-  warning:  "#ffd635",
-  danger:   "#ff585b",
+  success:  "#16a34a",      // accepted, resolved
+  warning:  "#d97706",
+  danger:   "#dc2626",
 
   // Tags
-  tag:      "#f3f4f6",
-  tagText:  "#0079d3",
-  tagBorder:"#edeff1",
+  tag:      "#f1f2f4",
+  tagText:  "#4b5563",
+  tagBorder:"#e6e8eb",
 
   // Anonymous
-  anon:     "#a8aaab",
+  anon:     "#9ca3af",
 
   // Legacy aliases (kept so older pages keep compiling)
-  primaryBg:   "#ff45001a",
-  primaryDark: "#e03d00",
-  pageBg:      "#dae0e6",
-  accepted:    "#46d160",
-  red:         "#ff585b",
-  purple:      "#8250df",
-  rep:         "#0079d3",
-  surface2:    "#f8f9fa",
-  accent:      "#0079d3",
-  ai:          "#8250df",
-  tagBg:       "#f3f4f6",
+  primaryBg:   "#4f46e51a",
+  primaryDark: "#4338ca",
+  pageBg:      "#f7f8fa",
+  accepted:    "#16a34a",
+  red:         "#dc2626",
+  purple:      "#7c3aed",
+  rep:         "#2563eb",
+  surface2:    "#f5f6f8",
+  accent:      "#4f46e5",
+  ai:          "#7c3aed",
+  tagBg:       "#f1f2f4",
 };
 
 export function timeAgo(dateStr) {
@@ -70,12 +70,12 @@ export const TOPICS = [
 ];
 
 export const TYPE_BADGE = {
-  Question:        { bg: "#e8f4fd", color: "#0079d3" },
-  Discussion:      { bg: "#eaeef2", color: "#878a8c" },
-  Tutorial:        { bg: "#e6f7ea", color: "#1a7f37" },
-  "Anonymous Ask": { bg: "#eaeef2", color: "#878a8c" },
-  Blog:            { bg: "#e8f4fd", color: "#0079d3" },
-  "Q&A":           { bg: "#e6f7ea", color: "#1a7f37" },
+  Question:        { bg: "#eef2ff", color: "#4f46e5" },
+  Discussion:      { bg: "#f1f2f4", color: "#6b7280" },
+  Tutorial:        { bg: "#ecfdf3", color: "#16a34a" },
+  "Anonymous Ask": { bg: "#f1f2f4", color: "#6b7280" },
+  Blog:            { bg: "#eff6ff", color: "#2563eb" },
+  "Q&A":           { bg: "#ecfdf3", color: "#16a34a" },
 };
 
 export function deriveType(article) {

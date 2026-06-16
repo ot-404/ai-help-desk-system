@@ -33,9 +33,9 @@ export default function BottomNav() {
   return (
     <nav style={s.bar}>
       {tabs.map((t) => (
-        <NavLink key={t.label} to={t.to} end={t.end} style={({ isActive }) => ({ ...s.tab, color: isActive ? C.primary : "#818384" })}>
+        <NavLink key={t.label} to={t.to} end={t.end} style={({ isActive }) => ({ ...s.tab, color: isActive ? C.primary : C.muted })}>
           <Icon name={t.icon} />
-          <span style={s.label}>{t.label}</span>
+          <span style={{ ...s.label, fontWeight: 600 }}>{t.label}</span>
         </NavLink>
       ))}
     </nav>
@@ -43,7 +43,7 @@ export default function BottomNav() {
 }
 
 const s = {
-  bar: { position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 200, minHeight: 56, background: C.nav, borderTop: `1px solid ${C.navBorder}`, display: "flex", alignItems: "stretch", paddingBottom: "env(safe-area-inset-bottom, 0px)" },
-  tab: { flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3, textDecoration: "none", minHeight: 56 },
-  label: { fontSize: 10, fontWeight: 600 },
+  bar: { position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 200, minHeight: 58, background: C.surface, borderTop: `1px solid ${C.border}`, display: "flex", alignItems: "stretch", paddingBottom: "env(safe-area-inset-bottom, 0px)", boxShadow: "0 -1px 8px rgba(0,0,0,0.03)" },
+  tab: { flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3, textDecoration: "none", minHeight: 58 },
+  label: { fontSize: 10.5, fontWeight: 600, letterSpacing: 0.1 },
 };

@@ -53,7 +53,7 @@ export default function PostCard({ article, onVoteSuccess }) {
 
   return (
     <div
-      style={{ ...s.card, borderColor: hover ? "#818384" : C.border }}
+      style={{ ...s.card, borderColor: hover ? "#d4d7db" : C.border, boxShadow: hover ? "0 1px 6px rgba(0,0,0,0.05)" : "none" }}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
@@ -83,7 +83,7 @@ export default function PostCard({ article, onVoteSuccess }) {
 
         {tags.length > 0 && (
           <div style={s.tagsRow}>
-            {tags.map((t) => <span key={t} style={s.tag}>{String(t).replace(/^#/, "")}</span>)}
+            {tags.map((t, i) => <span key={`${t}-${i}`} style={s.tag}>{String(t).replace(/^#/, "")}</span>)}
           </div>
         )}
 
@@ -110,20 +110,20 @@ export default function PostCard({ article, onVoteSuccess }) {
 }
 
 const s = {
-  card: { background: C.surface, border: `1px solid ${C.border}`, borderRadius: 4, display: "flex", overflow: "hidden" },
-  voteCol: { width: 38, flexShrink: 0, background: "#f8f9fa", borderRadius: "4px 0 0 4px", display: "flex", flexDirection: "column", alignItems: "center", paddingTop: 8, gap: 2 },
-  voteBtn: { background: "none", border: "none", padding: 0, display: "flex", cursor: "pointer", minHeight: 22, minWidth: 22, alignItems: "center", justifyContent: "center" },
+  card: { background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, display: "flex", overflow: "hidden", transition: "border-color 0.15s, box-shadow 0.15s" },
+  voteCol: { width: 44, flexShrink: 0, background: C.surfaceHover, display: "flex", flexDirection: "column", alignItems: "center", paddingTop: 10, gap: 3 },
+  voteBtn: { background: "none", border: "none", padding: 0, display: "flex", cursor: "pointer", minHeight: 24, minWidth: 24, alignItems: "center", justifyContent: "center", borderRadius: 6 },
   voteNum: { fontSize: 13, fontWeight: 700, lineHeight: 1.2 },
-  body: { flex: 1, minWidth: 0, padding: 8 },
-  metaRow: { display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6, marginBottom: 6, fontSize: 12 },
-  typeBadge: { display: "inline-flex", alignItems: "center", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 10 },
-  topicChip: { background: C.tag, color: C.muted, borderRadius: 10, padding: "2px 8px", fontSize: 12, fontWeight: 600, cursor: "pointer" },
-  meta: { fontSize: 12, color: C.muted },
+  body: { flex: 1, minWidth: 0, padding: "12px 14px" },
+  metaRow: { display: "flex", flexWrap: "wrap", alignItems: "center", gap: 7, marginBottom: 7, fontSize: 12 },
+  typeBadge: { display: "inline-flex", alignItems: "center", fontSize: 11, fontWeight: 600, padding: "2px 9px", borderRadius: 6 },
+  topicChip: { background: C.tag, color: C.muted, borderRadius: 6, padding: "2px 9px", fontSize: 12, fontWeight: 500, cursor: "pointer" },
+  meta: { fontSize: 12, color: C.light },
   anon: { fontStyle: "italic", color: C.anon },
-  title: { display: "block", fontSize: 18, fontWeight: 500, color: C.text, textDecoration: "none", lineHeight: 1.3, margin: "2px 0" },
-  tagsRow: { display: "flex", flexWrap: "wrap", gap: 6, margin: "6px 0" },
-  tag: { background: C.tag, color: C.tagText, borderRadius: 2, padding: "2px 8px", fontSize: 12 },
-  excerpt: { fontSize: 14, color: C.muted, margin: "4px 0 8px", overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", lineHeight: 1.4 },
-  actions: { display: "flex", flexWrap: "wrap", alignItems: "center", gap: 2, marginTop: 4 },
-  actionBtn: { display: "inline-flex", alignItems: "center", gap: 6, background: "none", border: "none", color: C.muted, fontSize: 12, fontWeight: 700, padding: "6px 8px", borderRadius: 2, cursor: "pointer", textDecoration: "none" },
+  title: { display: "block", fontSize: 17, fontWeight: 600, color: C.text, textDecoration: "none", lineHeight: 1.35, margin: "2px 0", letterSpacing: -0.2 },
+  tagsRow: { display: "flex", flexWrap: "wrap", gap: 6, margin: "8px 0" },
+  tag: { background: C.tag, color: C.tagText, borderRadius: 6, padding: "2px 9px", fontSize: 12, fontWeight: 500 },
+  excerpt: { fontSize: 14, color: C.muted, margin: "4px 0 8px", overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", lineHeight: 1.5 },
+  actions: { display: "flex", flexWrap: "wrap", alignItems: "center", gap: 2, marginTop: 6 },
+  actionBtn: { display: "inline-flex", alignItems: "center", gap: 6, background: "none", border: "none", color: C.muted, fontSize: 12.5, fontWeight: 600, padding: "6px 9px", borderRadius: 6, cursor: "pointer", textDecoration: "none" },
 };

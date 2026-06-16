@@ -4,7 +4,7 @@ import api from "../api/client";
 import { useAuth } from "../context/AuthContext";
 import { C, timeAgo, deriveType, TYPE_BADGE } from "../theme";
 
-const STATUS_COLOR = { open: "#9a6700", pending: C.blue, resolved: "#1a7f37", closed: C.light };
+const STATUS_COLOR = { open: C.warning, pending: C.blue, resolved: C.success, closed: C.light };
 const STATUSES = ["open", "pending", "resolved", "closed"];
 const ROLE_BADGE = { agent: { bg: "#e8f4fd", color: C.blue, label: "Support Agent" }, admin: { bg: "#ffe9e0", color: C.primary, label: "Admin" }, ai: { bg: "#f3ecff", color: "#8250df", label: "AI" } };
 
@@ -179,7 +179,7 @@ export default function TicketDetail() {
                   {idx === bestIdx && messages.length > 1 && <span style={s.bestBadge}>★ Best Answer</span>}
                   {accepted && (
                     <span style={s.acceptedMark} title="Accepted answer">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1a7f37" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.success} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                       Accepted
                     </span>
                   )}
@@ -198,7 +198,7 @@ export default function TicketDetail() {
         ) : (
           <form onSubmit={sendReply}>
             <textarea style={s.textarea} value={reply} onChange={(e) => setReply(e.target.value)} placeholder="Write your answer here…" rows={8} />
-            <button style={s.submit} disabled={sending || !reply.trim()}>{sending ? "POSTING…" : "POST ANSWER"}</button>
+            <button style={s.submit} disabled={sending || !reply.trim()}>{sending ? "Posting…" : "Post Answer"}</button>
           </form>
         )}
       </div>
@@ -209,47 +209,47 @@ export default function TicketDetail() {
 const s = {
   loading: { textAlign: "center", color: C.light, marginTop: 80, fontSize: 16 },
   back: { color: C.muted, textDecoration: "none", fontSize: 13, display: "block", marginBottom: 12 },
-  agentCard: { background: C.surface, border: `1px solid ${C.border}`, borderRadius: 4, marginBottom: 12, overflow: "hidden" },
-  agentHead: { width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#f8f9fa", border: "none", padding: "10px 14px", fontSize: 13, fontWeight: 700, color: C.text, cursor: "pointer" },
+  agentCard: { background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, marginBottom: 12, overflow: "hidden" },
+  agentHead: { width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", background: C.surfaceHover, border: "none", padding: "11px 14px", fontSize: 13, fontWeight: 700, color: C.text, cursor: "pointer" },
   agentBody: { display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6, padding: "10px 14px" },
   agentLabel: { fontSize: 13, fontWeight: 600, color: C.muted, marginRight: 4 },
-  qCard: { background: C.surface, border: `1px solid ${C.border}`, borderRadius: 4, display: "flex", overflow: "hidden" },
-  voteCol: { width: 38, flexShrink: 0, background: "#f8f9fa", display: "flex", flexDirection: "column", alignItems: "center", paddingTop: 8, gap: 4 },
+  qCard: { background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, display: "flex", overflow: "hidden" },
+  voteCol: { width: 44, flexShrink: 0, background: C.surfaceHover, display: "flex", flexDirection: "column", alignItems: "center", paddingTop: 10, gap: 4 },
   voteNum: { fontSize: 13, fontWeight: 700, color: C.muted },
   qBody: { flex: 1, minWidth: 0, padding: 12 },
   metaRow: { display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6, marginBottom: 8, fontSize: 12 },
-  typeBadge: { fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 10 },
-  topicChip: { background: C.tag, color: C.muted, borderRadius: 10, padding: "2px 8px", fontSize: 12, fontWeight: 600 },
-  meta: { fontSize: 12, color: C.muted },
+  typeBadge: { fontSize: 11, fontWeight: 600, padding: "2px 9px", borderRadius: 6 },
+  topicChip: { background: C.tag, color: C.muted, borderRadius: 6, padding: "2px 9px", fontSize: 12, fontWeight: 500 },
+  meta: { fontSize: 12, color: C.light },
   anon: { fontStyle: "italic", color: C.anon },
-  title: { fontSize: 22, fontWeight: 700, color: C.text, margin: "0 0 12px", lineHeight: 1.3 },
+  title: { fontSize: 22, fontWeight: 700, color: C.text, margin: "0 0 12px", lineHeight: 1.3, letterSpacing: -0.3 },
   desc: { fontSize: 15, color: C.text, lineHeight: 1.7, whiteSpace: "pre-wrap", marginBottom: 14 },
   actions: { display: "flex", flexWrap: "wrap", gap: 8 },
-  actionBtn: { color: C.muted, fontSize: 12, fontWeight: 700, padding: "6px 8px", borderRadius: 2 },
-  aiSection: { margin: "12px 0" },
-  aiBtn: { display: "inline-flex", alignItems: "center", gap: 8, background: "#f3ecff", border: "1px solid #d8c4f7", color: "#8250df", borderRadius: 20, padding: "8px 18px", fontSize: 13, fontWeight: 700, cursor: "pointer" },
-  aiThinking: { display: "flex", alignItems: "center", gap: 6, padding: "10px 14px", background: "#f3ecff", borderRadius: 8, border: "1px solid #d8c4f7" },
-  aiDot: { width: 6, height: 6, borderRadius: "50%", background: "#8250df", display: "inline-block", animation: "none", opacity: 0.6 },
-  aiCard: { background: "#f3ecff", border: "1px solid #d8c4f7", borderRadius: 8, padding: 14 },
+  actionBtn: { color: C.muted, fontSize: 12.5, fontWeight: 600, padding: "6px 8px", borderRadius: 6 },
+  aiSection: { margin: "14px 0" },
+  aiBtn: { display: "inline-flex", alignItems: "center", gap: 8, background: "#f3ecff", border: "1px solid #d8c4f7", color: C.purple, borderRadius: 10, padding: "9px 18px", fontSize: 13, fontWeight: 600, cursor: "pointer" },
+  aiThinking: { display: "flex", alignItems: "center", gap: 6, padding: "11px 14px", background: "#f3ecff", borderRadius: 10, border: "1px solid #d8c4f7" },
+  aiDot: { width: 6, height: 6, borderRadius: "50%", background: C.purple, display: "inline-block", opacity: 0.6 },
+  aiCard: { background: "#f3ecff", border: "1px solid #d8c4f7", borderRadius: 10, padding: 16 },
   aiCardHead: { display: "flex", alignItems: "center", gap: 10, marginBottom: 10 },
-  aiBadge: { fontSize: 13, fontWeight: 700, color: "#8250df" },
+  aiBadge: { fontSize: 13, fontWeight: 700, color: C.purple },
   aiLabel: { fontSize: 11, color: "#a78bcc", fontStyle: "italic" },
   aiText: { fontSize: 15, color: C.text, lineHeight: 1.75, whiteSpace: "pre-wrap" },
   aiDismiss: { marginTop: 10, background: "none", border: "none", color: "#a78bcc", fontSize: 12, cursor: "pointer", padding: 0 },
-  answersHead: { fontSize: 16, fontWeight: 700, color: C.muted, margin: "20px 0 10px" },
-  answers: { display: "flex", flexDirection: "column", gap: 8 },
-  noAnswers: { color: C.light, padding: "16px", fontSize: 15, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 4 },
-  answerCard: { background: C.surface, border: `1px solid ${C.border}`, borderRadius: 4, display: "flex", overflow: "hidden" },
-  answerContent: { flex: 1, minWidth: 0, padding: 12 },
+  answersHead: { fontSize: 16, fontWeight: 700, color: C.text, margin: "22px 0 12px" },
+  answers: { display: "flex", flexDirection: "column", gap: 10 },
+  noAnswers: { color: C.light, padding: "18px", fontSize: 15, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12 },
+  answerCard: { background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, display: "flex", overflow: "hidden" },
+  answerContent: { flex: 1, minWidth: 0, padding: 14 },
   answerMeta: { display: "flex", alignItems: "center", flexWrap: "wrap", gap: 8, marginBottom: 8 },
   author: { fontSize: 13, fontWeight: 700, color: C.text },
-  roleBadge: { fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 10 },
-  dim: { fontSize: 12, color: C.muted },
-  bestBadge: { fontSize: 11, fontWeight: 700, color: "#1a7f37", background: "#e6f7ea", padding: "2px 8px", borderRadius: 10 },
-  acceptedMark: { display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11, fontWeight: 700, color: "#1a7f37" },
+  roleBadge: { fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 8 },
+  dim: { fontSize: 12, color: C.light },
+  bestBadge: { fontSize: 11, fontWeight: 700, color: C.success, background: "#ecfdf3", padding: "2px 8px", borderRadius: 8 },
+  acceptedMark: { display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11, fontWeight: 700, color: C.success },
   answerBody: { fontSize: 15, color: C.text, lineHeight: 1.7, whiteSpace: "pre-wrap" },
-  writeBox: { marginTop: 20, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 4, padding: 16 },
+  writeBox: { marginTop: 22, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, padding: 18 },
   writeTitle: { fontSize: 16, fontWeight: 700, color: C.text, marginBottom: 12 },
-  textarea: { width: "100%", border: `1px solid ${C.border}`, borderRadius: 4, padding: "12px 14px", fontSize: 16, fontFamily: "inherit", resize: "vertical", boxSizing: "border-box", lineHeight: 1.6, minHeight: 300 },
-  submit: { marginTop: 12, display: "inline-block", background: C.primary, color: "#fff", border: "none", borderRadius: 20, padding: "9px 24px", fontSize: 14, fontWeight: 700, cursor: "pointer", minHeight: 38, textDecoration: "none", textTransform: "uppercase" },
+  textarea: { width: "100%", border: `1px solid ${C.border}`, borderRadius: 10, padding: "12px 14px", fontSize: 16, fontFamily: "inherit", resize: "vertical", boxSizing: "border-box", lineHeight: 1.6, minHeight: 220 },
+  submit: { marginTop: 12, display: "inline-block", background: C.primary, color: "#fff", border: "none", borderRadius: 10, padding: "10px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer", minHeight: 40, textDecoration: "none" },
 };

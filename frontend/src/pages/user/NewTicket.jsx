@@ -160,7 +160,7 @@ export default function NewTicket() {
         {error && <div style={s.error}>{error}</div>}
 
         <div style={s.submitRow}>
-          <button type="submit" style={s.submit} disabled={submitting}>{submitting ? "POSTING…" : "POST"}</button>
+          <button type="submit" style={s.submit} disabled={submitting}>{submitting ? "Posting…" : "Post"}</button>
         </div>
       </form>
     </div>
@@ -168,27 +168,27 @@ export default function NewTicket() {
 }
 
 const s = {
-  heading: { fontSize: 20, fontWeight: 700, color: C.text, margin: "0 0 16px", borderBottom: `1px solid ${C.border}`, paddingBottom: 12 },
-  tabBar: { display: "flex", background: C.surface, border: `1px solid ${C.border}`, borderRadius: 4, marginBottom: 12, overflowX: "auto" },
+  heading: { fontSize: 20, fontWeight: 700, color: C.text, margin: "0 0 16px", borderBottom: `1px solid ${C.border}`, paddingBottom: 12, letterSpacing: -0.3 },
+  tabBar: { display: "flex", background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, marginBottom: 14, overflowX: "auto" },
   tab: { flex: 1, minWidth: 110, background: "none", border: "none", borderBottom: "2px solid transparent", padding: "12px 8px", fontSize: 14, fontWeight: 600, color: C.muted, cursor: "pointer", whiteSpace: "nowrap" },
   tabActive: { color: C.primary, borderBottom: `2px solid ${C.primary}` },
-  anonBox: { background: "#eaeef2", border: `1px solid ${C.border}`, borderRadius: 4, padding: "12px 14px", fontSize: 13, color: C.muted, lineHeight: 1.5, marginBottom: 12 },
-  card: { background: C.surface, border: `1px solid ${C.border}`, borderRadius: 4, padding: 16, display: "flex", flexDirection: "column", gap: 16 },
-  titleInput: { width: "100%", height: 44, fontSize: 16, padding: "0 12px", border: `1px solid ${C.border}`, borderRadius: 4, boxSizing: "border-box", fontFamily: "inherit", color: C.text },
-  body: { width: "100%", minHeight: 300, fontSize: 16, padding: "12px", border: `1px solid ${C.border}`, borderRadius: 4, resize: "vertical", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", boxSizing: "border-box", color: C.text, lineHeight: 1.6 },
+  anonBox: { background: C.surfaceHover, border: `1px solid ${C.border}`, borderRadius: 10, padding: "12px 14px", fontSize: 13, color: C.muted, lineHeight: 1.5, marginBottom: 12 },
+  card: { background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, padding: 18, display: "flex", flexDirection: "column", gap: 16 },
+  titleInput: { width: "100%", height: 46, fontSize: 16, padding: "0 14px", border: `1px solid ${C.border}`, borderRadius: 10, boxSizing: "border-box", fontFamily: "inherit", color: C.text },
+  body: { width: "100%", minHeight: 280, fontSize: 16, padding: "12px 14px", border: `1px solid ${C.border}`, borderRadius: 10, resize: "vertical", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", boxSizing: "border-box", color: C.text, lineHeight: 1.6 },
   label: { fontSize: 13, fontWeight: 700, color: C.text, display: "block", marginBottom: 6 },
-  tagBox: { display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center", border: `1px solid ${C.border}`, borderRadius: 4, padding: "8px 10px", minHeight: 44, boxSizing: "border-box" },
-  tagChip: { display: "inline-flex", alignItems: "center", gap: 4, background: C.tag, color: C.tagText, fontSize: 13, padding: "3px 8px", borderRadius: 2 },
+  tagBox: { display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center", border: `1px solid ${C.border}`, borderRadius: 10, padding: "8px 10px", minHeight: 44, boxSizing: "border-box" },
+  tagChip: { display: "inline-flex", alignItems: "center", gap: 4, background: C.tag, color: C.tagText, fontSize: 13, padding: "3px 9px", borderRadius: 6 },
   tagX: { background: "none", border: "none", color: C.tagText, fontSize: 15, lineHeight: 1, padding: 0, cursor: "pointer" },
   tagInput: { flex: 1, minWidth: 140, border: "none", fontSize: 16, padding: "4px 2px", outline: "none" },
-  select: { width: "100%", height: 44, fontSize: 16, padding: "0 12px", border: `1px solid ${C.border}`, borderRadius: 4, boxSizing: "border-box", background: C.surface, color: C.text },
-  sugBox: { background: "#f3ecff", border: "1px solid #d8c4f7", borderRadius: 6, padding: "10px 14px", display: "flex", flexDirection: "column", gap: 8 },
-  sugHead: { fontSize: 13, fontWeight: 700, color: "#8250df", display: "flex", alignItems: "center", gap: 6 },
+  select: { width: "100%", height: 46, fontSize: 16, padding: "0 12px", border: `1px solid ${C.border}`, borderRadius: 10, boxSizing: "border-box", background: C.surface, color: C.text },
+  sugBox: { background: "#f3ecff", border: "1px solid #d8c4f7", borderRadius: 10, padding: "12px 14px", display: "flex", flexDirection: "column", gap: 8 },
+  sugHead: { fontSize: 13, fontWeight: 700, color: C.purple, display: "flex", alignItems: "center", gap: 6 },
   sugIcon: { fontSize: 16 },
-  sugItem: { display: "flex", flexDirection: "column", gap: 2, background: "#fff", borderRadius: 4, padding: "8px 10px", textDecoration: "none", border: "1px solid #e2d5f5", color: C.text },
+  sugItem: { display: "flex", flexDirection: "column", gap: 2, background: "#fff", borderRadius: 8, padding: "8px 11px", textDecoration: "none", border: "1px solid #e2d5f5", color: C.text },
   sugExcerpt: { fontSize: 12, color: C.muted, marginTop: 2, lineHeight: 1.4 },
   sugFooter: { fontSize: 11, color: "#a78bcc", fontStyle: "italic" },
-  error: { background: "#fff5f5", border: "1px solid #fed7d7", borderRadius: 6, padding: "10px 14px", fontSize: 14, color: C.danger },
+  error: { background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 8, padding: "10px 14px", fontSize: 14, color: C.danger },
   submitRow: { display: "flex", justifyContent: "flex-end" },
-  submit: { background: C.primary, color: "#fff", border: "none", borderRadius: 20, padding: "8px 28px", fontSize: 14, fontWeight: 700, cursor: "pointer", minHeight: 38 },
+  submit: { background: C.primary, color: "#fff", border: "none", borderRadius: 10, padding: "10px 28px", fontSize: 14, fontWeight: 600, cursor: "pointer", minHeight: 40 },
 };

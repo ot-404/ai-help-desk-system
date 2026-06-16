@@ -49,14 +49,14 @@ export default function Login() {
           <input type="email" style={s.input} value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required autoFocus />
           <input type="password" style={s.input} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" required />
           {error && <div style={s.error}>{error}</div>}
-          <button type="submit" style={s.submit} disabled={loading}>{loading ? "LOGGING IN…" : "LOG IN"}</button>
+          <button type="submit" style={s.submit} disabled={loading}>{loading ? "Logging in…" : "Log in"}</button>
         </form>
 
         <a href="#" style={s.forgot}>Forgot password?</a>
 
-        <div style={s.divider}><span style={s.dividerText}>NEW TO HD SYSTEMS?</span></div>
+        <div style={s.divider}><span style={s.dividerText}>New to HD Systems?</span></div>
 
-        <Link to="/register" style={s.signupBtn}>SIGN UP</Link>
+        <Link to="/register" style={s.signupBtn}>Create an account</Link>
       </div>
     </div>
   );
@@ -64,18 +64,18 @@ export default function Login() {
 
 const s = {
   page: { minHeight: "100vh", background: C.bg, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 },
-  card: { width: "100%", maxWidth: 440, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 4, padding: "48px 40px", boxSizing: "border-box" },
+  card: { width: "100%", maxWidth: 420, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 16, padding: "44px 36px", boxSizing: "border-box", boxShadow: "0 4px 24px rgba(0,0,0,0.04)" },
   logoRow: { display: "flex", justifyContent: "center", marginBottom: 24 },
-  title: { fontSize: 20, fontWeight: 700, color: C.text, margin: "0 0 8px" },
+  title: { fontSize: 21, fontWeight: 700, color: C.text, margin: "0 0 8px", letterSpacing: -0.3 },
   legal: { fontSize: 12, color: C.muted, margin: "0 0 16px", lineHeight: 1.5 },
   legalLink: { color: C.blue, textDecoration: "underline" },
   sep: { borderTop: `1px solid ${C.border}`, margin: "0 0 20px" },
-  form: { display: "flex", flexDirection: "column", gap: 14 },
-  input: { height: 44, borderRadius: 8, border: `1px solid ${C.border}`, background: C.surfaceHover, padding: "0 14px", fontSize: 16, boxSizing: "border-box", width: "100%", color: C.text },
-  error: { background: "#fff5f5", border: "1px solid #fed7d7", borderRadius: 6, padding: "10px 14px", fontSize: 14, color: C.danger },
-  submit: { background: C.primary, color: "#fff", border: "none", borderRadius: 20, padding: 0, height: 38, fontSize: 14, fontWeight: 700, textTransform: "uppercase", width: "100%", cursor: "pointer" },
-  forgot: { display: "inline-block", marginTop: 16, color: C.blue, fontSize: 12, fontWeight: 600, textDecoration: "none" },
-  divider: { display: "flex", alignItems: "center", textAlign: "center", margin: "20px 0", color: C.muted },
-  dividerText: { flex: 1, fontSize: 11, fontWeight: 700, letterSpacing: 1, position: "relative" },
-  signupBtn: { display: "block", textAlign: "center", border: `1px solid ${C.primary}`, color: C.primary, borderRadius: 20, height: 38, lineHeight: "38px", fontSize: 14, fontWeight: 700, textTransform: "uppercase", textDecoration: "none" },
+  form: { display: "flex", flexDirection: "column", gap: 12 },
+  input: { height: 46, borderRadius: 10, border: `1px solid ${C.border}`, background: C.surfaceHover, padding: "0 14px", fontSize: 16, boxSizing: "border-box", width: "100%", color: C.text },
+  error: { background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 8, padding: "10px 14px", fontSize: 14, color: C.danger },
+  submit: { background: C.primary, color: "#fff", border: "none", borderRadius: 10, padding: 0, height: 44, fontSize: 15, fontWeight: 600, width: "100%", cursor: "pointer", marginTop: 2 },
+  forgot: { display: "inline-block", marginTop: 16, color: C.blue, fontSize: 13, fontWeight: 600, textDecoration: "none" },
+  divider: { display: "flex", alignItems: "center", textAlign: "center", margin: "20px 0", color: C.light },
+  dividerText: { flex: 1, fontSize: 12, fontWeight: 600, position: "relative" },
+  signupBtn: { display: "block", textAlign: "center", border: `1px solid ${C.border}`, color: C.text, borderRadius: 10, height: 44, lineHeight: "44px", fontSize: 15, fontWeight: 600, textDecoration: "none" },
 };
