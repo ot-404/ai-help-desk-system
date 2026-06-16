@@ -23,7 +23,11 @@ export default function PostCard({ article, onVoteSuccess }) {
   const link = `/question/${article.id}`;
   const type = deriveType(article);
   const badge = TYPE_BADGE[type] || TYPE_BADGE.Question;
-  const topic = article.topic || article.category || "Programming";
+  // Tickets carry a "Topic: X" line in their description — surface it as the topic.
+  const topicFromDesc = (article.description || "").match(/^Topic:\s*(.+)/m)?.[1]?.trim();
+  const topic = article.topic || article.category || topicFromDesc || "Programming";
+  // KB articles use `title`; tickets use `subject`.
+  const title = article.title || article.subject || "Untitled post";
 
   const vote = async (direction) => {
     if (busy) return;
@@ -49,7 +53,9 @@ export default function PostCard({ article, onVoteSuccess }) {
   };
 
   const countColor = dir > 0 ? C.primary : dir < 0 ? C.blue : C.muted;
-  const excerpt = article.excerpt || article.summary || article.content || article.description || "";
+  const rawExcerpt = article.excerpt || article.summary || article.content || article.description || "";
+  // Hide the internal "Topic: X" / "Tags: …" lines tickets store at the top.
+  const excerpt = rawExcerpt.replace(/^(Topic|Tags):.*$/gim, "").trim();
 
   return (
     <div
@@ -79,7 +85,7 @@ export default function PostCard({ article, onVoteSuccess }) {
           <span style={s.meta}>• Posted by <span style={isAnon ? s.anon : undefined}>{author}</span> • {timeAgo(article.created_at)}</span>
         </div>
 
-        <Link to={link} style={s.title}>{article.title}</Link>
+        <Link to={link} style={s.title}>{title}</Link>
 
         {tags.length > 0 && (
           <div style={s.tagsRow}>

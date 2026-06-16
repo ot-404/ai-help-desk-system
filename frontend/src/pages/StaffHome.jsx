@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import api from "../api/client";
+import PostComposer from "../components/PostComposer";
 import { C } from "../theme";
 
 const STATUS_COLOR = { open: C.warning, pending: C.primary, resolved: C.success, closed: C.light };
@@ -31,6 +32,8 @@ export default function StaffHome() {
     <div style={s.page}>
       <h1 style={s.h1}>Agent Dashboard</h1>
       <p style={s.sub}>Welcome back, {user?.name?.split(" ")[0] || "agent"}.</p>
+
+      <PostComposer />
 
       <div style={s.statGrid}>
         {stats.map((st) => (

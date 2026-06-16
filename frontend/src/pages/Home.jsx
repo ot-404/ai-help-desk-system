@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../api/client";
 import PostCard from "../components/PostCard";
+import PostComposer from "../components/PostComposer";
 import { C } from "../theme";
 
 function TabIcon({ name }) {
@@ -52,9 +53,16 @@ export default function Home({ heading }) {
   const view = [...articles];
   const shown = view.slice(0, limit);
 
+  const onCreated = (ticket) => {
+    setArticles((prev) => [ticket, ...prev]);
+    setTab("New");
+  };
+
   return (
     <div>
       <h1 style={s.heading}>{heading || "HD Systems Feed"}</h1>
+
+      <PostComposer onCreated={onCreated} />
 
       <div style={s.tabsCard}>
         {TABS.map((t) => (

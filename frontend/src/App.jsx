@@ -115,9 +115,9 @@ export default function App() {
           <Route path="/ask"  element={<Layout><AskAI /></Layout>} />
           <Route path="/faq"  element={<Layout><FAQ /></Layout>} />
 
-          {/* User-only */}
+          {/* Any logged-in user can post; guests are sent to login */}
           <Route path="/my-questions" element={<PrivateRoute roles={["user"]}><Layout><MyTickets /></Layout></PrivateRoute>} />
-          <Route path="/new-question" element={<PrivateRoute roles={["user"]}><Layout><NewTicket /></Layout></PrivateRoute>} />
+          <Route path="/new-question" element={<PrivateRoute><Layout><NewTicket /></Layout></PrivateRoute>} />
 
           {/* Legacy redirects */}
           <Route path="/my-tickets"  element={<Navigate to="/my-questions" replace />} />
