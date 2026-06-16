@@ -55,15 +55,18 @@ export default function Sidebar() {
         <Item to="/" label="Home" icon="home" end />
         <Item to="/help" label="Popular" icon="flame" />
 
-        <Group title="Topics" />
-        {TOPICS.map((t, i) => (
-          <Item key={t} to={`/help?topic=${encodeURIComponent(t)}`} label={t} dot={DOT_COLORS[i % DOT_COLORS.length]} />
-        ))}
-
         <Group title="Resources" />
         <Item to="/faq" label="FAQs" icon="faq" />
-        <Item to="/help" label="Knowledge Base" icon="book" />
         <Item to="/ask" label="Ask AI" icon="sparkle" />
+
+        {isStaff && (
+          <>
+            <Group title="Topics" />
+            {TOPICS.map((t, i) => (
+              <Item key={t} to={`/help?topic=${encodeURIComponent(t)}`} label={t} dot={DOT_COLORS[i % DOT_COLORS.length]} />
+            ))}
+          </>
+        )}
 
         {isStaff && (
           <>
@@ -71,6 +74,7 @@ export default function Sidebar() {
             <Item to="/admin" label="Dashboard" icon="dash" end />
             <Item to="/admin/users" label="Users" icon="users" />
             <Item to="/admin/kb" label="KB Manager" icon="kb" />
+            <Item to="/help" label="Knowledge Base" icon="book" />
           </>
         )}
       </nav>

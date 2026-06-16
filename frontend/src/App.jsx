@@ -109,7 +109,7 @@ export default function App() {
 
           {/* Public pages — shell visible, no login required */}
           <Route path="/"    element={<Layout><HomeOrRedirect /></Layout>} />
-          <Route path="/help" element={<Layout><PublicHelp /></Layout>} />
+          <Route path="/help" element={<PrivateRoute roles={["agent","admin"]}><Layout><PublicHelp /></Layout></PrivateRoute>} />
           <Route path="/ask"  element={<Layout><AskAI /></Layout>} />
           <Route path="/faq"  element={<Layout><FAQ /></Layout>} />
 
