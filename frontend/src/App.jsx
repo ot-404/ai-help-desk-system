@@ -60,7 +60,7 @@ function RightSummary() {
         <div style={{ fontWeight: 700, fontSize: 13, color: C.muted, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 10 }}>Popular Tags</div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
           {["javascript","python","devops","kubernetes","security","rust","react","systemdesign","linux","cloud"].map(t => (
-            <span key={t} style={{ background: C.tag, color: C.tagText, border: `1px solid ${C.tagBorder}`, borderRadius: 6, padding: "3px 9px", fontSize: 12, fontWeight: 500, cursor: "pointer" }}>#{t}</span>
+            <Link key={t} to={`/faq?topic=${encodeURIComponent(t)}`} style={{ background: C.tag, color: C.tagText, border: `1px solid ${C.tagBorder}`, borderRadius: 6, padding: "3px 9px", fontSize: 12, fontWeight: 500, cursor: "pointer", textDecoration: "none" }}>#{t}</Link>
           ))}
         </div>
       </div>
