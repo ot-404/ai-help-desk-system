@@ -166,7 +166,9 @@ export default function FAQ() {
 
       {!loading && totalCount === 0 && (
         <div style={s.empty}>
-          <div style={{ fontSize: 32, marginBottom: 8 }}>🔍</div>
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 10, color: C.light }}>
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>
+          </div>
           <div style={{ fontWeight: 700, fontSize: 16, color: C.muted }}>No results found</div>
           <div style={{ fontSize: 14, color: C.light, marginTop: 4 }}>
             Try a different search term or category.

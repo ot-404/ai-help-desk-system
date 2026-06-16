@@ -148,7 +148,10 @@ export default function TicketDetail() {
         {aiAnswer && (
           <div style={s.aiCard}>
             <div style={s.aiCardHead}>
-              <span style={s.aiBadge}>🤖 HDS Bot</span>
+              <span style={s.aiBadge}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 8V4H8" /><rect x="4" y="8" width="16" height="12" rx="2" /><path d="M2 14h2M20 14h2M9 13v2M15 13v2" /></svg>
+                HDS Bot
+              </span>
               <span style={s.aiLabel}>AI-generated · not a human answer</span>
             </div>
             <div style={s.aiText}>{aiAnswer}</div>
@@ -232,7 +235,7 @@ const s = {
   aiDot: { width: 6, height: 6, borderRadius: "50%", background: C.purple, display: "inline-block", opacity: 0.6 },
   aiCard: { background: "#e3f2f6", border: "1px solid #bcdfe8", borderRadius: 10, padding: 16 },
   aiCardHead: { display: "flex", alignItems: "center", gap: 10, marginBottom: 10 },
-  aiBadge: { fontSize: 13, fontWeight: 700, color: C.purple },
+  aiBadge: { display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 700, color: C.purple },
   aiLabel: { fontSize: 11, color: "#6b9aa6", fontStyle: "italic" },
   aiText: { fontSize: 15, color: C.text, lineHeight: 1.75, whiteSpace: "pre-wrap" },
   aiDismiss: { marginTop: 10, background: "none", border: "none", color: "#6b9aa6", fontSize: 12, cursor: "pointer", padding: 0 },

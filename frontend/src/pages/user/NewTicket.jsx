@@ -114,7 +114,9 @@ export default function NewTicket() {
         {(sugLoading || suggestions.length > 0) && (
           <div style={s.sugBox}>
             <div style={s.sugHead}>
-              <span style={s.sugIcon}>🤖</span>
+              <span style={s.sugIcon}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 8V4H8" /><rect x="4" y="8" width="16" height="12" rx="2" /><path d="M2 14h2M20 14h2M9 13v2M15 13v2" /></svg>
+              </span>
               {sugLoading ? "Searching for similar questions…" : `${suggestions.length} similar answer${suggestions.length !== 1 ? "s" : ""} found in FAQs`}
             </div>
             {suggestions.map((a) => (
@@ -184,7 +186,7 @@ const s = {
   select: { width: "100%", height: 46, fontSize: 16, padding: "0 12px", border: `1px solid ${C.border}`, borderRadius: 10, boxSizing: "border-box", background: C.surface, color: C.text },
   sugBox: { background: "#e3f2f6", border: "1px solid #bcdfe8", borderRadius: 10, padding: "12px 14px", display: "flex", flexDirection: "column", gap: 8 },
   sugHead: { fontSize: 13, fontWeight: 700, color: C.purple, display: "flex", alignItems: "center", gap: 6 },
-  sugIcon: { fontSize: 16 },
+  sugIcon: { display: "inline-flex", alignItems: "center" },
   sugItem: { display: "flex", flexDirection: "column", gap: 2, background: "#fff", borderRadius: 8, padding: "8px 11px", textDecoration: "none", border: "1px solid #e2d5f5", color: C.text },
   sugExcerpt: { fontSize: 12, color: C.muted, marginTop: 2, lineHeight: 1.4 },
   sugFooter: { fontSize: 11, color: "#6b9aa6", fontStyle: "italic" },

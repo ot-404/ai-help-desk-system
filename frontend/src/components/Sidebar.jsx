@@ -6,19 +6,19 @@ import { C } from "../theme";
 import api from "../api/client";
 
 const DEV_RESOURCES = [
-  { label: "MDN Web Docs",    url: "https://developer.mozilla.org", emoji: "📖" },
-  { label: "DevDocs",         url: "https://devdocs.io",            emoji: "🔍" },
-  { label: "GitHub",          url: "https://github.com",            emoji: "🐙" },
-  { label: "Stack Overflow",  url: "https://stackoverflow.com",     emoji: "💬" },
-  { label: "Regex101",        url: "https://regex101.com",          emoji: "🔣" },
-  { label: "roadmap.sh",      url: "https://roadmap.sh",            emoji: "🗺️" },
-  { label: "Can I Use",       url: "https://caniuse.com",           emoji: "🌐" },
-  { label: "DevHints",        url: "https://devhints.io",           emoji: "📝" },
+  { label: "MDN Web Docs",    url: "https://developer.mozilla.org", icon: "book" },
+  { label: "DevDocs",         url: "https://devdocs.io",            icon: "search" },
+  { label: "GitHub",          url: "https://github.com",            icon: "github" },
+  { label: "Stack Overflow",  url: "https://stackoverflow.com",     icon: "layers" },
+  { label: "Regex101",        url: "https://regex101.com",          icon: "code" },
+  { label: "roadmap.sh",      url: "https://roadmap.sh",            icon: "map" },
+  { label: "Can I Use",       url: "https://caniuse.com",           icon: "globe" },
+  { label: "DevHints",        url: "https://devhints.io",           icon: "file" },
 ];
 
-function Icon({ name }) {
+function Icon({ name, size = 20 }) {
   const p = (d) => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       {[].concat(d).map((x, i) => <path key={i} d={x} />)}
     </svg>
   );
@@ -31,6 +31,13 @@ function Icon({ name }) {
     case "users":   return p(["M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2", "M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z", "M23 21v-2a4 4 0 0 0-3-3.87", "M16 3.13a4 4 0 0 1 0 7.75"]);
     case "kb":      return p(["M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z", "M14 2v6h6", "M9 13h6", "M9 17h6"]);
     case "faq":     return p(["M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3", "M12 17h.01"]);
+    case "search":  return p(["M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16z", "M21 21l-4.35-4.35"]);
+    case "github":  return p(["M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"]);
+    case "layers":  return p(["M12 2 2 7l10 5 10-5-10-5z", "m2 17 10 5 10-5", "m2 12 10 5 10-5"]);
+    case "code":    return p(["M16 18l6-6-6-6", "M8 6l-6 6 6 6"]);
+    case "map":     return p(["M9 3 3 6v15l6-3 6 3 6-3V3l-6 3-6-3z", "M9 3v15", "M15 6v15"]);
+    case "globe":   return p(["M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z", "M2 12h20", "M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"]);
+    case "file":    return p(["M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z", "M14 2v6h6", "M16 13H8", "M16 17H8", "M10 9H8"]);
     default: return null;
   }
 }
@@ -61,10 +68,10 @@ function Group({ title }) {
   return <div style={st.group}>{title}</div>;
 }
 
-function ExternalLink({ emoji, label, url }) {
+function ExternalLink({ icon, label, url }) {
   return (
     <a href={url} target="_blank" rel="noreferrer" style={st.extLink}>
-      <span style={st.extEmoji}>{emoji}</span>
+      <span style={st.extIcon}><Icon name={icon} size={16} /></span>
       <span style={st.extLabel}>{label}</span>
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={C.light} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginLeft: "auto" }}>
         <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
@@ -159,7 +166,7 @@ const st = {
   footer: { fontSize: 11, color: C.light, padding: "14px 12px", borderTop: `1px solid ${C.divider}`, marginTop: 8 },
 
   extLink: { display: "flex", alignItems: "center", gap: 9, padding: "7px 12px", borderRadius: 8, fontSize: 13.5, textDecoration: "none", color: C.text, fontWeight: 500 },
-  extEmoji: { fontSize: 14, flexShrink: 0, width: 18, textAlign: "center" },
+  extIcon: { flexShrink: 0, width: 18, display: "inline-flex", alignItems: "center", justifyContent: "center", color: C.muted },
   extLabel: { flex: 1, minWidth: 0 },
 
   tagCloud: { display: "flex", flexWrap: "wrap", gap: 6, padding: "4px 12px 12px" },

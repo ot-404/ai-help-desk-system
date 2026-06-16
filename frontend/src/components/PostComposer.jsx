@@ -113,7 +113,12 @@ export default function PostComposer({ onCreated }) {
         <select style={s.select} value={topic} onChange={(e) => setTopic(e.target.value)}>
           {TOPICS.map((t) => <option key={t} value={t}>{t}</option>)}
         </select>
-        {isAnon && <span style={s.anonBadge}>🕶️ Posting anonymously</span>}
+        {isAnon && (
+          <span style={s.anonBadge}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" /><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" /><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" /><path d="M2 2l20 20" /></svg>
+            Posting anonymously
+          </span>
+        )}
       </div>
 
       {error && <div style={s.error}>{error}</div>}
@@ -169,7 +174,7 @@ const s = {
     height: 42, fontSize: 15, padding: "0 12px", border: `1px solid ${C.border}`,
     borderRadius: 10, background: C.surface, color: C.text, flex: "0 1 220px",
   },
-  anonBadge: { fontSize: 12.5, color: C.muted, fontWeight: 500 },
+  anonBadge: { display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12.5, color: C.muted, fontWeight: 500 },
   error: { background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 8, padding: "9px 13px", fontSize: 13.5, color: C.danger },
   actions: { display: "flex", justifyContent: "flex-end", gap: 8 },
   cancel: { background: "none", border: `1px solid ${C.border}`, color: C.muted, borderRadius: 10, padding: "9px 18px", fontSize: 14, fontWeight: 600, cursor: "pointer" },
