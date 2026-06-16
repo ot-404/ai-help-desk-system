@@ -21,6 +21,7 @@ import AgentQueue from "./pages/agent/AgentQueue";
 import Dashboard from "./pages/admin/Dashboard";
 import AdminPanel from "./pages/admin/AdminPanel";
 import KnowledgeBase from "./pages/admin/KnowledgeBase";
+import FAQ from "./pages/FAQ";
 
 function HomeOrRedirect() {
   const { user } = useAuth();
@@ -110,6 +111,7 @@ export default function App() {
           <Route path="/"    element={<Layout><HomeOrRedirect /></Layout>} />
           <Route path="/help" element={<Layout><PublicHelp /></Layout>} />
           <Route path="/ask"  element={<Layout><AskAI /></Layout>} />
+          <Route path="/faq"  element={<Layout><FAQ /></Layout>} />
 
           {/* User-only */}
           <Route path="/my-questions" element={<PrivateRoute roles={["user"]}><Layout><MyTickets /></Layout></PrivateRoute>} />

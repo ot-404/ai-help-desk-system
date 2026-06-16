@@ -10,6 +10,13 @@ from app.utils.auth_helpers import role_required
 ticket_bp = Blueprint("tickets", __name__)
 
 
+@ticket_bp.get("/feed")
+def public_feed():
+    """Public community feed — non-anonymous tickets, newest first."""
+    tickets = Ticket.query.filter_by(is_anonymous=False).order_by(Ticket.created_at.desc()).limit(50).all()
+    return jsonify([t.to_dict() for t in tickets])
+
+
 @ticket_bp.post("/")
 @jwt_required()
 def create():

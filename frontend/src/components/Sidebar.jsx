@@ -19,6 +19,7 @@ function Icon({ name }) {
     case "dash": return p(["M3 3h7v9H3z", "M14 3h7v5h-7z", "M14 12h7v9h-7z", "M3 16h7v5H3z"]);
     case "users": return p(["M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2", "M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z", "M23 21v-2a4 4 0 0 0-3-3.87", "M16 3.13a4 4 0 0 1 0 7.75"]);
     case "kb": return p(["M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z", "M14 2v6h6", "M9 13h6", "M9 17h6"]);
+    case "faq": return p(["M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3", "M12 17h.01"]);
     default: return null;
   }
 }
@@ -60,6 +61,7 @@ export default function Sidebar() {
         ))}
 
         <Group title="Resources" />
+        <Item to="/faq" label="FAQs" icon="faq" />
         <Item to="/help" label="Knowledge Base" icon="book" />
         <Item to="/ask" label="Ask AI" icon="sparkle" />
 

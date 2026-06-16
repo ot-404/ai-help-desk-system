@@ -38,9 +38,9 @@ export default function Home({ heading }) {
 
   useEffect(() => {
     setLoading(true);
-    api.get(`/kb/?sort=${current.sort}`)
+    api.get(`/tickets/feed`)
       .then((r) => setArticles(r.data || []))
-      .catch(() => {})
+      .catch(() => setArticles([]))
       .finally(() => setLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab]);
