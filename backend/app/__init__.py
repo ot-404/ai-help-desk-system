@@ -17,14 +17,19 @@ FRONTEND_DIST = os.path.join(os.path.dirname(__file__), "..", "frontend_dist")
 
 
 def create_app(config_object="app.config.Config"):
+    # Pin the instance path to backend/instance/ regardless of CWD
+    _instance_path = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "instance")
+    )
+    os.makedirs(_instance_path, exist_ok=True)
+
     app = Flask(
         __name__,
         static_folder=FRONTEND_DIST if os.path.isdir(FRONTEND_DIST) else None,
+        instance_path=_instance_path,
         instance_relative_config=True,
     )
     app.config.from_object(config_object)
-
-    os.makedirs(app.instance_path, exist_ok=True)
 
     db.init_app(app)
     jwt.init_app(app)
