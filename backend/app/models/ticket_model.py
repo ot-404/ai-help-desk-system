@@ -18,6 +18,7 @@ class Ticket(db.Model):
     assigned_to = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     csat_rating = db.Column(db.Integer, nullable=True)  # 1-5 star rating by user
     is_anonymous = db.Column(db.Boolean, default=False, nullable=False)
+    tags = db.Column(db.Text, nullable=True)  # AI-generated, comma-separated
     resolved_at = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(
@@ -43,6 +44,7 @@ class Ticket(db.Model):
             "assigned_to": self.assigned_to,
             "csat_rating": self.csat_rating,
             "is_anonymous": self.is_anonymous or False,
+            "tags": [t.strip() for t in self.tags.split(",") if t.strip()] if self.tags else [],
             "message_count": len(self.messages),
             "answer_count": len(self.messages),
             "resolved_at": self.resolved_at.isoformat() if self.resolved_at else None,

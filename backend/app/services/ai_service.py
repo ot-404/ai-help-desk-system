@@ -6,6 +6,7 @@ no SDK dependencies, no version conflicts.
 Priority: ANTHROPIC_API_KEY → OPENAI_API_KEY → fallback message.
 """
 import json
+import re
 import requests
 from flask import current_app
 from app import db
@@ -217,6 +218,51 @@ Return a JSON object with these exact keys:
     data.setdefault("content", answer)
     data.setdefault("summary", answer[:200])
     return data
+
+
+def _normalize_tag(raw):
+    """lowercase, hyphenated, alnum-only slug; '' if nothing usable."""
+    t = str(raw).strip().lower().lstrip("#")
+    t = re.sub(r"\s+", "-", t)
+    t = re.sub(r"[^a-z0-9-]", "", t).strip("-")
+    return t[:30]
+
+
+def extract_post_tags(subject, description, existing_tags=None, max_tags=3):
+    """Find a post's main focus and return topic tags, reusing existing tags
+    when they fit. Returns a list (primary tag first); empty if AI unavailable."""
+    existing = sorted(existing_tags or [])
+    existing_str = ", ".join(existing) if existing else "(none yet)"
+    system = (
+        "You label technical community posts with concise topic tags. "
+        "Respond with valid JSON only — no markdown, no extra text."
+    )
+    user = f"""Post title: {subject}
+Post body: {(description or '')[:1500]}
+
+Existing tags already used on the site: {existing_str}
+
+Identify the SINGLE main focus of this post, plus up to {max_tags - 1} clearly-present
+secondary topics. Rules:
+- If an existing tag fits the topic, REUSE it exactly.
+- Otherwise create a concise new tag: lowercase, one or two words, hyphenated, no '#'.
+- Tags describe the technical subject (e.g. "kubernetes", "password-reset", "react").
+Return JSON: {{"tags": ["primary", "secondary"]}} — 1 to {max_tags} tags, primary first."""
+
+    data, model = _call_llm_json(system, user, {"tags": []})
+    if model == "unavailable":
+        return []
+
+    seen, clean = set(), []
+    # Map normalized existing tags back to their canonical form for exact reuse.
+    canon = {_normalize_tag(t): t for t in existing}
+    for raw in (data.get("tags") or [])[:max_tags]:
+        norm = _normalize_tag(raw)
+        if not norm or norm in seen:
+            continue
+        seen.add(norm)
+        clean.append(canon.get(norm, norm))
+    return clean
 
 
 def summarize_conversation(messages):

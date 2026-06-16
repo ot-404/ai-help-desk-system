@@ -127,5 +127,7 @@ def _ensure_kb_columns():
         with db.engine.begin() as conn:
             if "is_anonymous" not in t_cols:
                 conn.execute(text("ALTER TABLE tickets ADD COLUMN is_anonymous BOOLEAN NOT NULL DEFAULT 0"))
+            if "tags" not in t_cols:
+                conn.execute(text("ALTER TABLE tickets ADD COLUMN tags TEXT"))
     except Exception:
         pass

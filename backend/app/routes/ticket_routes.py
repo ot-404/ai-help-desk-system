@@ -31,6 +31,8 @@ def create():
         int(get_jwt_identity()), data["subject"], data["description"], priority,
         is_anonymous=is_anonymous,
     )
+    # Auto-tag the post in the background (AI finds the main focus / reuses tags).
+    ticket_service.schedule_auto_tag(ticket)
     result = None
     if data.get("auto_answer", True):
         try:
