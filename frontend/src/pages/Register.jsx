@@ -72,7 +72,7 @@ export default function Register() {
 }
 
 const s = {
-  page: { minHeight: "100vh", background: C.bg, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 },
+  page: { minHeight: "100vh", background: C.bg, display: "flex", alignItems: "flex-start", justifyContent: "center", padding: "clamp(24px, 8vh, 80px) 16px", overflowY: "auto" },
   card: { width: "100%", maxWidth: 420, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 16, padding: "44px 36px", boxSizing: "border-box", boxShadow: "0 4px 24px rgba(0,0,0,0.04)" },
   logoRow: { display: "flex", justifyContent: "center", marginBottom: 24 },
   title: { fontSize: 21, fontWeight: 700, color: C.text, margin: "0 0 8px", letterSpacing: -0.3 },

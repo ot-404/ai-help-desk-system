@@ -13,10 +13,18 @@ api.interceptors.request.use((cfg) => {
 api.interceptors.response.use(
   (r) => r,
   (err) => {
-    if (err.response?.status === 401) {
+    const url = err.config?.url || "";
+    const isAuthCall = url.includes("/auth/login") || url.includes("/auth/register");
+    // Only force a re-login when a *previously authenticated* request fails,
+    // never on the login/register calls themselves (so their error messages show),
+    // and never if we're already on the login page (avoids reload loops).
+    if (err.response?.status === 401 && !isAuthCall) {
+      const hadToken = !!localStorage.getItem("token");
       localStorage.removeItem("token");
       localStorage.removeItem("user");
-      window.location.href = "/login";
+      if (hadToken && window.location.pathname !== "/login") {
+        window.location.href = "/login";
+      }
     }
     return Promise.reject(err);
   }
