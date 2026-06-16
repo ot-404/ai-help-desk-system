@@ -20,7 +20,7 @@ function Icon({ name }) {
 
 export default function BottomNav() {
   const { user } = useAuth();
-  const profileTo = user ? (user.role === "user" ? "/my-questions" : user.role === "admin" ? "/admin" : "/agent") : "/login";
+  const profileTo = user ? "/profile" : "/login";
 
   const tabs = [
     { to: "/", icon: "home", label: "Home", end: true },

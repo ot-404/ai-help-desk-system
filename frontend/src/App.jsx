@@ -24,6 +24,7 @@ import Dashboard from "./pages/admin/Dashboard";
 import AdminPanel from "./pages/admin/AdminPanel";
 import KnowledgeBase from "./pages/admin/KnowledgeBase";
 import FAQ from "./pages/FAQ";
+import Profile from "./pages/Profile";
 
 function HomeOrRedirect() {
   const { user } = useAuth();
@@ -114,6 +115,9 @@ export default function App() {
           <Route path="/help" element={<PrivateRoute roles={["agent","admin"]}><Layout><PublicHelp /></Layout></PrivateRoute>} />
           <Route path="/ask"  element={<Layout><AskAI /></Layout>} />
           <Route path="/faq"  element={<Layout><FAQ /></Layout>} />
+
+          {/* Any logged-in user */}
+          <Route path="/profile" element={<PrivateRoute><Layout><Profile /></Layout></PrivateRoute>} />
 
           {/* Any logged-in user can post; guests are sent to login */}
           <Route path="/my-questions" element={<PrivateRoute roles={["user"]}><Layout><MyTickets /></Layout></PrivateRoute>} />

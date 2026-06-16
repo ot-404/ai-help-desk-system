@@ -2,9 +2,8 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useIsMobile } from "../hooks/useIsMobile";
+import ProfileMenu from "./ProfileMenu";
 import { C } from "../theme";
-
-const ROLE_BG = { admin: C.primary, agent: C.blue, user: C.success };
 
 export default function NavBar() {
   const { user, logout } = useAuth();
@@ -18,9 +17,6 @@ export default function NavBar() {
     if (q.trim()) navigate(`/help?q=${encodeURIComponent(q.trim())}`);
     setSearchOpen(false);
   };
-
-  const avatarChar = user ? (user.name || user.email || "?")[0].toUpperCase() : "?";
-  const avatarBg = user ? (ROLE_BG[user.role] || C.blue) : C.blue;
 
   const Logo = (
     <Link to="/" style={s.logo}>
@@ -57,10 +53,7 @@ export default function NavBar() {
                 Create
               </Link>
             )}
-            <Link to="/my-questions" aria-label="Profile">
-              <div style={{ ...s.avatar, background: avatarBg }} title={user.role}>{avatarChar}</div>
-            </Link>
-            {!isMobile && <button style={s.signOut} onClick={logout}>Sign out</button>}
+            <ProfileMenu user={user} logout={logout} />
           </>
         ) : (
           <>
