@@ -17,6 +17,8 @@ export default function PublicHelp() {
   const [query, setQuery] = useState(params.get("q") || "");
   const [tab, setTab] = useState("Hot");
 
+  const activeTopic = params.get("topic") || "";
+
   useEffect(() => {
     setLoading(true);
     const q = params.get("q");
@@ -39,11 +41,30 @@ export default function PublicHelp() {
   };
 
   let articles = [...all];
+
+  // Filter by sidebar topic if present
+  if (activeTopic) {
+    const t = activeTopic.toLowerCase();
+    articles = articles.filter((a) =>
+      a.category?.toLowerCase().includes(t) ||
+      a.title?.toLowerCase().includes(t) ||
+      (Array.isArray(a.tags) && a.tags.some((tag) => tag.toLowerCase().includes(t)))
+    );
+  }
+
   if (tab === "Top" || tab === "Hot") articles.sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0));
 
   return (
     <div>
-      <h1 style={s.title}>Knowledge Base</h1>
+      <h1 style={s.title}>
+        Knowledge Base
+        {activeTopic && (
+          <span style={s.topicPill}>
+            {activeTopic}
+            <button onClick={() => setParams({})} style={s.clearTopic}>✕</button>
+          </span>
+        )}
+      </h1>
 
       <form onSubmit={handleSearch} style={s.searchCard}>
         <span style={s.searchIcon}>
@@ -78,7 +99,9 @@ export default function PublicHelp() {
 }
 
 const s = {
-  title: { fontSize: 20, fontWeight: 700, color: C.text, margin: "0 0 12px" },
+  title: { fontSize: 20, fontWeight: 700, color: C.text, margin: "0 0 12px", display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" },
+  topicPill: { display: "inline-flex", alignItems: "center", gap: 6, background: C.primary, color: "#fff", borderRadius: 20, padding: "3px 10px 3px 12px", fontSize: 13, fontWeight: 700 },
+  clearTopic: { background: "none", border: "none", color: "#fff", cursor: "pointer", fontSize: 14, padding: 0, lineHeight: 1, opacity: 0.8 },
   searchCard: { display: "flex", alignItems: "center", gap: 8, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 4, padding: 8, marginBottom: 12, position: "relative" },
   searchIcon: { position: "absolute", left: 18, display: "flex", pointerEvents: "none" },
   searchInput: { flex: 1, minWidth: 0, height: 40, border: `1px solid ${C.border}`, borderRadius: 20, padding: "0 14px 0 38px", fontSize: 16, background: C.surfaceHover, boxSizing: "border-box" },
