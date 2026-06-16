@@ -1,5 +1,6 @@
 """Application factory for the AI Help Desk System."""
 import hashlib
+import mimetypes
 import os
 from flask import Flask, jsonify, request, send_from_directory, send_file
 from flask_sqlalchemy import SQLAlchemy
@@ -8,6 +9,10 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# Ensure PWA assets are served with correct MIME types in production.
+mimetypes.add_type("application/manifest+json", ".webmanifest")
+mimetypes.add_type("text/javascript", ".js")
 
 db = SQLAlchemy()
 jwt = JWTManager()
@@ -76,7 +81,10 @@ def create_app(config_object="app.config.Config"):
         if path.startswith("/api/") or path.startswith("/static/"):
             return
         ext = path.rsplit(".", 1)[-1].lower() if "." in path.split("/")[-1] else ""
-        if ext in ("js", "css", "png", "svg", "ico", "json", "woff", "woff2", "ttf", "map"):
+        if ext in ("js", "css", "png", "svg", "ico", "json", "webmanifest", "woff", "woff2", "ttf", "map"):
+            return
+        # Don't log the service worker as a page visit.
+        if path == "/sw.js":
             return
         from app.models.site_visit_model import SiteVisit
         ip = request.headers.get("X-Forwarded-For", request.remote_addr or "").split(",")[0].strip()

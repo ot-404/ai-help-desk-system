@@ -6,6 +6,7 @@ import BottomNav from "./components/BottomNav";
 import PrivateRoute from "./components/PrivateRoute";
 import ErrorBoundary from "./components/ErrorBoundary";
 import AIChat from "./components/AIChat";
+import InstallPrompt from "./components/InstallPrompt";
 import { useIsMobile } from "./hooks/useIsMobile";
 import { C } from "./theme";
 import Login from "./pages/Login";
@@ -86,6 +87,7 @@ function Layout({ children }) {
             flex: 1, minWidth: 0,
             padding: isMobile ? "0 8px" : 0,
           }}>
+            <InstallPrompt />
             {children}
           </main>
           {!isMobile && <RightSummary />}
