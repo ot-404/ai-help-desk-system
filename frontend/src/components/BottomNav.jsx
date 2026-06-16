@@ -24,7 +24,7 @@ export default function BottomNav() {
 
   const tabs = [
     { to: "/", icon: "home", label: "Home", end: true },
-    { to: "/help", icon: "flame", label: "Popular" },
+    { to: "/popular", icon: "flame", label: "Popular" },
     { to: "/new-question", icon: "plus", label: "Post" },
     { to: "/ask", icon: "ai", label: "AI" },
     { to: profileTo, icon: "profile", label: "Profile" },

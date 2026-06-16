@@ -129,7 +129,7 @@ export default function Sidebar() {
     <aside style={st.sidebar}>
       <nav style={st.nav}>
         <Item to="/" label="Home" icon="home" end />
-        <Item to="/help" label="Popular" icon="flame" />
+        <Item to="/popular" label="Popular" icon="flame" />
 
         <Group title="Resources" />
         <Item to="/faq" label="FAQs" icon="faq" />

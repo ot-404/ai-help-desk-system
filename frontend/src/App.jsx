@@ -24,6 +24,7 @@ import Dashboard from "./pages/admin/Dashboard";
 import AdminPanel from "./pages/admin/AdminPanel";
 import KnowledgeBase from "./pages/admin/KnowledgeBase";
 import FAQ from "./pages/FAQ";
+import Popular from "./pages/Popular";
 import Profile from "./pages/Profile";
 
 function HomeOrRedirect() {
@@ -115,6 +116,7 @@ export default function App() {
           <Route path="/help" element={<PrivateRoute roles={["agent","admin"]}><Layout><PublicHelp /></Layout></PrivateRoute>} />
           <Route path="/ask"  element={<Layout><AskAI /></Layout>} />
           <Route path="/faq"  element={<Layout><FAQ /></Layout>} />
+          <Route path="/popular" element={<Layout><Popular /></Layout>} />
 
           {/* Any logged-in user */}
           <Route path="/profile" element={<PrivateRoute><Layout><Profile /></Layout></PrivateRoute>} />
