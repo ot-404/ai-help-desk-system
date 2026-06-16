@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/client";
 import { C, POST_TYPES, TOPICS } from "../../theme";
@@ -20,8 +20,27 @@ export default function NewTicket() {
   const [topic, setTopic] = useState(TOPICS[0]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [sugLoading, setSugLoading] = useState(false);
+  const debounceRef = useRef(null);
 
   const isAnon = type === "Anonymous Ask";
+
+  // Debounced FAQ search as user types title
+  useEffect(() => {
+    clearTimeout(debounceRef.current);
+    if (title.trim().length < 5) { setSuggestions([]); return; }
+    debounceRef.current = setTimeout(async () => {
+      setSugLoading(true);
+      try {
+        const { data } = await api.get(`/kb/search?q=${encodeURIComponent(title)}`);
+        const list = Array.isArray(data) ? data : (data.results || []);
+        setSuggestions(list.slice(0, 3));
+      } catch { setSuggestions([]); }
+      finally { setSugLoading(false); }
+    }, 500);
+    return () => clearTimeout(debounceRef.current);
+  }, [title]);
 
   function addTag(e) {
     if (e.key === "Enter") {
@@ -91,6 +110,25 @@ export default function NewTicket() {
           maxLength={200}
         />
 
+        {/* AI suggestions */}
+        {(sugLoading || suggestions.length > 0) && (
+          <div style={s.sugBox}>
+            <div style={s.sugHead}>
+              <span style={s.sugIcon}>🤖</span>
+              {sugLoading ? "Searching for similar questions…" : `${suggestions.length} similar answer${suggestions.length !== 1 ? "s" : ""} found in FAQs`}
+            </div>
+            {suggestions.map((a) => (
+              <a key={a.id} href={`/faq`} target="_blank" rel="noreferrer" style={s.sugItem}>
+                <strong>{a.title}</strong>
+                <span style={s.sugExcerpt}>{(a.content || "").slice(0, 100)}…</span>
+              </a>
+            ))}
+            {suggestions.length > 0 && (
+              <div style={s.sugFooter}>Your question might already be answered above. Still post if you need more help.</div>
+            )}
+          </div>
+        )}
+
         <textarea
           style={s.body}
           placeholder="Add details. Code is welcome — share what you tried and what you expect."
@@ -144,6 +182,12 @@ const s = {
   tagX: { background: "none", border: "none", color: C.tagText, fontSize: 15, lineHeight: 1, padding: 0, cursor: "pointer" },
   tagInput: { flex: 1, minWidth: 140, border: "none", fontSize: 16, padding: "4px 2px", outline: "none" },
   select: { width: "100%", height: 44, fontSize: 16, padding: "0 12px", border: `1px solid ${C.border}`, borderRadius: 4, boxSizing: "border-box", background: C.surface, color: C.text },
+  sugBox: { background: "#f3ecff", border: "1px solid #d8c4f7", borderRadius: 6, padding: "10px 14px", display: "flex", flexDirection: "column", gap: 8 },
+  sugHead: { fontSize: 13, fontWeight: 700, color: "#8250df", display: "flex", alignItems: "center", gap: 6 },
+  sugIcon: { fontSize: 16 },
+  sugItem: { display: "flex", flexDirection: "column", gap: 2, background: "#fff", borderRadius: 4, padding: "8px 10px", textDecoration: "none", border: "1px solid #e2d5f5", color: C.text },
+  sugExcerpt: { fontSize: 12, color: C.muted, marginTop: 2, lineHeight: 1.4 },
+  sugFooter: { fontSize: 11, color: "#a78bcc", fontStyle: "italic" },
   error: { background: "#fff5f5", border: "1px solid #fed7d7", borderRadius: 6, padding: "10px 14px", fontSize: 14, color: C.danger },
   submitRow: { display: "flex", justifyContent: "flex-end" },
   submit: { background: C.primary, color: "#fff", border: "none", borderRadius: 20, padding: "8px 28px", fontSize: 14, fontWeight: 700, cursor: "pointer", minHeight: 38 },

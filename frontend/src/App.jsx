@@ -5,6 +5,7 @@ import Sidebar from "./components/Sidebar";
 import BottomNav from "./components/BottomNav";
 import PrivateRoute from "./components/PrivateRoute";
 import ErrorBoundary from "./components/ErrorBoundary";
+import AIChat from "./components/AIChat";
 import { useIsMobile } from "./hooks/useIsMobile";
 import { C } from "./theme";
 import Login from "./pages/Login";
@@ -93,6 +94,7 @@ function Layout({ children }) {
         </div>
       </div>
       {isMobile && <BottomNav />}
+      <AIChat />
     </>
   );
 }

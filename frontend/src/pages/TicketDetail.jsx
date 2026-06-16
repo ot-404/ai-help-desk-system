@@ -27,6 +27,8 @@ export default function TicketDetail() {
   const [sending, setSending] = useState(false);
   const [statusUpdating, setStatusUpdating] = useState(false);
   const [agentOpen, setAgentOpen] = useState(true);
+  const [aiAnswer, setAiAnswer] = useState(null);
+  const [aiLoading, setAiLoading] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -47,6 +49,20 @@ export default function TicketDetail() {
       setMessages((m) => [...m, data]);
       setReply("");
     } finally { setSending(false); }
+  }
+
+  async function getAiAnswer() {
+    if (aiLoading || aiAnswer) return;
+    setAiLoading(true);
+    try {
+      const q = ticket.subject + (ticket.description ? `\n\n${ticket.description}` : "");
+      const { data } = await api.post("/ai/answer", { question: q, ticket_id: ticket.id });
+      setAiAnswer(data.answer);
+    } catch {
+      setAiAnswer("Sorry, the AI couldn't generate an answer right now. Please try again.");
+    } finally {
+      setAiLoading(false);
+    }
   }
 
   async function updateStatus(status) {
@@ -111,6 +127,34 @@ export default function TicketDetail() {
             <span style={s.actionBtn}>Save</span>
           </div>
         </div>
+      </div>
+
+      {/* AI Answer */}
+      <div style={s.aiSection}>
+        {!aiAnswer && !aiLoading && (
+          <button onClick={getAiAnswer} style={s.aiBtn}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+              <rect x="3" y="11" width="18" height="10" rx="2" /><circle cx="12" cy="5" r="2" /><path d="M12 7v4" />
+            </svg>
+            Get AI Answer
+          </button>
+        )}
+        {aiLoading && (
+          <div style={s.aiThinking}>
+            <span style={s.aiDot} /><span style={s.aiDot} /><span style={s.aiDot} />
+            <span style={{ fontSize: 13, color: "#8250df", fontStyle: "italic" }}>HDS Bot is thinking…</span>
+          </div>
+        )}
+        {aiAnswer && (
+          <div style={s.aiCard}>
+            <div style={s.aiCardHead}>
+              <span style={s.aiBadge}>🤖 HDS Bot</span>
+              <span style={s.aiLabel}>AI-generated · not a human answer</span>
+            </div>
+            <div style={s.aiText}>{aiAnswer}</div>
+            <button onClick={() => setAiAnswer(null)} style={s.aiDismiss}>Dismiss</button>
+          </div>
+        )}
       </div>
 
       <div style={s.answersHead}>{messages.length} Answer{messages.length !== 1 ? "s" : ""}</div>
@@ -182,6 +226,16 @@ const s = {
   desc: { fontSize: 15, color: C.text, lineHeight: 1.7, whiteSpace: "pre-wrap", marginBottom: 14 },
   actions: { display: "flex", flexWrap: "wrap", gap: 8 },
   actionBtn: { color: C.muted, fontSize: 12, fontWeight: 700, padding: "6px 8px", borderRadius: 2 },
+  aiSection: { margin: "12px 0" },
+  aiBtn: { display: "inline-flex", alignItems: "center", gap: 8, background: "#f3ecff", border: "1px solid #d8c4f7", color: "#8250df", borderRadius: 20, padding: "8px 18px", fontSize: 13, fontWeight: 700, cursor: "pointer" },
+  aiThinking: { display: "flex", alignItems: "center", gap: 6, padding: "10px 14px", background: "#f3ecff", borderRadius: 8, border: "1px solid #d8c4f7" },
+  aiDot: { width: 6, height: 6, borderRadius: "50%", background: "#8250df", display: "inline-block", animation: "none", opacity: 0.6 },
+  aiCard: { background: "#f3ecff", border: "1px solid #d8c4f7", borderRadius: 8, padding: 14 },
+  aiCardHead: { display: "flex", alignItems: "center", gap: 10, marginBottom: 10 },
+  aiBadge: { fontSize: 13, fontWeight: 700, color: "#8250df" },
+  aiLabel: { fontSize: 11, color: "#a78bcc", fontStyle: "italic" },
+  aiText: { fontSize: 15, color: C.text, lineHeight: 1.75, whiteSpace: "pre-wrap" },
+  aiDismiss: { marginTop: 10, background: "none", border: "none", color: "#a78bcc", fontSize: 12, cursor: "pointer", padding: 0 },
   answersHead: { fontSize: 16, fontWeight: 700, color: C.muted, margin: "20px 0 10px" },
   answers: { display: "flex", flexDirection: "column", gap: 8 },
   noAnswers: { color: C.light, padding: "16px", fontSize: 15, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 4 },
