@@ -36,15 +36,16 @@ export default function Profile() {
     <div>
       <div style={s.card}>
         <div style={{ ...s.banner, background: C.gradient }} />
-        <div style={s.body}>
+        <div style={s.avatarRow}>
           <div style={{ ...s.avatar, background: C.gradient }}>{initial}</div>
-          <div style={s.identity}>
-            <h1 style={s.name}>{user.name || "User"}</h1>
-            <div style={s.handle}>{handle}</div>
-          </div>
           <span style={{ ...s.roleBadge, background: (ROLE_BG[user.role] || C.primary) + "1a", color: ROLE_BG[user.role] || C.primary }}>
             {ROLE_LABEL[user.role] || user.role}
           </span>
+        </div>
+
+        <div style={s.identity}>
+          <h1 style={s.name}>{user.name || "User"}</h1>
+          <div style={s.handle}>{handle}</div>
         </div>
 
         <div style={s.meta}>
@@ -87,14 +88,14 @@ function Icon({ name }) {
 
 const s = {
   card: { background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, overflow: "hidden", marginBottom: 16 },
-  banner: { height: 88 },
-  body: { display: "flex", alignItems: "flex-end", gap: 14, padding: "0 20px", marginTop: -34 },
+  banner: { height: 80 },
+  avatarRow: { display: "flex", alignItems: "flex-end", justifyContent: "space-between", padding: "0 20px", marginTop: -38 },
   avatar: { width: 76, height: 76, borderRadius: "50%", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 30, border: "4px solid #fff", flexShrink: 0 },
-  identity: { flex: 1, minWidth: 0, paddingBottom: 4 },
+  identity: { padding: "12px 20px 0" },
   name: { fontSize: 21, fontWeight: 700, color: C.text, margin: 0, letterSpacing: -0.3 },
-  handle: { fontSize: 13.5, color: C.muted },
+  handle: { fontSize: 13.5, color: C.muted, marginTop: 2 },
   roleBadge: { fontSize: 12, fontWeight: 700, padding: "4px 12px", borderRadius: 20, marginBottom: 6 },
-  meta: { display: "flex", flexWrap: "wrap", gap: 24, padding: "18px 20px 20px" },
+  meta: { display: "flex", flexWrap: "wrap", gap: "16px 32px", padding: "18px 20px 20px" },
   metaItem: { display: "flex", flexDirection: "column", gap: 2 },
   metaLabel: { fontSize: 11, fontWeight: 700, color: C.light, textTransform: "uppercase", letterSpacing: 0.5 },
   metaVal: { fontSize: 14, color: C.text, fontWeight: 500 },
