@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { C, ANDROID_APK_URL } from "../theme";
+import { C } from "../theme";
 
 const ROLE_BG = { admin: C.primary, agent: C.blue, user: C.success };
 const ROLE_LABEL = { admin: "Admin", agent: "Support Agent", user: "Member" };
@@ -63,10 +63,6 @@ export default function Profile() {
             <span>{q.label}</span>
           </Link>
         ))}
-        <a href={ANDROID_APK_URL} target="_blank" rel="noreferrer" style={s.tile}>
-          <Icon name="android" />
-          <span>Download Android app</span>
-        </a>
       </div>
 
       <button style={s.logout} onClick={handleLogout}>Log out</button>
@@ -86,7 +82,6 @@ function Icon({ name }) {
     case "faq": return p(["M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3", "M12 17h.01", "M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z"]);
     case "list": return p(["M8 6h13", "M8 12h13", "M8 18h13", "M3 6h.01", "M3 12h.01", "M3 18h.01"]);
     case "dash": return p(["M3 3h7v9H3z", "M14 3h7v5h-7z", "M14 12h7v9h-7z", "M3 16h7v5H3z"]);
-    case "android": return p(["M5 16V9a7 7 0 0 1 14 0v7", "M5 16h14a0 0 0 0 1 0 0v2a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z", "M9 7L7.5 4.5", "M15 7l1.5-2.5", "M9 12h.01", "M15 12h.01"]);
     default: return null;
   }
 }
