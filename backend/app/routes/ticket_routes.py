@@ -45,6 +45,19 @@ def create():
     return jsonify(ticket=ticket.to_dict(), ai=result), 201
 
 
+@ticket_bp.post("/<int:ticket_id>/dismiss-flag")
+@role_required("agent", "admin")
+def dismiss_flag(ticket_id):
+    """Agent/admin clears an AI originality flag (false positive)."""
+    ticket = Ticket.query.get(ticket_id)
+    if not ticket:
+        return jsonify(error="not found"), 404
+    ticket.flagged = False
+    ticket.flag_reason = None
+    db.session.commit()
+    return jsonify(ticket.to_dict())
+
+
 @ticket_bp.get("/")
 @jwt_required()
 def list_tickets():

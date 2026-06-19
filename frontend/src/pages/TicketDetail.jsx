@@ -29,6 +29,16 @@ export default function TicketDetail() {
   const [agentOpen, setAgentOpen] = useState(true);
   const [aiAnswer, setAiAnswer] = useState(null);
   const [aiLoading, setAiLoading] = useState(false);
+  const [dismissing, setDismissing] = useState(false);
+
+  async function dismissFlag() {
+    setDismissing(true);
+    try {
+      const { data } = await api.post(`/tickets/${id}/dismiss-flag`);
+      setTicket(data);
+    } catch { /* ignore */ }
+    finally { setDismissing(false); }
+  }
 
   useEffect(() => {
     Promise.all([
@@ -92,11 +102,16 @@ export default function TicketDetail() {
       {ticket.flagged && (
         <div style={s.flagBanner}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 1 }}><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
-          <div>
+          <div style={{ flex: 1, minWidth: 0 }}>
             <strong>Flagged for review by AI.</strong>{" "}
             {ticket.flag_reason || "This post may closely match existing content."}
-            <div style={s.flagSub}>Automated check · not verified · an agent can dismiss this.</div>
+            <div style={s.flagSub}>Automated check · not verified{canManage ? "" : " · an agent can dismiss this"}.</div>
           </div>
+          {canManage && (
+            <button onClick={dismissFlag} disabled={dismissing} style={s.dismissFlagBtn}>
+              {dismissing ? "…" : "Dismiss"}
+            </button>
+          )}
         </div>
       )}
 
@@ -235,6 +250,7 @@ const s = {
   back: { color: C.muted, textDecoration: "none", fontSize: 13, display: "block", marginBottom: 12 },
   flagBanner: { display: "flex", gap: 10, alignItems: "flex-start", background: "#fff7ed", border: "1px solid #fed7aa", color: "#9a3412", borderRadius: 10, padding: "11px 14px", fontSize: 13.5, lineHeight: 1.5, marginBottom: 12 },
   flagSub: { fontSize: 12, color: "#b45c2e", marginTop: 3 },
+  dismissFlagBtn: { flexShrink: 0, background: "#fff", border: "1px solid #fed7aa", color: "#9a3412", borderRadius: 8, padding: "5px 12px", fontSize: 12.5, fontWeight: 600, cursor: "pointer", alignSelf: "center" },
   creditsCard: { background: "#e3f2f6", border: "1px solid #bcdfe8", borderRadius: 10, padding: "12px 14px", marginBottom: 12 },
   creditsHead: { fontSize: 12, fontWeight: 700, color: C.primary, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6 },
   creditsList: { margin: 0, paddingLeft: 18, display: "flex", flexDirection: "column", gap: 3 },
