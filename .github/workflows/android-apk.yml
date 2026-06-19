@@ -1,8 +1,7 @@
 name: Build Android APK
 
-# Builds an installable debug APK in the cloud (free) and uploads it as a
-# downloadable artifact. Run automatically on pushes that touch the frontend,
-# or manually from the Actions tab (Run workflow).
+# Builds an installable debug APK in the cloud (free), uploads it as an artifact,
+# and publishes it to a GitHub Release for a permanent public download link.
 on:
   workflow_dispatch:
   push:
@@ -15,7 +14,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write   # needed to publish the Release
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -37,18 +36,22 @@ jobs:
       - name: Build web bundle + sync Capacitor
         working-directory: frontend
         run: |
-          npm ci
+          npm install --no-audit --no-fund
           npm run build:app
           npx cap sync android
 
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: "8.14.3"
-
-      - name: Assemble debug APK
+      - name: Restore Gradle wrapper jar (gitignored) and build
         working-directory: frontend/android
-        run: gradle assembleDebug --no-daemon --stacktrace
+        run: |
+          set -e
+          if [ ! -f gradle/wrapper/gradle-wrapper.jar ]; then
+            echo "Wrapper jar missing — bootstrapping Gradle 8.14.3 to regenerate it…"
+            curl -sSL https://services.gradle.org/distributions/gradle-8.14.3-bin.zip -o /tmp/gradle.zip
+            unzip -q /tmp/gradle.zip -d /tmp
+            /tmp/gradle-8.14.3/bin/gradle wrapper --gradle-version 8.14.3
+          fi
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon --stacktrace
 
       - name: Rename APK
         run: cp frontend/android/app/build/outputs/apk/debug/app-debug.apk HD-Systems.apk
