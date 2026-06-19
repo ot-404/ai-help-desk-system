@@ -9,10 +9,12 @@ createRoot(document.getElementById('root')).render(
   </StrictMode>,
 )
 
-// Register the service worker for PWA / offline support (production only).
+// Register the service worker for PWA / offline support (production web only).
+// Skipped inside the native Capacitor app, where assets are already bundled.
 // Auto-updates: when a new version is deployed, activate it and reload once so
 // users never get stranded on a stale build.
-if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+const isNativeApp = typeof window !== 'undefined' && window.Capacitor?.isNativePlatform?.()
+if (import.meta.env.PROD && !isNativeApp && 'serviceWorker' in navigator) {
   let reloading = false
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (reloading) return

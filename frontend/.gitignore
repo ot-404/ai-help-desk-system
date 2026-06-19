@@ -12,6 +12,13 @@ dist
 dist-ssr
 *.local
 
+# Capacitor — regenerable binary assets (HF Spaces rejects binaries in git).
+# Icons/splash: run `npx @capacitor/assets generate`. Gradle wrapper: Android Studio.
+resources/*.png
+android/app/src/main/res/**/*.png
+ios/App/App/Assets.xcassets/**/*.png
+android/gradle/wrapper/gradle-wrapper.jar
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

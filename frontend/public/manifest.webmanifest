@@ -16,8 +16,8 @@
     { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "shortcuts": [
-    { "name": "Ask AI", "short_name": "Ask AI", "url": "/ask", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] },
-    { "name": "New Question", "short_name": "Ask", "url": "/new-question", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] },
-    { "name": "FAQs", "short_name": "FAQs", "url": "/faq", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] }
+    { "name": "Ask AI", "short_name": "Ask AI", "url": "/ask" },
+    { "name": "New Question", "short_name": "Ask", "url": "/new-question" },
+    { "name": "FAQs", "short_name": "FAQs", "url": "/faq" }
   ]
 }
