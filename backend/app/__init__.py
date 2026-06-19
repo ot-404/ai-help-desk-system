@@ -129,5 +129,11 @@ def _ensure_kb_columns():
                 conn.execute(text("ALTER TABLE tickets ADD COLUMN is_anonymous BOOLEAN NOT NULL DEFAULT 0"))
             if "tags" not in t_cols:
                 conn.execute(text("ALTER TABLE tickets ADD COLUMN tags TEXT"))
+            if "flagged" not in t_cols:
+                conn.execute(text("ALTER TABLE tickets ADD COLUMN flagged BOOLEAN NOT NULL DEFAULT 0"))
+            if "flag_reason" not in t_cols:
+                conn.execute(text("ALTER TABLE tickets ADD COLUMN flag_reason TEXT"))
+            if "credits" not in t_cols:
+                conn.execute(text("ALTER TABLE tickets ADD COLUMN credits TEXT"))
     except Exception:
         pass

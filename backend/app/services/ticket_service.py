@@ -1,10 +1,11 @@
-"""Ticket business logic: routing, auto-answer vs. escalation, auto-tagging."""
+"""Ticket business logic: routing, auto-answer, auto-tagging, originality check."""
+import re
 import threading
 from flask import current_app
 from app import db
 from app.models.ticket_model import Ticket
 from app.models.message_model import Message
-from app.services.ai_service import generate_response, extract_post_tags
+from app.services.ai_service import generate_response, extract_post_tags, check_originality
 
 # If retrieval finds context the bot answers; otherwise escalate to a human.
 CONFIDENCE_MIN_CONTEXT = 1
@@ -30,13 +31,44 @@ def collect_existing_tags():
     return tags
 
 
-def _auto_tag_worker(app, ticket_id):
-    """Background: ask the AI for the post's main focus, save tags on the ticket."""
+def _words(text):
+    return set(re.findall(r"[a-z0-9]+", (text or "").lower()))
+
+
+def _gather_candidates(ticket, limit=5, min_overlap=4):
+    """Most word-similar existing posts + KB articles, for the originality check."""
+    from app.models.kb_model import KnowledgeBase
+    new_words = _words(f"{ticket.subject} {ticket.description}")
+    if not new_words:
+        return []
+    scored = []
+    for t in Ticket.query.filter(Ticket.id != ticket.id).order_by(Ticket.created_at.desc()).limit(200).all():
+        text = f"{t.subject} {t.description or ''}"
+        overlap = len(new_words & _words(text))
+        if overlap >= min_overlap:
+            scored.append((overlap, f"post #{t.id}: {t.subject}", text))
+    for a in KnowledgeBase.query.limit(200).all():
+        text = f"{a.title} {a.content or ''}"
+        overlap = len(new_words & _words(text))
+        if overlap >= min_overlap:
+            scored.append((overlap, f"KB: {a.title}", text))
+    scored.sort(key=lambda x: x[0], reverse=True)
+    return [{"ref": ref, "text": text} for _, ref, text in scored[:limit]]
+
+
+def _review_worker(app, ticket_id):
+    """Background: tag the post, then run the AI originality / credit check.
+
+    The two steps are committed independently so a transient AI failure on one
+    (e.g. a rate limit) never discards the other.
+    """
     with app.app_context():
+        ticket = Ticket.query.get(ticket_id)
+        if not ticket:
+            return
+
+        # 1. Auto-tag (main focus).
         try:
-            ticket = Ticket.query.get(ticket_id)
-            if not ticket:
-                return
             tags = extract_post_tags(ticket.subject, ticket.description, collect_existing_tags())
             if tags:
                 ticket.tags = ",".join(tags)
@@ -44,12 +76,24 @@ def _auto_tag_worker(app, ticket_id):
         except Exception:
             db.session.rollback()
 
+        # 2. Originality + suggested credits.
+        try:
+            result = check_originality(ticket.subject, ticket.description, _gather_candidates(ticket))
+            if result:
+                ticket.flagged = bool(result.get("flagged"))
+                ticket.flag_reason = (result.get("reason") or None) if result.get("flagged") else None
+                creds = result.get("credits") or []
+                ticket.credits = "\n".join(creds) if creds else None
+                db.session.commit()
+        except Exception:
+            db.session.rollback()
+
 
 def schedule_auto_tag(ticket):
-    """Fire-and-forget the AI tagging so post creation isn't blocked."""
+    """Fire-and-forget AI tagging + originality check so post creation isn't blocked."""
     app = current_app._get_current_object()
     threading.Thread(
-        target=_auto_tag_worker, args=(app, ticket.id), daemon=True
+        target=_review_worker, args=(app, ticket.id), daemon=True
     ).start()
 
 

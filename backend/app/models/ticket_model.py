@@ -19,6 +19,9 @@ class Ticket(db.Model):
     csat_rating = db.Column(db.Integer, nullable=True)  # 1-5 star rating by user
     is_anonymous = db.Column(db.Boolean, default=False, nullable=False)
     tags = db.Column(db.Text, nullable=True)  # AI-generated, comma-separated
+    flagged = db.Column(db.Boolean, default=False, nullable=False)  # AI originality flag
+    flag_reason = db.Column(db.Text, nullable=True)
+    credits = db.Column(db.Text, nullable=True)  # AI-suggested source attributions, newline-separated
     resolved_at = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(
@@ -45,6 +48,9 @@ class Ticket(db.Model):
             "csat_rating": self.csat_rating,
             "is_anonymous": self.is_anonymous or False,
             "tags": [t.strip() for t in self.tags.split(",") if t.strip()] if self.tags else [],
+            "flagged": self.flagged or False,
+            "flag_reason": self.flag_reason or "",
+            "credits": [c.strip() for c in self.credits.split("\n") if c.strip()] if self.credits else [],
             "message_count": len(self.messages),
             "answer_count": len(self.messages),
             "resolved_at": self.resolved_at.isoformat() if self.resolved_at else None,

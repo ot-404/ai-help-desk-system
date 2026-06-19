@@ -89,6 +89,27 @@ export default function TicketDetail() {
     <div>
       <Link to="/" style={s.back}>← Back to feed</Link>
 
+      {ticket.flagged && (
+        <div style={s.flagBanner}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 1 }}><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
+          <div>
+            <strong>Flagged for review by AI.</strong>{" "}
+            {ticket.flag_reason || "This post may closely match existing content."}
+            <div style={s.flagSub}>Automated check · not verified · an agent can dismiss this.</div>
+          </div>
+        </div>
+      )}
+
+      {ticket.credits?.length > 0 && (
+        <div style={s.creditsCard}>
+          <div style={s.creditsHead}>Suggested sources</div>
+          <ul style={s.creditsList}>
+            {ticket.credits.map((c, i) => <li key={i} style={s.creditItem}>{c}</li>)}
+          </ul>
+          <div style={s.creditsSub}>AI-suggested attributions — please verify before relying on them.</div>
+        </div>
+      )}
+
       {canManage && (
         <div style={s.agentCard}>
           <button type="button" style={s.agentHead} onClick={() => setAgentOpen((v) => !v)}>
@@ -212,6 +233,13 @@ export default function TicketDetail() {
 const s = {
   loading: { textAlign: "center", color: C.light, marginTop: 80, fontSize: 16 },
   back: { color: C.muted, textDecoration: "none", fontSize: 13, display: "block", marginBottom: 12 },
+  flagBanner: { display: "flex", gap: 10, alignItems: "flex-start", background: "#fff7ed", border: "1px solid #fed7aa", color: "#9a3412", borderRadius: 10, padding: "11px 14px", fontSize: 13.5, lineHeight: 1.5, marginBottom: 12 },
+  flagSub: { fontSize: 12, color: "#b45c2e", marginTop: 3 },
+  creditsCard: { background: "#e3f2f6", border: "1px solid #bcdfe8", borderRadius: 10, padding: "12px 14px", marginBottom: 12 },
+  creditsHead: { fontSize: 12, fontWeight: 700, color: C.primary, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6 },
+  creditsList: { margin: 0, paddingLeft: 18, display: "flex", flexDirection: "column", gap: 3 },
+  creditItem: { fontSize: 13.5, color: C.text, lineHeight: 1.5 },
+  creditsSub: { fontSize: 11.5, color: "#6b9aa6", fontStyle: "italic", marginTop: 7 },
   agentCard: { background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, marginBottom: 12, overflow: "hidden" },
   agentHead: { width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", background: C.surfaceHover, border: "none", padding: "11px 14px", fontSize: 13, fontWeight: 700, color: C.text, cursor: "pointer" },
   agentBody: { display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6, padding: "10px 14px" },

@@ -265,6 +265,53 @@ Return JSON: {{"tags": ["primary", "secondary"]}} — 1 to {max_tags} tags, prim
     return clean
 
 
+def check_originality(subject, description, candidates):
+    """Judge whether a new post copies existing site content, and suggest credits.
+
+    candidates: list of {"ref": str, "text": str} (existing posts / KB articles).
+    Returns {"flagged": bool, "reason": str, "credits": [str, ...]} or {} if AI is off.
+    """
+    if not (subject or description):
+        return {}
+    cand_str = "\n\n".join(f"[{c['ref']}]\n{(c['text'] or '')[:600]}" for c in candidates) or "(no similar content found)"
+    system = (
+        "You are a content-integrity assistant for a tech Q&A community. "
+        "Respond with valid JSON only — no markdown, no extra text."
+    )
+    user = f"""New post:
+Title: {subject}
+Body: {(description or '')[:1800]}
+
+Existing site content to compare against:
+{cand_str}
+
+Tasks:
+1. Decide if the new post is substantially COPIED from, or a near-duplicate of, any item above.
+2. Suggest source attributions ONLY if the post clearly quotes or closely paraphrases a
+   well-known external source (official docs, a standard, a famous article). Be conservative —
+   do not invent sources or URLs.
+
+Return JSON:
+{{"flagged": true|false, "duplicate_of": "ref or null", "reason": "one short sentence", "credits": ["source", ...]}}
+- flagged=true ONLY for a clear copy / near-duplicate of a listed item.
+- credits: 0-3 short attribution strings like "MDN Web Docs — Array.prototype.map"; [] if none."""
+
+    data, model = _call_llm_json(system, user, {})
+    if model == "unavailable" or not isinstance(data, dict):
+        return {}
+    flagged = bool(data.get("flagged"))
+    reason = str(data.get("reason") or "").strip()[:300]
+    dup = data.get("duplicate_of")
+    if flagged and dup and str(dup).lower() != "null" and "duplicate" not in reason.lower():
+        reason = (f"Possible duplicate of {dup}. " + reason).strip()
+    credits = []
+    for c in (data.get("credits") or [])[:3]:
+        c = str(c).strip()
+        if c and c.lower() not in ("none", "n/a"):
+            credits.append(c[:160])
+    return {"flagged": flagged, "reason": reason, "credits": credits}
+
+
 def summarize_conversation(messages):
     text = "\n".join(f"{m.get('sender','')}: {m.get('message','')}" for m in messages)
     prompt = [

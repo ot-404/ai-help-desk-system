@@ -82,6 +82,12 @@ export default function PostCard({ article, onVoteSuccess }) {
             {type}
           </span>
           <span style={s.topicChip}>{topic}</span>
+          {article.flagged && (
+            <span style={s.flagChip} title={article.flag_reason || "Flagged for review"}>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
+              Flagged
+            </span>
+          )}
           <span style={s.meta}>• Posted by <span style={isAnon ? s.anon : undefined}>{author}</span> • {timeAgo(article.created_at)}</span>
         </div>
 
@@ -124,6 +130,7 @@ const s = {
   metaRow: { display: "flex", flexWrap: "wrap", alignItems: "center", gap: 7, marginBottom: 7, fontSize: 12 },
   typeBadge: { display: "inline-flex", alignItems: "center", fontSize: 11, fontWeight: 600, padding: "2px 9px", borderRadius: 6 },
   topicChip: { background: C.tag, color: C.muted, borderRadius: 6, padding: "2px 9px", fontSize: 12, fontWeight: 500, cursor: "pointer" },
+  flagChip: { display: "inline-flex", alignItems: "center", gap: 3, background: "#fff7ed", color: "#9a3412", border: "1px solid #fed7aa", borderRadius: 6, padding: "2px 7px", fontSize: 11, fontWeight: 600 },
   meta: { fontSize: 12, color: C.light },
   anon: { fontStyle: "italic", color: C.anon },
   title: { display: "block", fontSize: 17, fontWeight: 600, color: C.text, textDecoration: "none", lineHeight: 1.35, margin: "2px 0", letterSpacing: -0.2 },
