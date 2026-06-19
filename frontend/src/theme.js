@@ -64,6 +64,9 @@ export function timeAgo(dateStr) {
   return `${Math.floor(d / 30)}mo ago`;
 }
 
+// Public download link for the Android app (auto-published by GitHub Actions).
+export const ANDROID_APK_URL = "https://github.com/ot-404/ai-help-desk-system/releases/download/android-latest/HD-Systems.apk";
+
 export const POST_TYPES = ["Question", "Discussion", "Tutorial", "Anonymous Ask"];
 
 export const TOPICS = [

@@ -8,7 +8,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import AIChat from "./components/AIChat";
 import InstallPrompt from "./components/InstallPrompt";
 import { useIsMobile } from "./hooks/useIsMobile";
-import { C } from "./theme";
+import { C, ANDROID_APK_URL } from "./theme";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
@@ -34,6 +34,14 @@ function HomeOrRedirect() {
   return <Home />;
 }
 
+function AndroidIcon({ size = 18 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M17.6 9.48l1.84-3.18a.4.4 0 0 0-.69-.4l-1.86 3.23a11.46 11.46 0 0 0-9.78 0L5.25 5.9a.4.4 0 1 0-.69.4l1.84 3.18A10.7 10.7 0 0 0 1 18h22a10.7 10.7 0 0 0-5.4-8.52zM7 15.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5zm10 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5z" />
+    </svg>
+  );
+}
+
 function RightSummary() {
   const card = { background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, marginBottom: 16 };
   return (
@@ -44,6 +52,15 @@ function RightSummary() {
         <div style={{ fontSize: 13.5, color: C.muted, marginBottom: 14, lineHeight: 1.6 }}>The tech knowledge hub — ask questions, share answers, and learn together.</div>
         <Link to="/new-question" style={{ display: "block", textAlign: "center", background: C.gradient, color: "#fff", borderRadius: 10, padding: "9px 0", textDecoration: "none", fontWeight: 600, fontSize: 14, marginBottom: 8 }}>Create Post</Link>
         <Link to="/ask" style={{ display: "block", textAlign: "center", border: `1px solid ${C.border}`, color: C.text, borderRadius: 10, padding: "9px 0", textDecoration: "none", fontWeight: 600, fontSize: 14 }}>Ask AI</Link>
+      </div>
+
+      {/* Get the app card */}
+      <div style={{ ...card, padding: 16 }}>
+        <div style={{ fontWeight: 700, fontSize: 13, color: C.muted, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 10 }}>Get the app</div>
+        <a href={ANDROID_APK_URL} target="_blank" rel="noreferrer" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, background: C.gradient, color: "#fff", borderRadius: 10, padding: "10px 0", textDecoration: "none", fontWeight: 600, fontSize: 14 }}>
+          <AndroidIcon size={18} /> Download for Android
+        </a>
+        <div style={{ fontSize: 12, color: C.light, marginTop: 8, lineHeight: 1.5 }}>Or tap your browser's “Install” / “Add to Home Screen” to install the web app.</div>
       </div>
 
       {/* Community Rules card */}
