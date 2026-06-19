@@ -26,3 +26,17 @@ class Config:
     # Base URL for any OpenAI-compatible provider (Groq, OpenRouter, Together,
     # Mistral, etc.). Defaults to OpenAI itself. e.g. https://api.groq.com/openai/v1
     OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1").rstrip("/")
+
+    # Where the frontend lives, used to build password-reset links.
+    # Falls back to the request origin if unset.
+    FRONTEND_URL = os.getenv("FRONTEND_URL", "").rstrip("/")
+
+    # Email (SMTP) for password resets. If unset, reset links are returned in the
+    # API response (dev/demo fallback) instead of being emailed.
+    SMTP_HOST = os.getenv("SMTP_HOST", "")
+    SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
+    SMTP_USER = os.getenv("SMTP_USER", "")
+    SMTP_PASS = os.getenv("SMTP_PASS", "")
+    SMTP_FROM = os.getenv("SMTP_FROM", os.getenv("SMTP_USER", "no-reply@hdsystems.app"))
+    SMTP_TLS = os.getenv("SMTP_TLS", "true").lower() != "false"
+    PASSWORD_RESET_MAX_AGE = int(os.getenv("PASSWORD_RESET_MAX_AGE", "3600"))  # seconds

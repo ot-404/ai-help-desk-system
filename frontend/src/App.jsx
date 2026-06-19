@@ -11,6 +11,8 @@ import { useIsMobile } from "./hooks/useIsMobile";
 import { C } from "./theme";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import Home from "./pages/Home";
 import UserHome from "./pages/UserHome";
 import StaffHome from "./pages/StaffHome";
@@ -110,6 +112,8 @@ export default function App() {
           {/* Standalone auth pages — no shell */}
           <Route path="/login"    element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password"  element={<ResetPassword />} />
 
           {/* Public pages — shell visible, no login required */}
           <Route path="/"    element={<Layout><HomeOrRedirect /></Layout>} />

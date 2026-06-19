@@ -52,7 +52,7 @@ export default function Login() {
           <button type="submit" style={s.submit} disabled={loading}>{loading ? "Logging in…" : "Log in"}</button>
         </form>
 
-        <a href="#" style={s.forgot}>Forgot password?</a>
+        <Link to="/forgot-password" style={s.forgot}>Forgot password?</Link>
 
         <div style={s.divider}><span style={s.dividerText}>New to HD Systems?</span></div>
 
