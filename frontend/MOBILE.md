@@ -25,6 +25,23 @@ The web app is wrapped with [Capacitor](https://capacitorjs.com) into native
 
 ---
 
+## After a fresh `git clone`
+
+The generated **app icons, splash images, and the Gradle wrapper jar are not stored
+in git** (HF Spaces rejects binary files). Regenerate them once after cloning:
+
+```bash
+cd frontend
+npm install
+npm run build:app
+npx @capacitor/assets generate --iconBackgroundColor "#0e7490" --splashBackgroundColor "#ffffff"
+npx cap sync
+```
+
+(Opening the Android project in Android Studio restores the Gradle wrapper jar automatically.)
+The source images live in `frontend/resources/` — if those are also missing, drop a
+1024×1024 `icon.png` and a 2732×2732 `splash.png` there before running the generate step.
+
 ## Everyday workflow
 
 Whenever the web code changes, rebuild and sync the app:
