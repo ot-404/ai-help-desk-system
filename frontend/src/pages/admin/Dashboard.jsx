@@ -57,7 +57,7 @@ export default function Dashboard() {
   return (
     <div style={s.page}>
       <h1 style={s.h1}>Admin Overview</h1>
-      <p style={s.sub}>HD Systems platform analytics</p>
+      <p style={s.sub}>Askora platform analytics</p>
 
       <div style={{ ...s.kpiGrid, gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)" }}>
         <Kpi label="Users" value={stats.total_users} color={C.primary} />

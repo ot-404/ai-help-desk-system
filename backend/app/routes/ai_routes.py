@@ -35,8 +35,9 @@ def ask_and_publish():
     result = ai_service.generate_response(question)
     answer = result["answer"]
     model = result["model"]
+    it_related = result.get("it_related", True)
 
-    # 2. Generate structured KB article from Q&A
+    # 2. Generate structured KB article from Q&A (always — IT or not)
     kb_data = ai_service.generate_kb_article(question, answer)
     kb_article = KnowledgeBase(
         title=kb_data["title"],
@@ -57,13 +58,14 @@ def ask_and_publish():
         tags=blog_tags,
     )
     db.session.add(blog_article)
-    db.session.flush()  # get IDs before commit
+    db.session.flush()
 
     db.session.commit()
 
     return jsonify(
         answer=answer,
         model=model,
+        it_related=True,
         kb_article=kb_article.to_dict(),
         blog_post=blog_article.to_dict(),
     ), 201

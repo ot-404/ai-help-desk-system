@@ -178,7 +178,7 @@ export default function TicketDetail() {
         {aiLoading && (
           <div style={s.aiThinking}>
             <span style={s.aiDot} /><span style={s.aiDot} /><span style={s.aiDot} />
-            <span style={{ fontSize: 13, color: "#0e7490", fontStyle: "italic" }}>HDS Bot is thinking…</span>
+            <span style={{ fontSize: 13, color: "#0e7490", fontStyle: "italic" }}>Askora Bot is thinking…</span>
           </div>
         )}
         {aiAnswer && (
@@ -186,7 +186,7 @@ export default function TicketDetail() {
             <div style={s.aiCardHead}>
               <span style={s.aiBadge}>
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 8V4H8" /><rect x="4" y="8" width="16" height="12" rx="2" /><path d="M2 14h2M20 14h2M9 13v2M15 13v2" /></svg>
-                HDS Bot
+                Askora Bot
               </span>
               <span style={s.aiLabel}>AI-generated · not a human answer</span>
             </div>
@@ -205,7 +205,7 @@ export default function TicketDetail() {
           const isAgent = m.sender_role === "agent" || m.sender_role === "support";
           const roleKey = isAI ? "ai" : isAgent ? "agent" : null;
           const rb = roleKey ? ROLE_BADGE[roleKey] : null;
-          const name = isAI ? "HDS Bot" : isAgent ? "Support Agent" : (m.sender_email || "User");
+          const name = isAI ? "Askora Bot" : isAgent ? "Support Agent" : (m.sender_email || "User");
           const accepted = isResolved && idx === messages.length - 1;
           return (
             <div key={m.id} style={s.answerCard}>

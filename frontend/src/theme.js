@@ -70,10 +70,22 @@ export const ANDROID_APK_URL = "https://github.com/ot-404/ai-help-desk-system/re
 export const POST_TYPES = ["Question", "Discussion", "Tutorial", "Anonymous Ask"];
 
 export const TOPICS = [
+  // Technology
   "Programming", "DevOps & Cloud", "Cybersecurity", "Databases",
   "Web Development", "Mobile Dev", "AI & Machine Learning",
-  "System Admin", "Networking", "Software Architecture",
-  "Career & Jobs", "Open Source", "Hardware", "Data Science",
+  "System Admin", "Networking", "Hardware", "Data Science", "Open Source",
+  // Education
+  "Mathematics", "Science", "English & Writing", "History", "Geography",
+  "Computer Science", "Languages", "Philosophy",
+  // Health & Life
+  "Health & Medicine", "Mental Health", "Fitness & Sport", "Nutrition",
+  // Career & Finance
+  "Career & Jobs", "Finance & Money", "Business", "Law",
+  // Arts & Culture
+  "Arts & Music", "Books & Literature", "Film & Media",
+  // Everyday
+  "Cooking & Food", "Travel", "Environment", "Parenting", "Relationships",
+  "General Knowledge",
 ];
 
 export const TYPE_BADGE = {

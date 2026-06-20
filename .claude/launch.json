@@ -2,13 +2,6 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "Flask Backend",
-      "runtimeExecutable": "C:\\Users\\ripp3\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
-      "runtimeArgs": ["run.py"],
-      "cwd": "backend",
-      "port": 5000
-    },
-    {
       "name": "React Frontend (Vite)",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],

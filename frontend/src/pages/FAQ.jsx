@@ -73,39 +73,46 @@ function AccordionItem({ article }) {
 export default function FAQ() {
   const [params] = useSearchParams();
   const [articles, setArticles] = useState([]);
+  const [categories, setCategories] = useState(["All"]);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState(params.get("topic") || "");
   const [activeCategory, setActiveCategory] = useState("All");
 
+  // Fetch categories list once on mount
   useEffect(() => {
-    api.get("/kb/")
-      .then(r => setArticles(r.data || []))
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    api.get("/kb/categories").then(r => {
+      setCategories(["All", ...(r.data || [])]);
+    }).catch(() => {});
   }, []);
 
-  // Build sorted category list
-  const categories = useMemo(() => {
-    const cats = new Set(articles.map(a => a.category).filter(Boolean));
-    return ["All", ...Array.from(cats).sort()];
-  }, [articles]);
+  // Fetch articles whenever category changes
+  useEffect(() => {
+    setLoading(true);
+    setArticles([]);
+    const url = activeCategory === "All"
+      ? "/kb/?limit=50"
+      : `/kb/?category=${encodeURIComponent(activeCategory)}&limit=100`;
+    api.get(url)
+      .then(r => {
+        const data = r.data;
+        setArticles(data.results || data || []);
+        setTotal(data.total ?? (data.results || data || []).length);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [activeCategory]);
 
-  // Filter by search + category
+  // Filter by search term client-side
   const filtered = useMemo(() => {
-    let list = articles;
-    if (activeCategory !== "All") {
-      list = list.filter(a => a.category === activeCategory);
-    }
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      list = list.filter(a =>
-        a.title?.toLowerCase().includes(q) ||
-        a.content?.toLowerCase().includes(q) ||
-        a.tags?.some(t => t.toLowerCase().includes(q))
-      );
-    }
-    return list;
-  }, [articles, search, activeCategory]);
+    if (!search.trim()) return articles;
+    const q = search.toLowerCase();
+    return articles.filter(a =>
+      a.title?.toLowerCase().includes(q) ||
+      a.content?.toLowerCase().includes(q) ||
+      a.tags?.some(t => t.toLowerCase().includes(q))
+    );
+  }, [articles, search]);
 
   // Group by category
   const grouped = useMemo(() => {

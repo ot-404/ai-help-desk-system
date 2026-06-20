@@ -35,14 +35,29 @@ def _parse_txt(file_bytes):
 @kb_bp.get("/")
 def list_articles():
     sort = request.args.get("sort", "newest")  # newest | votes | views
+    category = request.args.get("category", "").strip()
+    limit = min(int(request.args.get("limit", 100)), 500)
+    offset = int(request.args.get("offset", 0))
+
     q = KnowledgeBase.query
+    if category:
+        q = q.filter(KnowledgeBase.category == category)
     if sort == "votes":
         q = q.order_by(KnowledgeBase.vote_count.desc())
     elif sort == "views":
         q = q.order_by(KnowledgeBase.views.desc())
     else:
         q = q.order_by(KnowledgeBase.created_at.desc())
-    return jsonify([a.to_dict() for a in q.all()])
+
+    total = q.count()
+    articles = q.offset(offset).limit(limit).all()
+    return jsonify({"results": [a.to_dict() for a in articles], "total": total})
+
+
+@kb_bp.get("/categories")
+def list_categories():
+    rows = db.session.query(KnowledgeBase.category).filter(KnowledgeBase.category != None, KnowledgeBase.category != "").distinct().all()
+    return jsonify(sorted(r[0] for r in rows))
 
 
 @kb_bp.get("/search")

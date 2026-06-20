@@ -5,9 +5,9 @@ import api from "../api/client";
 import { C, POST_TYPES, TOPICS } from "../theme";
 
 const PLACEHOLDERS = {
-  "Question": "Ask a question… e.g. How do I fix a Kubernetes CrashLoopBackOff?",
-  "Discussion": "Start a discussion… e.g. Is microservices overkill for small teams?",
-  "Tutorial": "Share a tutorial… e.g. Setting up CI/CD with GitHub Actions",
+  "Question": "Ask anything… e.g. How do I solve a quadratic equation? What causes inflation? How do I reset my password?",
+  "Discussion": "Start a discussion… e.g. What are the best study habits? Is remote work here to stay?",
+  "Tutorial": "Share what you know… e.g. How to write a persuasive essay, How to budget your salary",
   "Anonymous Ask": "Ask anonymously — your identity stays hidden",
 };
 
@@ -104,7 +104,7 @@ export default function PostComposer({ onCreated }) {
       />
       <textarea
         style={s.body}
-        placeholder="Add details. Code is welcome — share what you tried and what you expect."
+        placeholder="Add more details… the more context you give, the better the answers you'll get."
         value={body}
         onChange={(e) => setBody(e.target.value)}
       />

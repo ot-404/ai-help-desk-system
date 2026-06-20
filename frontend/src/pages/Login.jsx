@@ -6,8 +6,8 @@ import { C } from "../theme";
 function BigLogo() {
   return (
     <div style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-      <span style={{ background: C.gradient, color: "#fff", fontWeight: 800, borderRadius: 8, padding: "5px 11px", fontSize: 22 }}>HD</span>
-      <span style={{ color: C.text, fontWeight: 700, fontSize: 24 }}>Systems</span>
+      <span style={{ background: C.gradient, color: "#fff", fontWeight: 800, borderRadius: 8, padding: "5px 11px", fontSize: 22 }}>Ask</span>
+      <span style={{ color: C.text, fontWeight: 700, fontSize: 24 }}>ora</span>
     </div>
   );
 }
@@ -54,7 +54,7 @@ export default function Login() {
 
         <Link to="/forgot-password" style={s.forgot}>Forgot password?</Link>
 
-        <div style={s.divider}><span style={s.dividerText}>New to HD Systems?</span></div>
+        <div style={s.divider}><span style={s.dividerText}>New to Askora?</span></div>
 
         <Link to="/register" style={s.signupBtn}>Create an account</Link>
       </div>

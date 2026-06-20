@@ -44,5 +44,15 @@ with app.app_context():
     from app.models.kb_model import KnowledgeBase
     seed_kb_articles(db, KnowledgeBase)
 
+@app.cli.command("seed-web-knowledge")
+def seed_web_knowledge():
+    """Populate the KB with extensive web-sourced articles across all topics."""
+    from app.models.kb_model import KnowledgeBase
+    from app.utils.seed_web_knowledge import run_seed
+    with app.app_context():
+        added = run_seed(db, KnowledgeBase, app)
+    print(f"Web knowledge seed complete — {added} article(s) added.")
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

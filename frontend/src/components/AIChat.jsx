@@ -36,7 +36,7 @@ export default function AIChat() {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { role: "ai", text: "Hi! I'm the HD Systems AI. Ask me anything about tech, your account, or how to use this platform." },
+    { role: "ai", text: "Hi! I'm the Askora AI. Ask me anything — tech, education, health, or any topic you're curious about." },
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -104,7 +104,7 @@ export default function AIChat() {
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <div style={s.botAvatar}><BotIcon size={16} /></div>
               <div>
-                <div style={s.botName}>HDS Bot</div>
+                <div style={s.botName}>Askora Bot</div>
                 <div style={s.botSub}>AI · Always online</div>
               </div>
             </div>

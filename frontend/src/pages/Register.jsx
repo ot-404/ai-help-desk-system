@@ -48,7 +48,7 @@ export default function Register() {
       <div style={s.card}>
         <div style={s.logoRow}><BigLogo /></div>
         <h1 style={s.title}>Sign up</h1>
-        <p style={s.legal}>Join HD Systems — the tech community for programmers, DevOps, security, and data pros.</p>
+        <p style={s.legal}>Join Askora — a knowledge community for curious minds at every stage of life.</p>
         <div style={s.sep} />
 
         <form onSubmit={handleSubmit} style={s.form}>

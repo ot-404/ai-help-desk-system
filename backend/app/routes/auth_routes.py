@@ -49,7 +49,9 @@ def register():
         return jsonify(error="name, email and password are required"), 400
     if User.query.filter_by(email=data["email"]).first():
         return jsonify(error="email already registered"), 409
-    user = User(name=data["name"], email=data["email"], role="user")
+    allowed_roles = {"user", "agent"}
+    role = data.get("role", "user") if data.get("role") in allowed_roles else "user"
+    user = User(name=data["name"], email=data["email"], role=role)
     user.set_password(data["password"])
     db.session.add(user)
     db.session.commit()
@@ -81,11 +83,11 @@ def forgot_password():
         link = f"{_reset_base_url()}/reset-password?token={token}"
         body = (
             f"Hi {user.name},\n\n"
-            "We received a request to reset your HD Systems password.\n"
+            "We received a request to reset your Askora password.\n"
             f"Click the link below to choose a new password (valid for 1 hour):\n\n{link}\n\n"
             "If you didn't request this, you can safely ignore this email."
         )
-        sent = send_email(user.email, "Reset your HD Systems password", body)
+        sent = send_email(user.email, "Reset your Askora password", body)
         current_app.logger.info("Password reset link for %s: %s", user.email, link)
         # Dev/demo fallback: if email isn't configured, return the link so the
         # flow is usable. Once SMTP is set, the link is emailed and never exposed.

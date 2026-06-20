@@ -64,6 +64,15 @@ def create_app(config_object="app.config.Config"):
     def health():
         return jsonify(status="ok", service="ai-help-desk")
 
+    @app.errorhandler(Exception)
+    def handle_exception(e):
+        import traceback
+        from werkzeug.exceptions import HTTPException
+        if isinstance(e, HTTPException):
+            return jsonify(error=e.description), e.code
+        app.logger.error(traceback.format_exc())
+        return jsonify(error="An unexpected server error occurred."), 500
+
     # Serve React SPA for all non-API routes (production only)
     if os.path.isdir(FRONTEND_DIST):
         @app.route("/", defaults={"path": ""})

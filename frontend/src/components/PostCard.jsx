@@ -19,7 +19,7 @@ export default function PostCard({ article, onVoteSuccess }) {
   const answers = article.answer_count || 0;
   const tags = tagsFor(article);
   const isAnon = !!article.is_anonymous;
-  const author = isAnon ? "u/anonymous" : (article.author || article.user_name || "HD Systems");
+  const author = isAnon ? "u/anonymous" : (article.author || article.user_name || "Askora");
   const link = `/question/${article.id}`;
   const type = deriveType(article);
   const badge = TYPE_BADGE[type] || TYPE_BADGE.Question;

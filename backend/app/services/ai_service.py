@@ -12,12 +12,16 @@ from flask import current_app
 from app import db
 from app.models.ai_logs_model import AILog
 from app.services.rag_service import retrieve_context
+from app.services.web_search_service import web_search
 
 SYSTEM_PROMPT = (
-    "You are a helpful, accurate support assistant for a help desk. "
-    "Answer using ONLY the provided knowledge base context. If the answer "
-    "is not in the context, say you are not sure and suggest escalation to "
-    "a human agent. Be concise and friendly."
+    "You are a knowledgeable assistant integrated into a help desk. "
+    "You are given context from a knowledge base and live web search results. "
+    "Use the context when it is relevant. If the context does not cover the question, "
+    "answer directly from your own knowledge — you are allowed and expected to do this. "
+    "Never refuse to answer or say you don't know simply because the context is missing. "
+    "If a source URL is provided in the context and you use it, cite it. "
+    "Be accurate, concise, and friendly."
 )
 
 _FALLBACK = (
@@ -51,19 +55,28 @@ def _call_anthropic(messages, api_key, model):
 
 def _call_openai(messages, api_key, model, base_url="https://api.openai.com/v1"):
     """Works with OpenAI or any OpenAI-compatible provider (Groq, OpenRouter, …)."""
-    resp = requests.post(
-        f"{base_url.rstrip('/')}/chat/completions",
-        headers={
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-        },
-        json={
-            "model": model,
-            "messages": messages,
-            "temperature": 0.3,
-        },
-        timeout=30,
-    )
+    import time
+    for attempt in range(4):
+        resp = requests.post(
+            f"{base_url.rstrip('/')}/chat/completions",
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "model": model,
+                "messages": messages,
+                "temperature": 0.3,
+            },
+            timeout=30,
+        )
+        if resp.status_code == 429:
+            wait = 10 * (attempt + 1)  # 10s, 20s, 30s, 40s
+            current_app.logger.warning("Rate limited (429), retrying in %ss…", wait)
+            time.sleep(wait)
+            continue
+        resp.raise_for_status()
+        return resp.json()["choices"][0]["message"]["content"]
     resp.raise_for_status()
     return resp.json()["choices"][0]["message"]["content"]
 
@@ -124,36 +137,67 @@ def _call_llm_json(system_text, user_text, fallback):
         return fallback, model
 
 
+def is_it_related(question):
+    """Return True if the question is IT / tech support related."""
+    system = (
+        "You classify user questions. Respond with valid JSON only — no extra text."
+    )
+    user = f"""Is this question related to IT, technology, software, hardware, networking,
+accounts, passwords, billing, or technical support?
+
+Question: {question}
+
+Return JSON: {{"it_related": true}} or {{"it_related": false}}"""
+    data, model = _call_llm_json(system, user, {"it_related": True})
+    if model == "unavailable":
+        return True  # default to storing if classifier is unavailable
+    return bool(data.get("it_related", True))
+
+
 def build_prompt(question, context_chunks):
-    context = "\n\n".join(f"- {c}" for c in context_chunks) or "(no context found)"
+    if context_chunks:
+        context_block = "Context:\n" + "\n\n".join(f"- {c}" for c in context_chunks) + "\n\n"
+    else:
+        context_block = ""
     return [
         {"role": "system", "content": SYSTEM_PROMPT},
         {
             "role": "user",
-            "content": f"Knowledge base context:\n{context}\n\nUser question:\n{question}",
+            "content": f"{context_block}Question:\n{question}",
         },
     ]
 
 
 def generate_response(question, ticket_id=None, top_k=4):
-    """Full RAG answer flow with logging."""
-    chunks   = retrieve_context(question, top_k=top_k)
-    messages = build_prompt(question, chunks)
+    """Answer using KB + live web search. Logs only IT-related questions."""
+    it_related = is_it_related(question)
+
+    kb_chunks = retrieve_context(question, top_k=top_k)
+    web_chunks = web_search(question, max_results=4)
+    all_chunks = kb_chunks + web_chunks
+
+    messages = build_prompt(question, all_chunks)
     answer, model = _call_llm(messages)
 
-    log = AILog(
-        ticket_id=ticket_id,
-        prompt=messages[-1]["content"],
-        response=answer,
-        model_used=model,
-    )
-    db.session.add(log)
-    try:
-        db.session.commit()
-    except Exception:
-        db.session.rollback()
+    if it_related:
+        log = AILog(
+            ticket_id=ticket_id,
+            prompt=messages[-1]["content"],
+            response=answer,
+            model_used=model,
+        )
+        db.session.add(log)
+        try:
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
 
-    return {"answer": answer, "model": model, "context_used": chunks}
+    return {
+        "answer": answer,
+        "model": model,
+        "context_used": all_chunks,
+        "it_related": it_related,
+    }
 
 
 def generate_kb_article(question, answer):

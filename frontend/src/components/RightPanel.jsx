@@ -70,9 +70,9 @@ export default function RightPanel() {
       </div>
 
       <div style={s.card}>
-        <div style={s.title}>About HD Systems</div>
+        <div style={s.title}>About Askora</div>
         <div style={s.about}>
-          HD Systems is a community-driven help desk where you can ask questions,
+          Askora is a community-driven knowledge platform where you can ask questions,
           search the knowledge base, and get instant answers from our AI assistant.
         </div>
         <div style={s.statRow}>

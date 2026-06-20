@@ -20,8 +20,8 @@ export default function NavBar() {
 
   const Logo = (
     <Link to="/" style={s.logo}>
-      <span style={s.logoBadge}>HD</span>
-      {!isMobile && <span style={s.logoText}>Systems</span>}
+      <span style={s.logoBadge}>Ask</span>
+      {!isMobile && <span style={s.logoText}>ora</span>}
     </Link>
   );
 
@@ -34,7 +34,7 @@ export default function NavBar() {
           <span style={s.searchIcon}>
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={C.light} strokeWidth="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
           </span>
-          <input style={s.searchInput} placeholder="Search HD Systems" value={q} onChange={(e) => setQ(e.target.value)} />
+          <input style={s.searchInput} placeholder="Search anything…" value={q} onChange={(e) => setQ(e.target.value)} />
         </form>
       )}
 
@@ -65,7 +65,7 @@ export default function NavBar() {
 
       {isMobile && searchOpen && (
         <form onSubmit={submit} style={s.mobileSearch}>
-          <input autoFocus style={s.mobileInput} placeholder="Search HD Systems" value={q} onChange={(e) => setQ(e.target.value)} />
+          <input autoFocus style={s.mobileInput} placeholder="Search anything…" value={q} onChange={(e) => setQ(e.target.value)} />
           <button type="button" style={s.iconBtn} onClick={() => setSearchOpen(false)} aria-label="Close">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.navText} strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
           </button>

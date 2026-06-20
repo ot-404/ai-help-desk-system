@@ -70,7 +70,7 @@ export default function InstallPrompt() {
       <div style={s.left}>
         <img src="/icon-192.png" alt="" width="34" height="34" style={s.icon} />
         <div style={s.text}>
-          <div style={s.title}>Install HD Systems</div>
+          <div style={s.title}>Install Askora</div>
           <div style={s.sub}>
             {iosHint
               ? "Tap the Share icon, then “Add to Home Screen.”"

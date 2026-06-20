@@ -17,7 +17,7 @@ def send_email(to_email, subject, body_text):
     cfg = current_app.config
     msg = MIMEText(body_text, "plain", "utf-8")
     msg["Subject"] = subject
-    msg["From"] = formataddr(("HD Systems", cfg["SMTP_FROM"]))
+    msg["From"] = formataddr(("Askora", cfg["SMTP_FROM"]))
     msg["To"] = to_email
     try:
         with smtplib.SMTP(cfg["SMTP_HOST"], cfg["SMTP_PORT"], timeout=20) as server:

@@ -42,8 +42,8 @@ function RightSummary() {
     <div style={{ width: 300, flexShrink: 0 }}>
       {/* About card */}
       <div style={{ ...card, padding: 16 }}>
-        <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 6, color: C.text }}>HD Systems</div>
-        <div style={{ fontSize: 13.5, color: C.muted, marginBottom: 14, lineHeight: 1.6 }}>The tech knowledge hub — ask questions, share answers, and learn together.</div>
+        <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 6, color: C.text }}>Askora</div>
+        <div style={{ fontSize: 13.5, color: C.muted, marginBottom: 14, lineHeight: 1.6 }}>Your knowledge hub for everything — ask any question, get instant AI answers, and connect with others.</div>
         <Link to="/new-question" style={{ display: "block", textAlign: "center", background: C.gradient, color: "#fff", borderRadius: 10, padding: "9px 0", textDecoration: "none", fontWeight: 600, fontSize: 14, marginBottom: 8 }}>Create Post</Link>
         <Link to="/ask" style={{ display: "block", textAlign: "center", border: `1px solid ${C.border}`, color: C.text, borderRadius: 10, padding: "9px 0", textDecoration: "none", fontWeight: 600, fontSize: 14 }}>Ask AI</Link>
       </div>
@@ -51,7 +51,7 @@ function RightSummary() {
       {/* Community Rules card */}
       <div style={{ ...card, padding: 16 }}>
         <div style={{ fontWeight: 700, fontSize: 13, color: C.muted, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 10 }}>Community Guidelines</div>
-        {["Be respectful and professional","Stay on-topic (tech, programming, IT)","No spam or low-value self-promotion","Share knowledge, not just opinions","Credit sources and original authors"].map((r, i, arr) => (
+        {["Be respectful and kind to everyone","All topics welcome — tech, education, health, life and more","No spam or misleading content","Share knowledge and personal experience","Credit sources and original authors"].map((r, i, arr) => (
           <div key={i} style={{ display: "flex", gap: 8, fontSize: 13.5, padding: "7px 0", borderBottom: i < arr.length - 1 ? `1px solid ${C.divider}` : "none", color: C.text, lineHeight: 1.45 }}>
             <span style={{ fontWeight: 700, color: C.primary, flexShrink: 0 }}>{i+1}</span>{r}
           </div>
@@ -62,7 +62,7 @@ function RightSummary() {
       <div style={{ ...card, padding: 16, marginBottom: 0 }}>
         <div style={{ fontWeight: 700, fontSize: 13, color: C.muted, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 10 }}>Popular Tags</div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
-          {["javascript","python","devops","kubernetes","security","rust","react","systemdesign","linux","cloud"].map(t => (
+          {["mathematics","health","history","science","english","cooking","finance","geography","careers","fitness","music","law"].map(t => (
             <Link key={t} to={`/faq?topic=${encodeURIComponent(t)}`} style={{ background: C.tag, color: C.tagText, border: `1px solid ${C.tagBorder}`, borderRadius: 6, padding: "3px 9px", fontSize: 12, fontWeight: 500, cursor: "pointer", textDecoration: "none" }}>#{t}</Link>
           ))}
         </div>

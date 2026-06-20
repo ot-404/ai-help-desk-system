@@ -1,4 +1,4 @@
-"""
+﻿"""
 Seed the Knowledge Base with popular help desk topics, Q&A, and guides.
 Run via:  flask --app run seed-kb
 """
@@ -1085,6 +1085,301 @@ Business is designed for teams that:
 Go to **Account Settings → Billing → Upgrade Plan** and choose your plan. You can upgrade or downgrade at any time — changes take effect on your next billing cycle (downgrades) or immediately (upgrades).""",
     },
 
+    # ── SITE FAQ ──────────────────────────────────────────────────────────────
+
+    {
+        "title": "What is Askora?",
+        "category": "FAQ",
+        "tags": "Askora,about,what is,overview,help desk",
+        "content": """Askora is an AI-powered help desk platform designed to give everyone fast, accurate answers to their questions — whether they are related to technology, education, health, history, science, or everyday life.
+
+**What makes Askora different?**
+Unlike traditional help desks that only handle IT support, Askora is built for everyone. Whether you are a student needing help with maths homework, a professional looking for technical guidance, or someone with a general question about the world, Askora can help.
+
+**How does it work?**
+When you ask a question, our AI searches a vast knowledge base and the web to find the most accurate, up-to-date answer possible. If the AI cannot fully resolve your issue, you can submit a support ticket and a human agent will assist you personally.
+
+**Who is it for?**
+Askora is for anyone — students, professionals, business owners, or curious individuals. You do not need to be tech-savvy to use it. Simply sign up, ask your question, and get an answer instantly.
+
+**Key features:**
+- AI-powered instant answers to any question
+- Submit support tickets for personalised human help
+- Knowledge base covering hundreds of topics
+- Role-based access for users, agents, and admins
+- Fully accessible from any device""",
+    },
+
+    {
+        "title": "What can I use Askora for?",
+        "category": "FAQ",
+        "tags": "use cases,features,what can i do,capabilities",
+        "content": """Askora is a versatile platform you can use for a wide range of tasks and questions.
+
+**Getting instant answers**
+Ask the AI assistant any question — from technical IT problems to school subjects, health questions, history, science, cooking, sports, and more. The AI searches the knowledge base and the internet to give you a comprehensive answer immediately.
+
+**Submitting support tickets**
+If your question requires personalised attention or the AI cannot fully resolve your issue, you can submit a support ticket. A human agent will review it and respond directly to you. You can track the status of your ticket at any time.
+
+**Browsing the knowledge base**
+Explore hundreds of pre-written articles across topics including IT, mathematics, English, geography, history, science, health, business, law, and more. Use the search feature to find articles relevant to your needs.
+
+**Escalating complex issues**
+For issues that require human expertise — such as account problems, billing queries, or complex technical faults — our support agents are available to assist you directly via the ticketing system.
+
+**As a student or learner**
+Use Askora to get help with any school or university subject. Ask about quadratic equations, essay writing techniques, historical events, scientific concepts, or any topic you are studying.
+
+**As a business or professional**
+Use Askora to get technical guidance, understand business concepts, resolve IT issues, or get answers to professional questions quickly without waiting for a specialist.""",
+    },
+
+    {
+        "title": "How do I ask the AI a question?",
+        "category": "FAQ",
+        "tags": "ai assistant,ask question,how to use,ai help",
+        "content": """Asking the AI a question on Askora is simple and works for any topic.
+
+**Steps to ask the AI:**
+1. Log in to your Askora account.
+2. Navigate to the **AI Assistant** section from the main menu or dashboard.
+3. Type your question in the text box — be as specific as possible for the best answer.
+4. Press **Enter** or click **Ask**.
+5. The AI will search the knowledge base and the web, then provide a detailed answer within seconds.
+
+**Tips for getting the best answers:**
+- Be specific: Instead of "help with maths", ask "How do I solve a quadratic equation using the quadratic formula?"
+- Include context: "I am a GCSE student trying to understand the causes of World War One."
+- Ask follow-up questions: If the answer is not complete, ask for more detail on a specific part.
+- Ask anything: The AI is not limited to IT questions. Ask about history, science, cooking, sports, law, and more.
+
+**What happens with your question?**
+If your question is IT or support-related, it is saved in the system to help improve future answers. Non-IT questions are answered but not stored, protecting your privacy.
+
+**What if the AI doesn't know the answer?**
+If the AI cannot find a satisfactory answer, it will let you know and suggest submitting a support ticket, where a human agent can assist you personally.""",
+    },
+
+    {
+        "title": "How do I submit a support ticket?",
+        "category": "FAQ",
+        "tags": "ticket,submit,support,help,how to",
+        "content": """A support ticket lets you get personalised help from a human agent when the AI assistant cannot fully resolve your issue.
+
+**How to submit a ticket:**
+1. Log in to your Askora account.
+2. Click **Submit a Ticket** or **New Ticket** from the dashboard or navigation menu.
+3. Enter a clear subject line describing your issue (e.g. "Cannot log in to my account" or "Need help understanding calculus").
+4. In the description, provide as much detail as possible about your question or problem.
+5. Select a priority level (Low, Medium, High, or Urgent).
+6. Click **Submit**.
+
+**What happens after you submit?**
+- Your ticket is immediately visible to the support team.
+- An agent will be assigned to your ticket and will respond as soon as possible.
+- You will receive updates directly in your ticket thread.
+- You can view the status of your ticket (Open, Pending, Resolved, Closed) from your dashboard.
+
+**Tips for a good ticket:**
+- Write a descriptive subject — this helps agents prioritise and respond faster.
+- Include any relevant details: error messages, steps you have already tried, screenshots if applicable.
+- Choose the correct priority: use Urgent only for critical issues that are blocking you completely.
+
+**Can I add messages to my ticket?**
+Yes — once your ticket is open, you can add follow-up messages at any time. Agents can also reply directly in the ticket thread, creating a full conversation history.""",
+    },
+
+    {
+        "title": "What is the difference between a User, Agent, and Admin on Askora?",
+        "category": "FAQ",
+        "tags": "roles,user,agent,admin,permissions,account types",
+        "content": """Askora has three account roles, each with different levels of access and responsibility.
+
+**User**
+A standard user account is for anyone who wants to ask questions, get AI-powered answers, and submit support tickets. Users can:
+- Ask the AI assistant any question
+- Submit, view, and manage their own support tickets
+- Browse and search the knowledge base
+- Rate responses and provide feedback
+
+**Agent**
+An agent account is for support staff who handle tickets submitted by users. Agents can do everything a user can, plus:
+- View and manage all support tickets across the system
+- Reply to and resolve user tickets
+- See ticket history and conversation threads
+- Access the agent dashboard with ticket statistics
+- View AI-generated ticket summaries and suggested resolutions
+
+**Admin**
+An admin account has full control over the platform. Admins can do everything agents can, plus:
+- Manage all user accounts (view, edit, suspend)
+- Access the admin dashboard with site-wide analytics
+- Manage and edit knowledge base articles
+- View AI usage logs and system activity
+- Oversee all tickets and agent activity
+
+**How do I become an agent or admin?**
+When registering, you can select your role as User or Agent. Admin accounts are created and managed by existing admins. If you need a role change, contact your platform administrator.""",
+    },
+
+    {
+        "title": "How does the AI on Askora work?",
+        "category": "FAQ",
+        "tags": "ai,how it works,technology,rag,knowledge base",
+        "content": """The Askora AI assistant uses advanced technology to give you accurate, helpful answers to any question.
+
+**RAG — Retrieval-Augmented Generation**
+Our AI uses a technique called RAG (Retrieval-Augmented Generation). When you ask a question, the system first searches the Askora knowledge base for relevant articles. It then combines those articles with a live web search to gather the most current information. Finally, a large language model (LLM) uses all of that context to generate a clear, accurate, natural-language answer.
+
+**Web Search Integration**
+Unlike a basic chatbot, the Askora AI searches the internet in real time. This means answers are not limited to what was pre-programmed — the AI can answer questions about recent events, niche topics, and anything else you might ask.
+
+**What topics can the AI answer?**
+The AI can answer questions on virtually any topic: IT and technology, mathematics, English, science, history, geography, health, law, business, cooking, sports, arts, music, religion, philosophy, and much more. There is no restriction on topic.
+
+**Is the AI always right?**
+The AI is highly accurate but not perfect. For critical decisions — medical, legal, or financial — always verify with a qualified professional. If you are unsure about an answer, submit a support ticket and a human agent will verify the information for you.
+
+**Privacy**
+IT-related questions are logged to help improve the system. Non-IT questions (such as general knowledge, school subjects, or personal queries) are answered but not stored, protecting your privacy.""",
+    },
+
+    {
+        "title": "How do I track the status of my support ticket?",
+        "category": "FAQ",
+        "tags": "ticket status,track,open,pending,resolved,closed",
+        "content": """You can check the status of your support ticket at any time from your Askora dashboard.
+
+**Ticket statuses explained:**
+- **Open** — Your ticket has been received and is waiting for an agent to pick it up.
+- **Pending** — An agent is actively working on your ticket or is waiting for additional information from you.
+- **Resolved** — The agent has provided a solution. Please review it and confirm it has fixed your issue.
+- **Closed** — The ticket has been closed, either because the issue was resolved or it was inactive for an extended period.
+
+**How to view your tickets:**
+1. Log in to your account.
+2. Go to **My Tickets** or **Dashboard**.
+3. You will see all your tickets listed with their current status, subject, and last update.
+4. Click on any ticket to view the full conversation thread.
+
+**Can I reopen a closed ticket?**
+If your issue returns after a ticket is closed, submit a new ticket. Reference your previous ticket number in the description so the agent has full context.
+
+**How long does it take to get a response?**
+Response times depend on priority:
+- Urgent: as fast as possible
+- High: within a few hours
+- Medium: within 24 hours
+- Low: within 48 hours""",
+    },
+
+    {
+        "title": "Can I use Askora for school or university work?",
+        "category": "FAQ",
+        "tags": "school,university,students,education,learning,homework",
+        "content": """Yes — Askora is designed for everyone, including students at all levels of education.
+
+**What subjects can I get help with?**
+Askora covers a huge range of academic subjects including:
+- **Mathematics**: algebra, calculus, statistics, geometry, trigonometry, and more
+- **English**: grammar, essay writing, literature analysis (Shakespeare, Orwell, Fitzgerald, etc.), poetry
+- **Sciences**: physics, chemistry, biology, and environmental science
+- **History**: world events, wars, civilisations, political movements
+- **Geography**: physical geography, human geography, countries and capitals, climate
+- **Computer Science**: algorithms, programming, data structures, networks
+- **Languages**: English grammar, Spanish, French, and more
+- **Religious Studies, Philosophy, Economics, Business, and more**
+
+**How to use Askora for studying:**
+- Ask specific questions: "What is the quadratic formula and how do I use it?"
+- Ask for explanations: "Can you explain the causes of World War One in simple terms?"
+- Ask for examples: "Give me an example of a metaphor and a simile."
+- Ask for step-by-step help: "Walk me through how to differentiate x squared."
+
+**Is this cheating?**
+Askora is an educational resource, like a textbook or tutor. Use it to understand concepts and learn, not to copy answers directly into your work. Always write your own responses in your own words after using Askora to understand a topic.""",
+    },
+
+    {
+        "title": "How do I search the knowledge base?",
+        "category": "FAQ",
+        "tags": "knowledge base,search,articles,find,browse",
+        "content": """The Askora knowledge base contains hundreds of articles on a wide range of topics. Here is how to find what you need.
+
+**Using the search bar**
+The fastest way to find information is to use the search bar in the knowledge base section. Type keywords related to your topic — for example, "quadratic equation", "World War One", or "reset password" — and the system will show you the most relevant articles.
+
+**Browsing by category**
+You can also browse articles by category. Categories include:
+- FAQ, Getting Started, Password & Login, Account, Billing
+- IT & Networking, Security, Hardware, Software, Cloud
+- Mathematics, English, Science, History, Geography
+- Health, Finance, Law, Psychology, Arts, Music, Sports
+- And many more
+
+**What if I can't find an article?**
+If there is no article covering your topic, ask the AI assistant directly. The AI can answer questions on any topic even if there is no pre-written article about it. Your question may also trigger the creation of a new knowledge base article to help future users.
+
+**Can I suggest a new article?**
+Yes — when submitting a support ticket, mention the topic you would like to see covered and our team will consider adding it to the knowledge base.""",
+    },
+
+    {
+        "title": "Is Askora free to use?",
+        "category": "FAQ",
+        "tags": "free,cost,pricing,paid,subscription",
+        "content": """Askora offers access to its AI assistant and knowledge base for registered users.
+
+**What is free?**
+- Creating an account
+- Asking the AI assistant questions on any topic
+- Browsing and searching the knowledge base
+- Submitting support tickets
+- Viewing your ticket history
+
+**Do I need to pay?**
+Basic access to Askora is available to all registered users. For advanced features or higher-priority support, premium plans may be available depending on your organisation's setup.
+
+**How do I sign up?**
+Simply click **Sign Up** on the homepage, enter your name, email, and password, and choose your role (User or Agent). Your account is created instantly and you can start using the platform right away.
+
+**Is there a limit on questions?**
+Standard accounts can ask questions and submit tickets freely. If you encounter any limits, contact support and an admin can review your account.""",
+    },
+
+    {
+        "title": "How do I update my profile or account settings?",
+        "category": "FAQ",
+        "tags": "profile,settings,update,account,name,email",
+        "content": """You can update your Askora profile and account settings at any time.
+
+**What can I update?**
+- Display name
+- Email address
+- Password
+- Notification preferences
+
+**How to update your profile:**
+1. Log in to your account.
+2. Click on your profile icon or name in the top navigation bar.
+3. Select **Profile** or **Account Settings**.
+4. Make your changes and click **Save**.
+
+**Changing your password:**
+1. Go to Account Settings.
+2. Click **Change Password**.
+3. Enter your current password, then your new password twice.
+4. Click **Update Password**.
+
+If you have forgotten your current password, use the **Forgot Password** link on the login page instead.
+
+**Changing your email address:**
+Updating your email may require re-verification. After saving the new email, check your inbox for a verification link and click it to confirm the change.
+
+**Deleting your account:**
+If you wish to delete your account, submit a support ticket requesting account deletion. An admin will process your request and permanently remove your data in accordance with our privacy policy.""",
+    },
 ]
 
 
@@ -1105,3 +1400,4 @@ def run_seed(db, KnowledgeBase):
         added += 1
     db.session.commit()
     return added
+

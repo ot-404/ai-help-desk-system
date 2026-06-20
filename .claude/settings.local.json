@@ -15,7 +15,13 @@
       "Bash(git add *)",
       "Bash(npm run *)",
       "Bash(git commit -m ' *)",
-      "WebSearch"
+      "WebSearch",
+      "PowerShell($env:PATH -split \";\" | Where-Object { $_ -match \"python|conda|pyenv|venv|env\" } | Select-Object -First 10)",
+      "PowerShell(cd \"C:\\\\Users\\\\ripp3\\\\OneDrive\\\\Desktop\\\\AI_HDS\\\\frontend\"; npm run build 2>&1 | Select-Object -Last 6; Write-Output \"---SW in dist---\"; \\(Get-Content dist\\\\sw.js -TotalCount 3\\))",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "Bash(python -c \"from app import create_app; app = create_app\\(\\); print\\('OK'\\)\")",
+      "PowerShell(Get-Process | Where-Object { $_.ProcessName -match \"python|flask|gunicorn\" } | Format-Table Id, ProcessName, CPU -AutoSize)",
+      "Bash(python -c ' *)"
     ]
   }
 }

@@ -60,7 +60,7 @@ export default function Home({ heading }) {
 
   return (
     <div>
-      <h1 style={s.heading}>{heading || "HD Systems Feed"}</h1>
+      <h1 style={s.heading}>{heading || "Community Feed"}</h1>
 
       <PostComposer onCreated={onCreated} />
 
@@ -82,7 +82,7 @@ export default function Home({ heading }) {
       {!loading && view.length === 0 && (
         <div style={s.empty}>
           <div style={s.emptyTitle}>No posts yet</div>
-          <div style={s.emptySub}>Be the first to share something with the community.</div>
+          <div style={s.emptySub}>Be the first to ask a question or share something — any topic welcome.</div>
           <Link to="/new-question" style={s.emptyBtn}>Create the first post</Link>
         </div>
       )}

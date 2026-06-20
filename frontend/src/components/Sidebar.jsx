@@ -153,7 +153,7 @@ export default function Sidebar() {
           </>
         )}
       </nav>
-      <div style={st.footer}>HD Systems · Tech Community</div>
+      <div style={st.footer}>Askora · Knowledge Community</div>
     </aside>
   );
 }

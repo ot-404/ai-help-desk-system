@@ -15,7 +15,7 @@ export default function KnowledgeBase() {
   async function load(q = "") {
     const url = q ? `/kb/search?q=${encodeURIComponent(q)}` : "/kb/";
     const { data } = await api.get(url);
-    setArticles(Array.isArray(data) ? data : data.results ?? []);
+    setArticles(Array.isArray(data) ? data : (data.results ?? []));
   }
 
   useEffect(() => { load(); }, []);
