@@ -10,20 +10,21 @@ export default class ErrorBoundary extends Component {
     return { error };
   }
 
+  componentDidCatch(error, info) {
+    console.error("Lumo crashed:", error, info);
+  }
+
   render() {
     if (this.state.error) {
       return (
-        <div style={{ padding: 40, fontFamily: "sans-serif", maxWidth: 600, margin: "80px auto" }}>
-          <h2 style={{ color: "#c53030" }}>Something went wrong</h2>
-          <pre style={{
-            background: "#fff5f5", border: "1px solid #fed7d7",
-            borderRadius: 8, padding: 16, fontSize: 13,
-            whiteSpace: "pre-wrap", wordBreak: "break-word", color: "#742a2a",
-          }}>
-            {this.state.error?.message}
-            {"\n\n"}
-            {this.state.error?.stack}
-          </pre>
+        <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-canvas px-6 text-center">
+          <h1 className="text-xl font-semibold text-ink">Something went wrong</h1>
+          <p className="max-w-sm text-sm text-muted">
+            An unexpected error occurred. Reloading usually fixes it.
+          </p>
+          <button onClick={() => window.location.reload()} className="btn-primary">
+            Reload Lumo
+          </button>
         </div>
       );
     }

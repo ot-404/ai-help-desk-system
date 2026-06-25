@@ -1,66 +1,75 @@
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --accent: #0e7490;
-  --bg: #f7f8fa;
-  --text: #1a1a1e;
-  --border: #e6e8eb;
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  html, body, #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-canvas text-ink font-sans antialiased;
+    margin: 0;
+  }
+  ::selection {
+    background: rgba(45, 212, 191, 0.25);
+  }
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #222A36; border-radius: 8px; border: 2px solid #0B0E14; }
+  ::-webkit-scrollbar-thumb:hover { background: #2C3644; }
+  input, textarea, button { font-family: inherit; }
 }
 
-html { scroll-behavior: smooth; }
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  font-size: 15px;
-  line-height: 1.55;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  /* Prevent text size inflation on mobile */
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
-  /* Smooth momentum scrolling on iOS */
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: none;
-}
-
-#root { min-height: 100vh; }
-
-a { color: var(--accent); text-decoration: none; }
-a:hover { text-decoration: underline; }
-
-button { font-family: inherit; cursor: pointer; }
-
-input, textarea, select {
-  font-family: inherit;
-  /* 16px minimum prevents iOS zoom on focus */
-  font-size: max(16px, 1em);
-  outline: none;
-}
-
-/* Subtle focus ring for keyboard users (accessibility) */
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-/* Give interactive controls a comfortable tap target on mobile,
-   WITHOUT forcing inline text links to become flex blocks. */
-@media (max-width: 768px) {
-  button, [role="button"] {
-    min-height: 40px;
+@layer components {
+  .card {
+    @apply bg-surface border border-line rounded-xl;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium
+           transition-colors duration-150 disabled:opacity-50 disabled:pointer-events-none select-none;
+  }
+  .btn-primary {
+    @apply btn bg-accent text-accent-ink hover:bg-accent-hover;
+  }
+  .btn-ghost {
+    @apply btn text-ink border border-line2 hover:bg-surface2;
+  }
+  .btn-subtle {
+    @apply btn text-muted hover:text-ink hover:bg-surface2;
+  }
+  .input {
+    @apply w-full bg-elevated border border-line rounded-lg px-3 py-2 text-sm text-ink
+           placeholder:text-faint outline-none transition
+           focus:border-accent/60 focus:ring-2 focus:ring-accent/15;
+  }
+  .label {
+    @apply block text-xs font-medium text-muted mb-1.5;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-md border border-line bg-surface2 px-2 py-0.5 text-xs text-muted;
+  }
+  .nav-item {
+    @apply flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted
+           transition-colors duration-150 hover:bg-surface2 hover:text-ink cursor-pointer;
+  }
+  .nav-item-active {
+    @apply bg-surface2 text-ink;
   }
 }
 
-/* Minimal scrollbars */
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #d4d7db; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #b9bdc2; }
-* { scrollbar-width: thin; scrollbar-color: #d4d7db transparent; }
-
-/* Safe area padding for notched phones (iPhone X+) */
-@supports (padding-bottom: env(safe-area-inset-bottom)) {
-  body { padding-bottom: env(safe-area-inset-bottom); }
+@layer utilities {
+  .skeleton {
+    background: linear-gradient(90deg, #131823 0%, #1A2030 50%, #131823 100%);
+    background-size: 800px 100%;
+    @apply animate-shimmer rounded;
+  }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 }

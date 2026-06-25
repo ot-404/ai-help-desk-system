@@ -1,19 +1,11 @@
-"""Auth/role helpers."""
-from functools import wraps
-from flask import jsonify
-from flask_jwt_extended import verify_jwt_in_request, get_jwt
+"""Auth helpers shared across routes."""
+from flask_jwt_extended import get_jwt_identity
+from app.models.user_model import User
 
 
-def role_required(*roles):
-    def decorator(fn):
-        @wraps(fn)
-        def wrapper(*args, **kwargs):
-            verify_jwt_in_request()
-            claims = get_jwt()
-            if claims.get("role") not in roles:
-                return jsonify(error="forbidden", required_roles=list(roles)), 403
-            return fn(*args, **kwargs)
-
-        return wrapper
-
-    return decorator
+def current_user():
+    """Return the User for the JWT identity, or None."""
+    uid = get_jwt_identity()
+    if uid is None:
+        return None
+    return User.query.get(int(uid))

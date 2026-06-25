@@ -1,69 +1,55 @@
-"""Seed demo data from seed_data.json (or built-in defaults)."""
-import json, os
+"""Seed helpers: a demo account and starter content for new users."""
+from datetime import date, timedelta
 from app import db
 from app.models.user_model import User
-from app.models.ticket_model import Ticket
-from app.models.message_model import Message
-from app.models.kb_model import KnowledgeBase
+from app.models.list_model import TaskList
+from app.models.task_model import Task
 
-# Look for seed_data.json one level above the backend folder
-_HERE = os.path.dirname(__file__)
-_SEED_FILE = os.path.join(_HERE, "..", "..", "..", "seed_data.json")
+DEMO_EMAIL = "demo@lumo.app"
+DEMO_PASSWORD = "demo123"
 
 
-def _load_config():
-    path = os.path.abspath(_SEED_FILE)
-    if os.path.isfile(path):
-        with open(path) as f:
-            return json.load(f)
-    return None
+def create_starter_content(user):
+    """Give a brand-new user a couple of lists and example tasks.
+
+    Caller is responsible for committing the session.
+    """
+    today = date.today()
+    work = TaskList(user_id=user.id, name="Work", color="#2DD4BF", icon="briefcase", position=0)
+    personal = TaskList(user_id=user.id, name="Personal", color="#A78BFA", icon="user", position=1)
+    db.session.add_all([work, personal])
+    db.session.flush()
+
+    samples = [
+        ("Welcome to Lumo — click the circle to complete me", None, "high", today, False),
+        ("Try the AI quick-add: type \"email Sam tomorrow 9am\"", None, "medium", today, False),
+        ("Plan the Q3 launch", work.id, "high", today + timedelta(days=2), True),
+        ("Review design mockups", work.id, "medium", today + timedelta(days=1), False),
+        ("Book dentist appointment", personal.id, "low", None, False),
+        ("Buy groceries for the week", personal.id, "none", today, False),
+    ]
+    parent_for_subtasks = None
+    for i, (title, list_id, prio, due, mk_subs) in enumerate(samples):
+        t = Task(user_id=user.id, title=title, list_id=list_id, priority=prio,
+                 due_date=due, position=i)
+        db.session.add(t)
+        if mk_subs:
+            db.session.flush()
+            parent_for_subtasks = t
+
+    if parent_for_subtasks:
+        for j, s in enumerate(["Define scope", "Draft timeline", "Brief the team"]):
+            db.session.add(Task(user_id=user.id, parent_id=parent_for_subtasks.id,
+                                title=s, position=j))
 
 
 def seed_demo_data():
-    if User.query.first():
-        return  # already seeded
-
-    cfg = _load_config() or {}
-
-    # ── Users ──────────────────────────────────────────────────────────────
-    user_map = {}
-    for u in cfg.get("users", [
-        {"name": "Admin",       "email": "ripp3r41@gmail.com", "password": "admin123", "role": "admin"},
-        {"name": "Agent Smith", "email": "agent@example.com", "password": "agent123", "role": "agent"},
-        {"name": "Jane Doe",    "email": "jane@example.com",  "password": "user123",  "role": "user"},
-    ]):
-        obj = User(name=u["name"], email=u["email"], role=u.get("role", "user"))
-        obj.set_password(u["password"])
-        db.session.add(obj)
-        db.session.flush()
-        user_map[u["email"]] = obj
-
-    # ── Knowledge Base ─────────────────────────────────────────────────────
-    for art in cfg.get("knowledge_base", []):
-        db.session.add(KnowledgeBase(
-            title=art["title"],
-            content=art["content"],
-            category=art.get("category", ""),
-            tags=art.get("tags", ""),
-        ))
-
-    # ── Sample Tickets ─────────────────────────────────────────────────────
-    admin_user = next((u for u in user_map.values() if u.role == "user"), None)
-    for td in cfg.get("sample_tickets", []):
-        owner = user_map.get(td.get("user_email", ""), admin_user)
-        if not owner:
-            continue
-        t = Ticket(
-            user_id=owner.id,
-            subject=td["subject"],
-            description=td["description"],
-            priority=td.get("priority", "medium"),
-            status=td.get("status", "open"),
-        )
-        db.session.add(t)
-        db.session.flush()
-        if td.get("message"):
-            db.session.add(Message(ticket_id=t.id, sender_id=owner.id, message=td["message"]))
-
+    """Idempotent: create the demo user with starter content if absent."""
+    if User.query.filter_by(email=DEMO_EMAIL).first():
+        return
+    user = User(name="Demo User", email=DEMO_EMAIL)
+    user.set_password(DEMO_PASSWORD)
+    db.session.add(user)
+    db.session.flush()
+    create_starter_content(user)
     db.session.commit()
-    print("Seeded from", "seed_data.json" if _load_config() else "built-in defaults")

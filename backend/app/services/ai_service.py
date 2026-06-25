@@ -1,379 +1,269 @@
-"""LLM integration + AI workflow.
+"""AI layer for Lumo.
 
-Calls OpenAI and Anthropic directly via HTTP (requests library) —
-no SDK dependencies, no version conflicts.
+Tries Anthropic (Claude) first, then any OpenAI-compatible endpoint, then a
+local heuristic mock — so the app is fully functional with zero API keys.
 
-Priority: ANTHROPIC_API_KEY → OPENAI_API_KEY → fallback message.
+Public helpers:
+  parse_task(text)            -> {"title","due_date","priority","notes","subtasks"}
+  breakdown_task(title, notes)-> {"subtasks": [...]}
+  plan_day(tasks)             -> {"message", "order": [task_id, ...]}
+  chat(messages, tasks)       -> {"reply"}
+Each returns a tuple of (result_dict, model_used).
 """
 import json
 import re
+from datetime import date, timedelta
+
 import requests
 from flask import current_app
-from app import db
-from app.models.ai_logs_model import AILog
-from app.services.rag_service import retrieve_context
-from app.services.web_search_service import web_search
 
-SYSTEM_PROMPT = (
-    "You are a knowledgeable assistant integrated into a help desk. "
-    "You are given context from a knowledge base and live web search results. "
-    "Use the context when it is relevant. If the context does not cover the question, "
-    "answer directly from your own knowledge — you are allowed and expected to do this. "
-    "Never refuse to answer or say you don't know simply because the context is missing. "
-    "If a source URL is provided in the context and you use it, cite it. "
-    "Be accurate, concise, and friendly."
-)
-
-_FALLBACK = (
-    "Our AI assistant is temporarily unavailable. A support agent has been "
-    "notified and will respond to your question shortly.",
-    "unavailable",
-)
+_TIMEOUT = 30
+_WEEKDAYS = ["monday", "tuesday", "wednesday", "thursday",
+             "friday", "saturday", "sunday"]
 
 
-def _call_anthropic(messages, api_key, model):
-    system = next((m["content"] for m in messages if m["role"] == "system"), "")
-    user_msgs = [m for m in messages if m["role"] != "system"]
-    resp = requests.post(
-        "https://api.anthropic.com/v1/messages",
-        headers={
-            "x-api-key": api_key,
-            "anthropic-version": "2023-06-01",
-            "content-type": "application/json",
-        },
-        json={
-            "model": model,
-            "max_tokens": 1024,
-            "system": system,
-            "messages": user_msgs,
-        },
-        timeout=30,
-    )
-    resp.raise_for_status()
-    return resp.json()["content"][0]["text"]
-
-
-def _call_openai(messages, api_key, model, base_url="https://api.openai.com/v1"):
-    """Works with OpenAI or any OpenAI-compatible provider (Groq, OpenRouter, …)."""
-    import time
-    for attempt in range(4):
-        resp = requests.post(
-            f"{base_url.rstrip('/')}/chat/completions",
-            headers={
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json",
-            },
-            json={
-                "model": model,
-                "messages": messages,
-                "temperature": 0.3,
-            },
-            timeout=30,
-        )
-        if resp.status_code == 429:
-            wait = 10 * (attempt + 1)  # 10s, 20s, 30s, 40s
-            current_app.logger.warning("Rate limited (429), retrying in %ss…", wait)
-            time.sleep(wait)
-            continue
-        resp.raise_for_status()
-        return resp.json()["choices"][0]["message"]["content"]
-    resp.raise_for_status()
-    return resp.json()["choices"][0]["message"]["content"]
-
-
-def _call_llm(messages):
-    """Return (text, model_name). Tries Anthropic → OpenAI → fallback."""
-    anthropic_key = current_app.config.get("ANTHROPIC_API_KEY", "")
-    openai_key    = current_app.config.get("OPENAI_API_KEY", "")
-    anthropic_model = current_app.config.get("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001")
-    openai_model    = current_app.config.get("OPENAI_MODEL", "gpt-4o-mini")
-    openai_base_url = current_app.config.get("OPENAI_BASE_URL", "https://api.openai.com/v1")
-
-    if anthropic_key:
-        try:
-            return _call_anthropic(messages, anthropic_key, anthropic_model), anthropic_model
-        except Exception as exc:
-            current_app.logger.error("Anthropic failed: %s", exc)
-
-    if openai_key:
-        try:
-            return _call_openai(messages, openai_key, openai_model, openai_base_url), openai_model
-        except Exception as exc:
-            current_app.logger.error("OpenAI-compatible call failed (%s): %s", openai_base_url, exc)
-
-    return _FALLBACK
-
-
-def _strip_json_fence(text):
-    """Remove ```json ... ``` or ``` ... ``` wrappers if present."""
-    text = text.strip()
-    if text.startswith("```"):
-        lines = text.split("\n")
-        start = 1 if lines[0].startswith("```") else 0
-        end = len(lines) - 1 if lines[-1].strip() == "```" else len(lines)
-        text = "\n".join(lines[start:end]).strip()
-    return text
-
-
-def _call_llm_json(system_text, user_text, fallback):
-    """Call LLM requesting JSON output, parse it. Returns (dict, model_name)."""
-    messages = [
-        {"role": "system", "content": system_text},
-        {"role": "user",   "content": user_text},
-    ]
-    raw, model = _call_llm(messages)
-    if model == "unavailable":
-        return fallback, model
+# --------------------------------------------------------------------------- #
+# Provider plumbing
+# --------------------------------------------------------------------------- #
+def _anthropic(system, messages, max_tokens):
+    key = current_app.config.get("ANTHROPIC_API_KEY")
+    if not key:
+        return None
+    model = current_app.config.get("ANTHROPIC_MODEL")
     try:
-        return json.loads(_strip_json_fence(raw)), model
-    except (json.JSONDecodeError, ValueError):
-        start = raw.find("{")
-        end   = raw.rfind("}") + 1
-        if start != -1 and end > start:
-            try:
-                return json.loads(raw[start:end]), model
-            except (json.JSONDecodeError, ValueError):
-                pass
-        return fallback, model
-
-
-def is_it_related(question):
-    """Return True if the question is IT / tech support related."""
-    system = (
-        "You classify user questions. Respond with valid JSON only — no extra text."
-    )
-    user = f"""Is this question related to IT, technology, software, hardware, networking,
-accounts, passwords, billing, or technical support?
-
-Question: {question}
-
-Return JSON: {{"it_related": true}} or {{"it_related": false}}"""
-    data, model = _call_llm_json(system, user, {"it_related": True})
-    if model == "unavailable":
-        return True  # default to storing if classifier is unavailable
-    return bool(data.get("it_related", True))
-
-
-def build_prompt(question, context_chunks):
-    if context_chunks:
-        context_block = "Context:\n" + "\n\n".join(f"- {c}" for c in context_chunks) + "\n\n"
-    else:
-        context_block = ""
-    return [
-        {"role": "system", "content": SYSTEM_PROMPT},
-        {
-            "role": "user",
-            "content": f"{context_block}Question:\n{question}",
-        },
-    ]
-
-
-def generate_response(question, ticket_id=None, top_k=4):
-    """Answer using KB + live web search. Logs only IT-related questions."""
-    it_related = is_it_related(question)
-
-    kb_chunks = retrieve_context(question, top_k=top_k)
-    web_chunks = web_search(question, max_results=4)
-    all_chunks = kb_chunks + web_chunks
-
-    messages = build_prompt(question, all_chunks)
-    answer, model = _call_llm(messages)
-
-    if it_related:
-        log = AILog(
-            ticket_id=ticket_id,
-            prompt=messages[-1]["content"],
-            response=answer,
-            model_used=model,
+        r = requests.post(
+            "https://api.anthropic.com/v1/messages",
+            headers={
+                "x-api-key": key,
+                "anthropic-version": "2023-06-01",
+                "content-type": "application/json",
+            },
+            json={"model": model, "max_tokens": max_tokens,
+                  "system": system, "messages": messages},
+            timeout=_TIMEOUT,
         )
-        db.session.add(log)
+        r.raise_for_status()
+        return r.json()["content"][0]["text"], model
+    except Exception as e:  # noqa: BLE001
+        current_app.logger.warning("Anthropic call failed: %s", e)
+        return None
+
+
+def _openai(system, messages, max_tokens):
+    key = current_app.config.get("OPENAI_API_KEY")
+    if not key:
+        return None
+    base = current_app.config.get("OPENAI_BASE_URL")
+    model = current_app.config.get("OPENAI_MODEL")
+    try:
+        r = requests.post(
+            f"{base}/chat/completions",
+            headers={"Authorization": f"Bearer {key}",
+                     "Content-Type": "application/json"},
+            json={"model": model,
+                  "messages": [{"role": "system", "content": system}] + messages,
+                  "max_tokens": max_tokens, "temperature": 0.4},
+            timeout=_TIMEOUT,
+        )
+        r.raise_for_status()
+        return r.json()["choices"][0]["message"]["content"], model
+    except Exception as e:  # noqa: BLE001
+        current_app.logger.warning("OpenAI call failed: %s", e)
+        return None
+
+
+def _complete(system, messages, max_tokens=700):
+    """Return (text, model_used) or (None, 'mock') when no provider answers."""
+    return _anthropic(system, messages, max_tokens) \
+        or _openai(system, messages, max_tokens) \
+        or (None, "mock")
+
+
+def _extract_json(text):
+    """Pull the first JSON object/array out of an LLM response."""
+    if not text:
+        return None
+    fenced = re.search(r"```(?:json)?\s*(.+?)```", text, re.DOTALL)
+    if fenced:
+        text = fenced.group(1)
+    match = re.search(r"[\[{].*[\]}]", text, re.DOTALL)
+    if not match:
+        return None
+    try:
+        return json.loads(match.group(0))
+    except json.JSONDecodeError:
+        return None
+
+
+# --------------------------------------------------------------------------- #
+# Heuristic mock helpers (used when no LLM is configured)
+# --------------------------------------------------------------------------- #
+def _mock_parse(text):
+    raw = text.strip()
+    low = raw.lower()
+    today = date.today()
+    due = None
+    consumed = []
+
+    def take(pattern):
+        nonlocal low
+        m = re.search(pattern, low)
+        if m:
+            consumed.append(m.group(0))
+        return m
+
+    if take(r"\btomorrow\b"):
+        due = today + timedelta(days=1)
+    elif take(r"\btoday\b|\btonight\b"):
+        due = today
+    elif (m := take(r"\bin (\d+) days?\b")):
+        due = today + timedelta(days=int(m.group(1)))
+    elif take(r"\bnext week\b"):
+        due = today + timedelta(days=7)
+    else:
+        for i, wd in enumerate(_WEEKDAYS):
+            if take(rf"\b(?:next |on )?{wd}\b"):
+                ahead = (i - today.weekday()) % 7
+                due = today + timedelta(days=ahead or 7)
+                break
+    iso = re.search(r"\b(\d{4}-\d{2}-\d{2})\b", low)
+    if iso and not due:
         try:
-            db.session.commit()
-        except Exception:
-            db.session.rollback()
+            due = date.fromisoformat(iso.group(1))
+            consumed.append(iso.group(1))
+        except ValueError:
+            pass
+
+    priority = "none"
+    if re.search(r"\b(urgent|asap|important|high priority)\b|!!", low):
+        priority = "high"
+        consumed += re.findall(r"\b(urgent|asap|important|high priority)\b", low)
+    elif re.search(r"\b(low priority|whenever|someday)\b", low):
+        priority = "low"
+        consumed += re.findall(r"\b(low priority|whenever|someday)\b", low)
+
+    title = raw
+    for phrase in consumed:
+        title = re.sub(re.escape(phrase), "", title, flags=re.IGNORECASE)
+    title = re.sub(r"\b(by|on|at|due)\b\s*$", "", title.strip(), flags=re.IGNORECASE)
+    title = re.sub(r"\s{2,}", " ", title).strip(" ,.-!") or raw
+    title = title[0].upper() + title[1:] if title else raw
 
     return {
-        "answer": answer,
-        "model": model,
-        "context_used": all_chunks,
-        "it_related": it_related,
+        "title": title,
+        "due_date": due.isoformat() if due else None,
+        "priority": priority,
+        "notes": "",
+        "subtasks": [],
     }
 
 
-def generate_kb_article(question, answer):
+def _mock_breakdown(title):
+    base = title.rstrip(".!?")
+    return {"subtasks": [
+        f"Outline what '{base}' involves",
+        f"Gather everything needed for {base.lower()}",
+        f"Do the main work for {base.lower()}",
+        "Review and wrap up",
+    ]}
+
+
+# --------------------------------------------------------------------------- #
+# Public API
+# --------------------------------------------------------------------------- #
+def parse_task(text):
     system = (
-        "You are a technical writer creating knowledge base articles. "
-        "Respond with valid JSON only — no markdown fences, no extra text."
+        "You turn a short natural-language note into a single structured to-do. "
+        "Respond with ONLY a JSON object: "
+        '{"title": string, "due_date": "YYYY-MM-DD" or null, '
+        '"priority": "none"|"low"|"medium"|"high", "notes": string, '
+        '"subtasks": [string, ...]}. '
+        f"Today is {date.today().isoformat()}. Resolve relative dates "
+        "(today, tomorrow, next friday). Keep the title concise and imperative. "
+        "Only add subtasks if the note clearly implies multiple steps."
     )
-    user = f"""Create a knowledge base article from this question and answer.
-
-Question: {question}
-Answer: {answer}
-
-Return a JSON object with these exact keys:
-- "title": a clear, searchable article title (string)
-- "content": 2-3 paragraphs explaining the topic clearly (string)
-- "category": one of FAQ, Account, Billing, Technical, General (string)
-- "tags": 3-5 relevant keywords, comma-separated (string)"""
-
-    fallback = {
-        "title": question[:120],
-        "content": answer,
-        "category": "FAQ",
-        "tags": "ai-generated,faq",
-    }
-    data, _ = _call_llm_json(system, user, fallback)
-    data.setdefault("title",    question[:120])
-    data.setdefault("content",  answer)
-    data.setdefault("category", "FAQ")
-    tags = data.get("tags", "ai-generated")
-    if "ai-generated" not in tags:
-        tags += ",ai-generated"
-    data["tags"] = tags
-    return data
+    text_out, model = _complete(system, [{"role": "user", "content": text}], 500)
+    data = _extract_json(text_out) if text_out else None
+    if not isinstance(data, dict) or not data.get("title"):
+        return _mock_parse(text), "mock"
+    data.setdefault("due_date", None)
+    data.setdefault("priority", "none")
+    data.setdefault("notes", "")
+    subs = data.get("subtasks") or []
+    data["subtasks"] = [str(s) for s in subs if str(s).strip()][:8]
+    if data["priority"] not in ("none", "low", "medium", "high"):
+        data["priority"] = "none"
+    return data, model
 
 
-def generate_blog_post(question, answer):
+def breakdown_task(title, notes=""):
     system = (
-        "You are a friendly content writer for a help desk blog. "
-        "Respond with valid JSON only — no markdown fences, no extra text."
+        "Break the given task into 3-6 concrete, ordered subtasks. "
+        'Respond with ONLY JSON: {"subtasks": [string, ...]}. '
+        "Each subtask is a short imperative action."
     )
-    user = f"""Write an engaging blog post based on this question and answer.
-
-Question: {question}
-Answer: {answer}
-
-Return a JSON object with these exact keys:
-- "title": an engaging, friendly blog title (string)
-- "content": a full blog post using markdown (## headers). ~300 words (string)
-- "summary": a 1-2 sentence preview (string)"""
-
-    fallback = {
-        "title": f"Understanding: {question[:80]}",
-        "content": (
-            f"## Overview\n\n{answer}\n\n"
-            "## Why This Matters\n\nUnderstanding this topic helps you get the most out of our service.\n\n"
-            "## Need More Help?\n\nOur support team is always here for you."
-        ),
-        "summary": answer[:200],
-    }
-    data, _ = _call_llm_json(system, user, fallback)
-    data.setdefault("title",   f"Understanding: {question[:80]}")
-    data.setdefault("content", answer)
-    data.setdefault("summary", answer[:200])
-    return data
+    prompt = f"Task: {title}\nNotes: {notes}" if notes else f"Task: {title}"
+    text_out, model = _complete(system, [{"role": "user", "content": prompt}], 400)
+    data = _extract_json(text_out) if text_out else None
+    if not isinstance(data, dict) or not data.get("subtasks"):
+        return _mock_breakdown(title), "mock"
+    data["subtasks"] = [str(s).strip() for s in data["subtasks"] if str(s).strip()][:8]
+    return data, model
 
 
-def _normalize_tag(raw):
-    """lowercase, hyphenated, alnum-only slug; '' if nothing usable."""
-    t = str(raw).strip().lower().lstrip("#")
-    t = re.sub(r"\s+", "-", t)
-    t = re.sub(r"[^a-z0-9-]", "", t).strip("-")
-    return t[:30]
+def plan_day(tasks):
+    """tasks: list of dicts with id/title/priority/due_date. Returns plan."""
+    if not tasks:
+        return {"message": "You're all clear — nothing due. Add a task to get started.",
+                "order": []}, "mock"
 
-
-def extract_post_tags(subject, description, existing_tags=None, max_tags=3):
-    """Find a post's main focus and return topic tags, reusing existing tags
-    when they fit. Returns a list (primary tag first); empty if AI unavailable."""
-    existing = sorted(existing_tags or [])
-    existing_str = ", ".join(existing) if existing else "(none yet)"
+    listing = "\n".join(
+        f"- [{t['id']}] {t['title']} (priority: {t.get('priority','none')}, "
+        f"due: {t.get('due_date') or 'none'})" for t in tasks
+    )
     system = (
-        "You label technical community posts with concise topic tags. "
-        "Respond with valid JSON only — no markdown, no extra text."
+        "You are a focused productivity coach. Given today's tasks, suggest a "
+        "sensible order to tackle them and a one-paragraph motivating plan. "
+        'Respond with ONLY JSON: {"message": string, "order": [task_id, ...]}. '
+        "Order ids most-important-first using priority and due dates."
     )
-    user = f"""Post title: {subject}
-Post body: {(description or '')[:1500]}
+    text_out, model = _complete(system, [{"role": "user", "content": listing}], 500)
+    data = _extract_json(text_out) if text_out else None
+    if isinstance(data, dict) and data.get("order"):
+        ids = [int(i) for i in data["order"] if str(i).isdigit()]
+        msg = data.get("message") or "Here's a good order to work through today."
+        return {"message": msg, "order": ids}, model
 
-Existing tags already used on the site: {existing_str}
-
-Identify the SINGLE main focus of this post, plus up to {max_tags - 1} clearly-present
-secondary topics. Rules:
-- If an existing tag fits the topic, REUSE it exactly.
-- Otherwise create a concise new tag: lowercase, one or two words, hyphenated, no '#'.
-- Tags describe the technical subject (e.g. "kubernetes", "password-reset", "react").
-Return JSON: {{"tags": ["primary", "secondary"]}} — 1 to {max_tags} tags, primary first."""
-
-    data, model = _call_llm_json(system, user, {"tags": []})
-    if model == "unavailable":
-        return []
-
-    seen, clean = set(), []
-    # Map normalized existing tags back to their canonical form for exact reuse.
-    canon = {_normalize_tag(t): t for t in existing}
-    for raw in (data.get("tags") or [])[:max_tags]:
-        norm = _normalize_tag(raw)
-        if not norm or norm in seen:
-            continue
-        seen.add(norm)
-        clean.append(canon.get(norm, norm))
-    return clean
+    rank = {"high": 0, "medium": 1, "low": 2, "none": 3}
+    ordered = sorted(tasks, key=lambda t: (rank.get(t.get("priority"), 3),
+                                           t.get("due_date") or "9999"))
+    top = ordered[0]["title"] if ordered else ""
+    return {
+        "message": f"You have {len(tasks)} task(s) for today. "
+                   f"Start with “{top}”, then work down the list. "
+                   "Tackle the high-priority items while your focus is fresh.",
+        "order": [t["id"] for t in ordered],
+    }, "mock"
 
 
-def check_originality(subject, description, candidates):
-    """Judge whether a new post copies existing site content, and suggest credits.
-
-    candidates: list of {"ref": str, "text": str} (existing posts / KB articles).
-    Returns {"flagged": bool, "reason": str, "credits": [str, ...]} or {} if AI is off.
-    """
-    if not (subject or description):
-        return {}
-    cand_str = "\n\n".join(f"[{c['ref']}]\n{(c['text'] or '')[:600]}" for c in candidates) or "(no similar content found)"
+def chat(messages, tasks):
+    context = "\n".join(
+        f"- {t['title']} (priority: {t.get('priority','none')}, "
+        f"due: {t.get('due_date') or 'none'}, "
+        f"{'done' if t.get('completed') else 'open'})" for t in tasks[:50]
+    ) or "(no tasks yet)"
     system = (
-        "You are a content-integrity assistant for a tech Q&A community. "
-        "Respond with valid JSON only — no markdown, no extra text."
+        "You are Lumo, a friendly, concise AI assistant inside a to-do app. "
+        "Help the user think through, prioritise and plan their tasks. "
+        "Be brief and practical. The user's current tasks:\n" + context
     )
-    user = f"""New post:
-Title: {subject}
-Body: {(description or '')[:1800]}
-
-Existing site content to compare against:
-{cand_str}
-
-Tasks:
-1. Decide if the new post is substantially COPIED from, or a near-duplicate of, any item above.
-2. Suggest source attributions ONLY if the post clearly quotes or closely paraphrases a
-   well-known external source (official docs, a standard, a famous article). Be conservative —
-   do not invent sources or URLs.
-
-Return JSON:
-{{"flagged": true|false, "duplicate_of": "ref or null", "reason": "one short sentence", "credits": ["source", ...]}}
-- flagged=true ONLY for a clear copy / near-duplicate of a listed item.
-- credits: 0-3 short attribution strings like "MDN Web Docs — Array.prototype.map"; [] if none."""
-
-    data, model = _call_llm_json(system, user, {})
-    if model == "unavailable" or not isinstance(data, dict):
-        return {}
-    flagged = bool(data.get("flagged"))
-    reason = str(data.get("reason") or "").strip()[:300]
-    dup = data.get("duplicate_of")
-    if flagged and dup and str(dup).lower() != "null" and "duplicate" not in reason.lower():
-        reason = (f"Possible duplicate of {dup}. " + reason).strip()
-    credits = []
-    for c in (data.get("credits") or [])[:3]:
-        c = str(c).strip()
-        if c and c.lower() not in ("none", "n/a"):
-            credits.append(c[:160])
-    return {"flagged": flagged, "reason": reason, "credits": credits}
-
-
-def summarize_conversation(messages):
-    text = "\n".join(f"{m.get('sender','')}: {m.get('message','')}" for m in messages)
-    prompt = [
-        {"role": "system", "content": "Summarize this support conversation in 2-3 sentences."},
-        {"role": "user",   "content": text},
-    ]
-    answer, model = _call_llm(prompt)
-    return {"summary": answer, "model": model}
-
-
-def suggest_resolution(ticket_subject, ticket_description):
-    chunks = retrieve_context(f"{ticket_subject} {ticket_description}", top_k=3)
-    prompt = [
-        {"role": "system", "content": "Suggest 3 concrete resolution steps for this support question using the context."},
-        {
-            "role": "user",
-            "content": f"Context:\n{chr(10).join(chunks)}\n\nQuestion: {ticket_subject}\n{ticket_description}",
-        },
-    ]
-    answer, model = _call_llm(prompt)
-    return {"steps": answer, "model": model, "context_used": chunks}
+    text_out, model = _complete(system, messages, 600)
+    if not text_out:
+        last = messages[-1]["content"] if messages else ""
+        open_count = sum(1 for t in tasks if not t.get("completed"))
+        return {"reply": (
+            f"You have {open_count} open task(s). "
+            "I can help you prioritise them, break a big one into steps, or plan "
+            f"your day. (You asked: “{last[:80]}” — connect an AI key for "
+            "full answers.)")}, "mock"
+    return {"reply": text_out.strip()}, model

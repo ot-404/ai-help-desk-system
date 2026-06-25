@@ -1,57 +1,21 @@
-"""Entry point for the AI Help Desk System."""
+"""Entry point for Lumo — the AI to-do app."""
 from app import create_app, db
 from app.utils.seed import seed_demo_data
-from app.utils.seed_kb import run_seed as seed_kb_articles
 
 app = create_app()
 
 
 @app.cli.command("seed")
 def seed():
-    """Populate the database with demo users, tickets and KB articles."""
+    """Create the demo account with starter lists and tasks."""
     with app.app_context():
         seed_demo_data()
-    print("Seeded demo data.")
+    print("Seeded demo data (demo@lumo.app / demo123).")
 
 
-@app.cli.command("seed-kb")
-def seed_kb():
-    """Populate the Knowledge Base with help articles (safe to re-run — skips duplicates)."""
-    from app.models.kb_model import KnowledgeBase
-    with app.app_context():
-        added = seed_kb_articles(db, KnowledgeBase)
-    print(f"KB seed complete — {added} new article(s) added.")
-
-
-@app.cli.command("set-admin-email")
-def set_admin_email():
-    """Update the primary admin account email."""
-    from app.models.user_model import User
-    target = "ripp3r41@gmail.com"
-    with app.app_context():
-        admin = User.query.filter_by(role="admin").first()
-        if admin and admin.email != target:
-            admin.email = target
-            db.session.commit()
-            print(f"Admin email updated to {target}")
-        else:
-            print("Admin email already set or no admin found.")
-
-
-# Auto-seed on first boot (safe — no-ops if data already exists)
+# Auto-seed the demo account on first boot (no-op if it already exists).
 with app.app_context():
     seed_demo_data()
-    from app.models.kb_model import KnowledgeBase
-    seed_kb_articles(db, KnowledgeBase)
-
-@app.cli.command("seed-web-knowledge")
-def seed_web_knowledge():
-    """Populate the KB with extensive web-sourced articles across all topics."""
-    from app.models.kb_model import KnowledgeBase
-    from app.utils.seed_web_knowledge import run_seed
-    with app.app_context():
-        added = run_seed(db, KnowledgeBase, app)
-    print(f"Web knowledge seed complete — {added} article(s) added.")
 
 
 if __name__ == "__main__":

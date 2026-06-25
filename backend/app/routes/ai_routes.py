@@ -1,96 +1,137 @@
-"""AI Assistant endpoints: answer, summarize, suggest resolution, ask-and-publish."""
+"""AI endpoints: natural-language quick-add, subtask breakdown, plan-my-day, chat."""
+from datetime import date
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from app import db
-from app.models.ticket_model import Ticket
-from app.models.message_model import Message
-from app.models.user_model import User
-from app.models.kb_model import KnowledgeBase
+from app.models.task_model import Task, PRIORITIES
+from app.models.list_model import TaskList
+from app.models.ai_logs_model import AILog
 from app.services import ai_service
-from app.utils.auth_helpers import role_required
 
 ai_bp = Blueprint("ai", __name__)
 
 
-@ai_bp.post("/answer")
+def _log(uid, action, prompt, response, model):
+    try:
+        db.session.add(AILog(user_id=uid, action=action, prompt=str(prompt)[:4000],
+                             response=str(response)[:4000], model_used=model))
+    except Exception:  # noqa: BLE001
+        pass
+
+
+def _to_date(value):
+    try:
+        return date.fromisoformat(str(value)[:10]) if value else None
+    except ValueError:
+        return None
+
+
+@ai_bp.post("/quick-add")
 @jwt_required()
-def answer():
+def quick_add():
+    uid = int(get_jwt_identity())
     data = request.get_json() or {}
-    question = data.get("question")
-    if not question:
-        return jsonify(error="question is required"), 400
-    return jsonify(ai_service.generate_response(question, data.get("ticket_id")))
+    text = (data.get("text") or "").strip()
+    if not text:
+        return jsonify(error="Type what you need to do."), 400
 
+    parsed, model = ai_service.parse_task(text)
+    _log(uid, "parse", text, parsed, model)
 
-@ai_bp.post("/ask")
-@jwt_required()
-def ask_and_publish():
-    """Ask a question → AI answers → saves KB article + blog post → returns all three."""
-    data = request.get_json() or {}
-    question = (data.get("question") or "").strip()
-    if not question:
-        return jsonify(error="question is required"), 400
+    list_id = data.get("list_id")
+    if list_id and not TaskList.query.filter_by(id=list_id, user_id=uid).first():
+        list_id = None
 
-    # 1. Generate AI answer (with RAG context from KB)
-    result = ai_service.generate_response(question)
-    answer = result["answer"]
-    model = result["model"]
-    it_related = result.get("it_related", True)
+    priority = parsed.get("priority")
+    if priority not in PRIORITIES:
+        priority = "none"
 
-    # 2. Generate structured KB article from Q&A (always — IT or not)
-    kb_data = ai_service.generate_kb_article(question, answer)
-    kb_article = KnowledgeBase(
-        title=kb_data["title"],
-        content=kb_data["content"],
-        category=kb_data.get("category", "FAQ"),
-        tags=kb_data.get("tags", "ai-generated"),
+    count = Task.query.filter_by(user_id=uid, parent_id=None).count()
+    task = Task(
+        user_id=uid,
+        title=parsed["title"][:400],
+        notes=parsed.get("notes") or "",
+        priority=priority,
+        due_date=_to_date(parsed.get("due_date")),
+        list_id=list_id,
+        position=count,
+        ai_created=True,
     )
-    db.session.add(kb_article)
-
-    # 3. Generate blog post from Q&A
-    blog_data = ai_service.generate_blog_post(question, answer)
-    existing_tags = kb_data.get("tags", "")
-    blog_tags = f"blog,ai-generated,{existing_tags}".strip(",")
-    blog_article = KnowledgeBase(
-        title=blog_data["title"],
-        content=blog_data["content"],
-        category="Blog",
-        tags=blog_tags,
-    )
-    db.session.add(blog_article)
+    db.session.add(task)
     db.session.flush()
 
+    for i, sub in enumerate(parsed.get("subtasks") or []):
+        db.session.add(Task(user_id=uid, parent_id=task.id, title=str(sub)[:400],
+                            position=i, ai_created=True))
+
     db.session.commit()
-
-    return jsonify(
-        answer=answer,
-        model=model,
-        it_related=True,
-        kb_article=kb_article.to_dict(),
-        blog_post=blog_article.to_dict(),
-    ), 201
+    return jsonify(task=task.to_dict(), model=model), 201
 
 
-@ai_bp.post("/summarize/<int:ticket_id>")
-@role_required("agent", "admin")
-def summarize(ticket_id):
-    if not Ticket.query.get(ticket_id):
-        return jsonify(error="ticket not found"), 404
-    msgs = Message.query.filter_by(ticket_id=ticket_id).order_by(Message.created_at).all()
-    payload = []
-    for m in msgs:
-        sender = "AI" if m.ai_generated else "Support"
-        if m.sender_id and not m.ai_generated:
-            u = User.query.get(m.sender_id)
-            sender = u.name if u else sender
-        payload.append({"sender": sender, "message": m.message})
-    return jsonify(ai_service.summarize_conversation(payload))
+@ai_bp.post("/breakdown")
+@jwt_required()
+def breakdown():
+    uid = int(get_jwt_identity())
+    data = request.get_json() or {}
+    task_id = data.get("task_id")
+    task = Task.query.filter_by(id=task_id, user_id=uid).first()
+    if not task:
+        return jsonify(error="Task not found."), 404
+
+    result, model = ai_service.breakdown_task(task.title, task.notes or "")
+    _log(uid, "breakdown", task.title, result, model)
+
+    start = Task.query.filter_by(user_id=uid, parent_id=task.id).count()
+    created = []
+    for i, sub in enumerate(result.get("subtasks") or []):
+        st = Task(user_id=uid, parent_id=task.id, title=str(sub)[:400],
+                  position=start + i, ai_created=True)
+        db.session.add(st)
+        created.append(st)
+    db.session.commit()
+    return jsonify(task=task.to_dict(), added=len(created), model=model)
 
 
-@ai_bp.post("/suggest/<int:ticket_id>")
-@role_required("agent", "admin")
-def suggest(ticket_id):
-    ticket = Ticket.query.get(ticket_id)
-    if not ticket:
-        return jsonify(error="ticket not found"), 404
-    return jsonify(ai_service.suggest_resolution(ticket.subject, ticket.description))
+@ai_bp.post("/plan")
+@jwt_required()
+def plan():
+    uid = int(get_jwt_identity())
+    today = date.today()
+    tasks = (
+        Task.query.filter(
+            Task.user_id == uid, Task.parent_id == None,  # noqa: E711
+            Task.completed == False,                       # noqa: E712
+            Task.due_date != None, Task.due_date <= today,  # noqa: E711
+        ).all()
+    )
+    payload = [t.to_dict(with_subtasks=False) for t in tasks]
+    result, model = ai_service.plan_day(payload)
+    _log(uid, "plan", f"{len(payload)} tasks", result.get("message"), model)
+
+    by_id = {t["id"]: t for t in payload}
+    ordered = [by_id[i] for i in result.get("order", []) if i in by_id]
+    for t in payload:  # append anything the model skipped
+        if t not in ordered:
+            ordered.append(t)
+    return jsonify(message=result["message"], items=ordered, model=model)
+
+
+@ai_bp.post("/chat")
+@jwt_required()
+def chat():
+    uid = int(get_jwt_identity())
+    data = request.get_json() or {}
+    messages = data.get("messages") or []
+    clean = [
+        {"role": "assistant" if m.get("role") == "assistant" else "user",
+         "content": str(m.get("content", ""))[:2000]}
+        for m in messages if m.get("content")
+    ][-12:]
+    if not clean:
+        return jsonify(error="Say something to the assistant."), 400
+
+    tasks = [t.to_dict(with_subtasks=False)
+             for t in Task.query.filter_by(user_id=uid, parent_id=None).all()]
+    result, model = ai_service.chat(clean, tasks)
+    _log(uid, "chat", clean[-1]["content"], result.get("reply"), model)
+    return jsonify(reply=result["reply"], model=model)
