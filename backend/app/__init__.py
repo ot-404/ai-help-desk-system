@@ -11,6 +11,7 @@ load_dotenv()
 
 # Serve compiled assets with correct MIME types in production.
 mimetypes.add_type("text/javascript", ".js")
+mimetypes.add_type("application/manifest+json", ".webmanifest")
 
 db = SQLAlchemy()
 jwt = JWTManager()

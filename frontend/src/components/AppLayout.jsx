@@ -4,6 +4,7 @@ import { Menu, X, Sparkles, CalendarCheck } from "lucide-react";
 import Sidebar from "./Sidebar";
 import ListModal from "./ListModal";
 import AIAssistant from "./AIAssistant";
+import InstallPrompt from "./InstallPrompt";
 import api from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 
@@ -100,6 +101,8 @@ export default function AppLayout() {
         onClose={() => setListModal({ open: false, existing: null })}
         onSaved={refreshMeta}
       />
+
+      <InstallPrompt />
     </div>
   );
 }
